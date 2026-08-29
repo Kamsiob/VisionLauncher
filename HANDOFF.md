@@ -10,7 +10,11 @@ Update and commit this file at every commit, before any pause, when context runs
 
 **Status:** Stage 1 is built, running, and verified on a real Pixel 8 running API 37. Every Stage 1 screen from `MASTER_SPEC.md` section 8 exists and was exercised on the device, not only compiled.
 
-Two review passes followed. The first found five defects where the interface asserted something the code did not guarantee, and enlarged every icon at the user's request. The second was an eight lens sweep with every finding adversarially verified: 46 confirmed, of which the serious ones are fixed. The most consequential were an emergency text that was silently dead on Android 10 and 11, an arranging session that discarded your work on Back or Home while the spec promised it would not, a keypad that could not dial a repeated digit, and Settings controls at half the app's own touch floor.
+Three review passes followed, each with every finding adversarially verified before anything was changed.
+
+The first found five defects where the interface asserted something the code did not guarantee, and enlarged every icon at the user's request. The second was an eight lens sweep over dead ends, states, voice, TalkBack, lifecycle, launcher behavior, visuals and feedback: 46 confirmed. The third took six angles the others never looked at, RTL, configuration changes, hostile data, privacy, release readiness and what accumulates over months: 23 confirmed.
+
+The most consequential across all three: an emergency text silently dead on Android 10 and 11; an arranging session that discarded your work on Back or Home while the spec promised it would not; a keypad that could not dial a repeated digit; Settings controls at half the app's own touch floor; an alarm playing on the ringtone stream so a phone on vibrate would ring in silence; a corrupt preferences file that would crash the launcher on every start with no way back in; a crash on any phone with a work profile; and cloud backup carrying the favorites and the emergency contact off the device while the README promised nothing leaves it.
 
 **Stage:** Stage 1 complete. Stage 2, messaging, has not been started.
 
@@ -126,7 +130,7 @@ All are recorded in full in `DECISIONS.md`.
 - Every device setting changed during testing was restored afterward: font scale, color inversion, TalkBack, airplane mode, and the ringer, which was found on vibrate and put back on vibrate.
 - TalkBack pass: done on Home and the arranging screens, with the accessibility tree inspected on Call, the keypad, Settings, Helper settings, and Add an app. Not yet swept screen by screen with TalkBack actually speaking on every screen.
 - 200 percent font scale pass: done on Home. Not yet swept across every screen.
-- Arabic RTL pass: done on the device by setting the app's locale to Arabic, which mirrors the layout while leaving the untranslated strings in place. The layout mirrors correctly throughout. Two defects found and fixed, recorded in D39. Translations themselves are still Stage 4.
+- Arabic RTL pass: done twice on the device by setting the app's locale to Arabic, which mirrors the layout while leaving the untranslated strings in place. The layout mirrors correctly throughout. Two defects found and fixed, recorded in D39. Translations themselves are still Stage 4.
 - Color inversion: checked against the requirement rather than the pixels, because `screencap` captures before the compositor inverts. Nothing carries meaning by color alone, so inversion cannot destroy meaning. A human eye on an inverted screen would still be worth having.
 - Color correction modes: none.
 - Screenshots captured: yes, in `docs/screenshots`, all from the running app on the device.
