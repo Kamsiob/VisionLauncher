@@ -95,3 +95,11 @@ Placeholder `Launcher by Kamsiob`, application ID `io.github.kamsiob.launcher`. 
 ## D21. Signed commits from the first commit, history never rewritten
 
 Every commit is SSH signed with the portfolio signing key, matching the Health Trail setup. Vigilant mode applies at the account level. History is never rewritten to add signatures to old commits; signing starts at the first commit and stays on.
+
+## D22. One application ID, no debug suffix
+
+The portfolio convention elsewhere is a `.debug` suffix so debug and release installs coexist. This project deliberately drops it. The standing rule is exactly one copy of this app per device, ever, and two application IDs is two copies. Debug and release builds collide on purpose; moving between them means uninstalling first, and that is the intended behavior.
+
+## D23. Unbuilt tiles are honest, not hidden
+
+Stage 1 ships the home screen with its full default tile set, but Messages, Magnifier, and Photos belong to later stages. Their tiles open a plain screen that says this part is not built yet and, where the phone has its own way to do the job, offers that instead: the message app for Messages, the gallery for Photos. Hiding the tiles would make the home layout shift as stages land, which breaks the layout the hands are learning. The interstitial deletes itself stage by stage. Camera is not an interstitial; it launches the phone's camera app directly, because the spec has no camera screen of its own.

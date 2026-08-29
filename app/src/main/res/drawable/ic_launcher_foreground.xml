@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The day part mark: the sun over its horizon line, the element the design
+     is remembered by. Drawn in the same stroke style as the grid icons. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <group
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:pivotX="12"
+        android:pivotY="12">
+        <path
+            android:pathData="M12,14 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"
+            android:strokeColor="@color/navy"
+            android:strokeWidth="2.4"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M12,6 L12,8 M5,14 L3,14 M21,14 L19,14 M6.6,8.6 L5.2,7.2 M17.4,8.6 L18.8,7.2"
+            android:strokeColor="@color/navy"
+            android:strokeWidth="2.4"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M3,19 L21,19"
+            android:strokeColor="@color/navy"
+            android:strokeWidth="2.4"
+            android:strokeLineCap="round" />
+    </group>
+</vector>

@@ -8,9 +8,9 @@ Update and commit this file at every commit, before any pause, when context runs
 
 ## Current state
 
-**Status:** First session in progress. Repository work underway.
+**Status:** First session in progress. The repository, the project board with 16 specification issues, and the Android foundation exist. The first debug APK builds. Stage 1 screens are being built.
 
-**Stage:** Pre Stage 1.
+**Stage:** Stage 1 in progress. Foundation done: Gradle project (AGP 9.3.1, Kotlin 2.4.10, Gradle 9.6.1, minSdk 29, targetSdk 36 verified against Play's August 31, 2026 requirement, compileSdk 37), three fonts bundled in `res/font` as variable TTFs, the full token layer read from the grid, the shared components (appliance key, tile, row key, masthead, status pill, attention lamp, undo strip, prompt bar, threshold screen), the attention watcher with all Stage 1 states, LauncherApps repository, Home screen with masthead and day part mark, More apps with search, the honest not-built interstitial (D23), and the em dash build gate.
 
 **App name:** VisionLauncher. Application ID `io.github.kamsiob.launcher`. Both settled by the user on August 29, 2026. See `DECISIONS.md` D20.
 

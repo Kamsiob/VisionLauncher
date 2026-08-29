@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VisionLauncher</string>
+
+    <!-- Home -->
+    <string name="all_is_well">All is well.</string>
+    <string name="more_apps">More apps</string>
+    <string name="day_part_morning">%1$s morning</string>
+    <string name="day_part_afternoon">%1$s afternoon</string>
+    <string name="day_part_evening">%1$s evening</string>
+    <string name="a11y_masthead">%1$s. %2$s. %3$s.</string>
+    <string name="a11y_sun_mark">Daytime</string>
+    <string name="a11y_moon_mark">Evening</string>
+
+    <!-- Built in feature names -->
+    <string name="feature_call">Call</string>
+    <string name="feature_messages">Messages</string>
+    <string name="feature_magnifier">Magnifier</string>
+    <string name="feature_camera">Camera</string>
+    <string name="feature_photos">Photos</string>
+    <string name="feature_alarms">Alarms</string>
+    <string name="empty_spot">Empty spot</string>
+
+    <!-- Attention queue -->
+    <plurals name="attention_count">
+        <item quantity="one">%d thing needs attention</item>
+        <item quantity="other">%d things need attention</item>
+    </plurals>
+    <string name="attention_ringer_off">Your ringer is off. You will not hear calls.</string>
+    <string name="attention_ringer_vibrate">Your phone is set to vibrate only. You will not hear calls.</string>
+    <string name="attention_repair_ringer">Turn ringer on</string>
+    <string name="attention_dnd_on">Do Not Disturb is on. Calls and messages will stay silent.</string>
+    <string name="attention_repair_dnd">Turn Do Not Disturb off</string>
+    <string name="attention_battery_low">Battery is at %d percent. Plug the phone in soon.</string>
+    <string name="attention_airplane_on">Airplane mode is on. Calls and messages cannot reach you.</string>
+    <string name="attention_repair_airplane">Open airplane mode settings</string>
+    <string name="attention_no_network">This phone has no connection right now. Calls and messages cannot reach you.</string>
+    <string name="attention_repair_network">Open connection settings</string>
+    <string name="attention_storage_full">This phone is nearly out of space. New photos may not save.</string>
+    <string name="attention_repair_storage">Open storage settings</string>
+    <string name="attention_battery_optimization">Android may put this app to sleep. Messages could stop appearing.</string>
+    <string name="attention_repair_battery_optimization">Keep messages arriving</string>
+
+    <!-- Common keys -->
+    <string name="key_home">Home</string>
+    <string name="key_back">Back</string>
+    <string name="key_done">Done</string>
+    <string name="key_continue">Continue</string>
+    <string name="key_skip">Skip for now</string>
+    <string name="key_never_mind">Never mind</string>
+    <string name="a11y_home_key">Go to the home screen</string>
+    <string name="a11y_back_key">Go back one screen</string>
+
+    <!-- Call -->
+    <string name="call_title">Call</string>
+    <string name="call_all_contacts">All contacts</string>
+    <string name="call_dial_a_number">Dial a number</string>
+    <string name="call_emergency">Emergency</string>
+    <string name="a11y_emergency_key">Emergency. Opens the emergency screen. Does not place a call.</string>
+    <string name="a11y_call_person">Call %1$s, %2$s</string>
+    <string name="a11y_call_person_no_relation">Call %1$s</string>
+    <string name="call_no_contacts_permission">This app cannot see your contacts yet. You can still dial a number.</string>
+    <string name="call_grant_contacts">Let this app see your contacts</string>
+    <string name="call_no_favorites">People you mark as favorites appear here. Helper settings is where favorites are chosen.</string>
+
+    <!-- Keypad -->
+    <string name="keypad_title">Dial a number</string>
+    <string name="keypad_erase">Erase</string>
+    <string name="keypad_clear">Clear</string>
+    <string name="keypad_call_this_number">Call this number</string>
+    <string name="a11y_dialed_number">Dialed so far: %1$s</string>
+    <string name="a11y_dialed_empty">No digits dialed yet</string>
+
+    <!-- Emergency -->
+    <string name="emergency_title">Emergency</string>
+    <string name="emergency_call_911">Call 911</string>
+    <string name="emergency_call_911_sub">Opens the phone\'s own emergency call screen</string>
+    <string name="emergency_alert_person">Alert %1$s</string>
+    <string name="emergency_alert_person_sub">Calls and texts where you are</string>
+    <string name="emergency_no_person">Choose a person to alert</string>
+    <string name="emergency_no_person_sub">A helper can set this up in Settings</string>
+    <string name="emergency_honesty">Both need a cell signal. This is not a monitored medical alert service.</string>
+    <string name="emergency_sms_body">This is an emergency alert from %1$s. My location: %2$s</string>
+    <string name="emergency_sms_body_no_location">This is an emergency alert from %1$s. My location is not available.</string>
+
+    <!-- More apps -->
+    <string name="more_apps_title">All your apps</string>
+    <string name="more_apps_search_hint">Search apps</string>
+    <string name="a11y_search_field">Search your apps by name</string>
+    <string name="more_apps_work_profile">%1$s, work profile</string>
+
+    <!-- Not built yet -->
+    <string name="not_built_title">Not built yet</string>
+    <string name="not_built_body">This part of VisionLauncher is still being built. It arrives with a later update.</string>
+    <string name="open_message_app">Open a message app</string>
+    <string name="open_photos_app">Open the phone\'s photos</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_text_size">Text size</string>
+    <string name="settings_size_now">Now</string>
+    <string name="a11y_text_size_step">Text size %1$d of 3</string>
+    <string name="settings_look">Look</string>
+    <string name="settings_look_light">Light</string>
+    <string name="settings_look_dark">Dark</string>
+    <string name="settings_look_outlined">Outlined</string>
+    <string name="a11y_look_selected">%1$s, selected</string>
+    <string name="settings_choose_apps">Choose your apps</string>
+    <string name="settings_choose_apps_sub">Pick and arrange your home screen</string>
+    <string name="settings_restore">Put my screen back</string>
+    <string name="settings_restore_sub">Undoes changes to your home screen</string>
+    <string name="settings_restore_done">Your home screen is back the way it was.</string>
+    <string name="settings_see_hear">See and hear better</string>
+    <string name="settings_see_hear_sub">Set up this phone\'s built-in helpers</string>
+    <string name="settings_helper">Helper settings</string>
+    <string name="settings_helper_sub">For the person who helps you</string>
+    <string name="settings_undo_note">Every change here can be undone.</string>
+
+    <!-- See and hear better -->
+    <string name="seehear_bigger">Make everything bigger</string>
+    <string name="seehear_bigger_sub">Opens Android\'s display size setting</string>
+    <string name="seehear_magnify">Magnify the screen</string>
+    <string name="seehear_magnify_sub">Zoom into anything, in any app</string>
+    <string name="seehear_hearing">Hearing aids</string>
+    <string name="seehear_hearing_sub">Pair them with this phone</string>
+    <string name="seehear_captions">Written captions</string>
+    <string name="seehear_captions_sub">Words on screen for videos and calls</string>
+    <string name="seehear_sound">Louder, clearer sound</string>
+    <string name="seehear_sound_sub">Boosts voices around you</string>
+    <string name="seehear_medical">Your medical info</string>
+    <string name="seehear_medical_sub">Seen by rescuers even when locked</string>
+
+    <!-- Helper settings -->
+    <string name="helper_title">Helper settings</string>
+    <string name="helper_favorites">Favorites</string>
+    <string name="helper_favorites_sub">The people on the Call screen</string>
+    <string name="helper_add_favorite">Add a favorite</string>
+    <string name="helper_remove_favorite">Take %1$s off the list</string>
+    <string name="helper_favorite_removed">%1$s was taken off the favorites.</string>
+    <string name="helper_relationship_hint">Relationship, like Daughter or Doctor</string>
+    <string name="helper_emergency_person">The emergency person</string>
+    <string name="helper_emergency_person_sub">Who the Emergency screen alerts</string>
+    <string name="helper_restore_warnings">Bring back all warnings</string>
+    <string name="helper_restore_warnings_sub">Shows every screen warning again</string>
+    <string name="helper_warnings_restored">All warnings will show again.</string>
+    <string name="helper_about">About this app</string>
+    <string name="about_title">About</string>
+    <string name="about_body">VisionLauncher is a home screen built around low vision and aging. Everything happens on this phone. Nothing is sent anywhere.</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_license">This app is free software under the AGPL 3.0 license. The fonts are Atkinson Hyperlegible Next, Atkinson Hyperlegible Mono, and Young Serif, all under the SIL Open Font License.</string>
+    <string name="about_support">Support this work</string>
+    <string name="put_it_back">Put it back</string>
+
+    <!-- Choose your apps -->
+    <string name="arrange_prompt">Tap an app to move it or take it off.</string>
+    <string name="arrange_prompt_destination">Tap the spot where %1$s should go.</string>
+    <string name="arrange_move_it">Move it</string>
+    <string name="arrange_put_first">Put it first</string>
+    <string name="arrange_take_off">Take it off the home screen</string>
+    <string name="arrange_taken_off">%1$s was taken off.</string>
+    <string name="arrange_call_stays">Call always stays first.</string>
+    <string name="arrange_undo_last">Undo my last move</string>
+    <string name="arrange_kept_partial">Your changes so far are kept.</string>
+    <string name="arrange_keep_title">Here is your new home screen</string>
+    <string name="arrange_keep_it">Keep it</string>
+    <string name="arrange_revert">Put it back the way it was</string>
+    <string name="arrange_add_app">Add an app</string>
+    <string name="arrange_add_app_note">The new app lands at the bottom of your home screen.</string>
+    <string name="a11y_arrange_tile">%1$s. Tap to move it or take it off.</string>
+    <string name="a11y_arrange_lifted">%1$s is lifted. Tap a spot to move it there, or tap it again to cancel.</string>
+    <string name="a11y_arrange_destination">Put %1$s here, in place of %2$s</string>
+    <string name="a11y_arrange_destination_empty">Put %1$s here, in the empty spot</string>
+
+    <!-- Threshold -->
+    <string name="threshold_title">You\'re about to leave this app</string>
+    <string name="threshold_body">The next screen is %1$s. It looks different from here, with smaller writing.</string>
+    <string name="threshold_return">When you\'re done, press Home and you\'ll come straight back.</string>
+    <string name="threshold_continue">Continue to %1$s</string>
+    <string name="threshold_stay">Stay here</string>
+    <string name="threshold_dont_warn">Don\'t warn me about %1$s again</string>
+    <string name="dest_sound_settings">the sound settings</string>
+    <string name="dest_dnd_settings">the Do Not Disturb settings</string>
+    <string name="dest_airplane_settings">the airplane mode settings</string>
+    <string name="dest_network_settings">the connection settings</string>
+    <string name="dest_storage_settings">the storage settings</string>
+    <string name="dest_battery_settings">the battery settings</string>
+    <string name="dest_display_settings">the display size settings</string>
+    <string name="dest_accessibility_settings">the accessibility settings</string>
+    <string name="dest_hearing_settings">the hearing device settings</string>
+    <string name="dest_caption_settings">the caption settings</string>
+    <string name="dest_sound_amplifier">the sound booster</string>
+    <string name="dest_medical_info">the medical info screen</string>
+    <string name="dest_home_settings">the home app settings</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_cant_break">You can\'t break anything.</string>
+    <string name="onboarding_cant_break_body">Every change can be undone. Nothing you press can harm the phone. Take your time.</string>
+    <string name="onboarding_own_phone">I\'m setting up my own phone</string>
+    <string name="onboarding_helping">I\'m helping someone set up theirs</string>
+    <string name="onboarding_set_home_title">Make this your home screen</string>
+    <string name="onboarding_set_home_body">When you press the Home button, this is the screen that will greet you.</string>
+    <string name="onboarding_set_home_key">Set as home screen</string>
+    <string name="onboarding_contacts_title">Your people</string>
+    <string name="onboarding_contacts_body">To show the people you call, this app needs to see your contacts. They stay on this phone.</string>
+    <string name="onboarding_contacts_key">Let it see contacts</string>
+    <string name="onboarding_phone_title">Calling</string>
+    <string name="onboarding_phone_body">To place calls when you tap a person, this app needs permission to call.</string>
+    <string name="onboarding_phone_key">Let it place calls</string>
+    <string name="onboarding_battery_title">Keep messages arriving</string>
+    <string name="onboarding_battery_body">To save battery, Android sometimes puts apps to sleep. If it puts this app to sleep, new messages may stop appearing here.</string>
+    <string name="onboarding_battery_instruction">On the next screen, choose Don\'t optimize for this app.</string>
+    <string name="onboarding_battery_key">Continue to battery settings</string>
+    <string name="onboarding_battery_skipped">If Android puts this app to sleep, the attention lamp will tell you.</string>
+    <string name="onboarding_skipped_consequence">You can allow this later in Settings. Until then, this part stays off.</string>
+    <string name="onboarding_all_set">You\'re all set.</string>
+    <string name="onboarding_helper_note">Helper settings holds favorites and the emergency person. It lives at the bottom of Settings.</string>
+    <string name="onboarding_go_home">Go to your home screen</string>
+
+    <!-- Alarms -->
+    <string name="alarms_title">Alarms</string>
+    <string name="alarm_new">New alarm</string>
+    <string name="alarm_label_hint">What is this alarm for</string>
+    <string name="alarm_save">Save this alarm</string>
+    <string name="alarm_delete">Take this alarm off</string>
+    <string name="alarm_deleted">The alarm was taken off.</string>
+    <string name="alarm_on">On</string>
+    <string name="alarm_off">Off</string>
+    <string name="a11y_alarm_row">Alarm at %1$s, %2$s. Tap to change it.</string>
+    <string name="a11y_alarm_toggle_on">Turn the %1$s alarm on</string>
+    <string name="a11y_alarm_toggle_off">Turn the %1$s alarm off</string>
+    <string name="alarm_stop">Stop</string>
+    <string name="alarm_ten_more">10 more minutes</string>
+    <string name="alarm_none_yet">No alarms yet. The key below makes one.</string>
+    <string name="alarm_channel_name">Alarms</string>
+    <string name="alarm_channel_description">Alarm clock ringing</string>
+    <string name="alarm_notification_title">Alarm</string>
+    <string name="alarm_hour">Hour</string>
+    <string name="alarm_minute">Minute</string>
+    <string name="alarm_am">AM</string>
+    <string name="alarm_pm">PM</string>
+    <string name="alarm_plus_hour">One hour later</string>
+    <string name="alarm_minus_hour">One hour earlier</string>
+    <string name="alarm_plus_minute">Five minutes later</string>
+    <string name="alarm_minus_minute">Five minutes earlier</string>
+
+    <!-- Misc -->
+    <string name="a11y_status_pill">Status: %1$s</string>
+    <string name="a11y_app_icon">%1$s app icon</string>
+    <string name="privacy_promise">Everything happens on this phone. Nothing is sent anywhere.</string>
+</resources>

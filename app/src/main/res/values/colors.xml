@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window and icon colors only. The full token set lives in Compose,
+         read from design/design-grid-v4.html. -->
+    <color name="paper">#F4EEE1</color>
+    <color name="navy">#2E4A66</color>
+</resources>
