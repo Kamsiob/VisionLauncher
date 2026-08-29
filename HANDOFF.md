@@ -76,7 +76,6 @@ Roughly fifteen commits, each verified on the device. The themes, in the order t
 
 ## Not done, and worth doing next
 
-- The tile trade animation MASTER_SPEC 5.12 describes does not exist. Issue #19.
 - The alarm stops ringing when it leaves the foreground, which is the lesser of two failures rather than the right answer. Issue #20.
 - `AttentionWatcher` does disk and binder work on the main thread on every resume.
 - Nineteen strings are unreachable, several of them fossils of features that were wired differently in the end.

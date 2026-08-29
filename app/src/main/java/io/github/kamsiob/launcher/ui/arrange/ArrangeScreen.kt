@@ -1,6 +1,21 @@
 package io.github.kamsiob.launcher.ui.arrange
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.offset
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.unit.IntOffset
+import io.github.kamsiob.launcher.support.tradeDurationMillis
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.border
@@ -65,6 +80,54 @@ import io.github.kamsiob.launcher.ui.theme.tileColumns
 import io.github.kamsiob.launcher.ui.theme.bodyStyle
 import kotlinx.coroutines.delay
 
+/**
+ * The slow tile trade from MASTER_SPEC 5.12, and the only deliberate animation
+ * in the app.
+ *
+ * Two 136dp tiles swapping in a single frame is hard to follow and reads like a
+ * mis-tap that scrambled the grid, on the one screen whose job is making
+ * rearrangement feel safe. The two tiles slide between their old and new places
+ * instead.
+ *
+ * The duration comes from the system's remove animations setting, so a person
+ * who turned animations off gets the instant swap deliberately rather than by
+ * accident.
+ */
+@Stable
+private class TradeAnimation(private val progress: Animatable<Float, AnimationVector1D>) {
+    private val places = mutableMapOf<Int, Offset>()
+    private var from by mutableStateOf<Pair<Int, IntOffset>?>(null)
+    private var to by mutableStateOf<Pair<Int, IntOffset>?>(null)
+
+    fun remember(index: Int, position: Offset) {
+        places[index] = position
+    }
+
+    /** Call with the two indices about to trade, before the list changes. */
+    suspend fun run(a: Int, b: Int, durationMs: Int) {
+        val pa = places[a]
+        val pb = places[b]
+        if (pa == null || pb == null || durationMs == 0) return
+        val delta = pb - pa
+        from = a to IntOffset(delta.x.toInt(), delta.y.toInt())
+        to = b to IntOffset(-delta.x.toInt(), -delta.y.toInt())
+        progress.snapTo(1f)
+        progress.animateTo(0f, tween(durationMs, easing = FastOutSlowInEasing))
+        from = null
+        to = null
+    }
+
+    fun offsetFor(index: Int): IntOffset {
+        val p = progress.value
+        from?.let { if (it.first == index) return it.second * p }
+        to?.let { if (it.first == index) return it.second * p }
+        return IntOffset.Zero
+    }
+
+    private operator fun IntOffset.times(f: Float) =
+        IntOffset((x * f).toInt(), (y * f).toInt())
+}
+
 /** What arranging mode is currently doing. */
 private sealed interface ArrangeMode {
     data object Browsing : ArrangeMode
@@ -91,6 +154,10 @@ fun ArrangeScreen(
     var showPreview by remember { mutableStateOf(false) }
     var addingApp by remember { mutableStateOf(false) }
     var keptOnExit by remember { mutableStateOf(false) }
+    val tradeProgress = remember { Animatable(0f) }
+    val trade = remember { TradeAnimation(tradeProgress) }
+    val tradeMs = tradeDurationMillis()
+    val scope = rememberCoroutineScope()
     // Set once Keep it or Put it back has decided, so the safety net below
     // knows the outcome was chosen rather than stumbled into.
     var decided by remember { mutableStateOf(false) }
@@ -214,6 +281,7 @@ fun ArrangeScreen(
             liftedIndex = liftedIndex,
             movingLabel = movingIndex?.let { tileLabel(working[it], apps) },
             dimOthers = chosenIndex != null,
+            trade = trade,
             onTapTile = { index ->
                 when {
                     movingIndex != null -> {
@@ -231,6 +299,7 @@ fun ArrangeScreen(
                             }
                             else -> {
                                 val before = working
+                                scope.launch { trade.run(movingIndex, index, tradeMs) }
                                 working = HomeLayout.swap(working, movingIndex, index)
                                 undo = UndoState.Moved(before)
                                 mode = ArrangeMode.Browsing
@@ -361,6 +430,7 @@ private fun ArrangeGrid(
     liftedIndex: Int?,
     movingLabel: String?,
     dimOthers: Boolean,
+    trade: TradeAnimation,
     onTapTile: (Int) -> Unit,
 ) {
     val palette = LocalPalette.current
@@ -377,10 +447,15 @@ private fun ArrangeGrid(
                     val index = rowIndex * columns + columnIndex
                     val lifted = index == liftedIndex
                     val dimmed = dimOthers && !lifted
+                    val slide = trade.offsetFor(index)
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
+                            // The two tiles slide from where they were to where
+                            // they now are. Nothing else in the app animates.
+                            .offset { slide }
+                            .onGloballyPositioned { trade.remember(index, it.positionInRoot()) }
                             .then(if (dimmed) Modifier.alpha(0.38f) else Modifier)
                             .then(
                                 if (lifted) {
