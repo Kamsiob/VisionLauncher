@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,6 +25,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import android.Manifest
 import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.data.ContactsRepository
 import io.github.kamsiob.launcher.data.EmergencyContact
@@ -31,6 +33,7 @@ import io.github.kamsiob.launcher.data.Favorite
 import io.github.kamsiob.launcher.ui.call.avatarColorFor
 import io.github.kamsiob.launcher.ui.call.initialOf
 import io.github.kamsiob.launcher.ui.components.ApplianceKey
+import io.github.kamsiob.launcher.ui.components.NoteText
 import io.github.kamsiob.launcher.ui.components.RowKey
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
 import io.github.kamsiob.launcher.ui.components.ScreenTitle
@@ -154,7 +157,14 @@ fun PickContactScreen(
     onBack: () -> Unit,
 ) {
     val palette = LocalPalette.current
-    val all = remember(contacts) { contacts.allContacts() }
+    // Keyed on a counter so granting the permission re-reads instead of
+    // leaving the screen empty forever.
+    var reads by remember { mutableIntStateOf(0) }
+    val permitted = remember(reads) { contacts.hasPermission() }
+    val all = remember(reads) { contacts.allContacts() }
+    val requestContacts = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { reads++ }
     var pending by remember { mutableStateOf<ContactsRepository.Contact?>(null) }
     var relationship by remember { mutableStateOf("") }
 
@@ -200,6 +210,18 @@ fun PickContactScreen(
     ScreenFrame(scrollable = false) {
         TopBar(onHome = onHome, onBack = onBack)
         ScreenTitle(title)
+        // Without these two the screen was a title over empty space, with no
+        // sentence, no way to grant, and no way forward. Setting an emergency
+        // person was then impossible and nothing said why.
+        if (!permitted) {
+            NoteText(stringResource(R.string.call_no_contacts_permission))
+            ApplianceKey(
+                label = stringResource(R.string.call_grant_contacts),
+                onClick = { requestContacts.launch(Manifest.permission.READ_CONTACTS) },
+            )
+        } else if (all.isEmpty()) {
+            NoteText(stringResource(R.string.contacts_none))
+        }
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(Dimens.gap),

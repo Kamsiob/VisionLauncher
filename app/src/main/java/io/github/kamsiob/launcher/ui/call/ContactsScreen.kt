@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.data.ContactsRepository
+import io.github.kamsiob.launcher.ui.components.NoteText
 import io.github.kamsiob.launcher.ui.components.RowKey
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
 import io.github.kamsiob.launcher.ui.components.ScreenTitle
@@ -29,6 +30,7 @@ fun ContactsScreen(
     ScreenFrame(scrollable = false) {
         TopBar(onHome = onHome, onBack = onBack)
         ScreenTitle(stringResource(R.string.call_all_contacts))
+        if (all.isEmpty()) NoteText(stringResource(R.string.contacts_none))
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Dimens.gap),

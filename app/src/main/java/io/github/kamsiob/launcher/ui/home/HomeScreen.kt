@@ -260,13 +260,20 @@ private fun lampItems(
             id = "dnd",
             sentence = stringResource(R.string.attention_dnd_on),
             icon = LineIcons.bellQuiet,
-            repairLabel = stringResource(R.string.attention_repair_dnd),
+            // The key said "Turn Do Not Disturb off" on every device, but the
+            // toggle needs a special access this app never requests, so it
+            // could never do it. The label now describes whichever of the two
+            // things will actually happen.
+            repairLabel = stringResource(
+                if (watcher.canToggleDnd()) R.string.attention_repair_dnd
+                else R.string.attention_repair_dnd_open
+            ),
             onRepair = {
                 if (watcher.repairDnd()) {
                     Haptics.confirm(view)
                 } else {
-                    Haptics.reject(view)
-                    onHandoff(SystemDestination.SOUND)
+                    Haptics.tap(view)
+                    onHandoff(SystemDestination.DND)
                 }
             },
         )

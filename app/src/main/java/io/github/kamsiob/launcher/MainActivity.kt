@@ -143,6 +143,8 @@ fun LauncherNav(
     val layout by app.layoutStore.layout
         .collectAsStateWithLifecycle(initialValue = app.layoutStore.defaultLayout)
     val alarms by alarmStore.alarms.collectAsStateWithLifecycle(initialValue = emptyList())
+    // Held above the NavHost so it survives the pop back to the alarm list.
+    var justRemovedAlarm by remember { mutableStateOf<Alarm?>(null) }
 
     // Recomposed after a permission result so the Call screen stops saying it
     // cannot see contacts the moment it can.
@@ -252,6 +254,14 @@ fun LauncherNav(
                 onEdit = { navController.navigate(Routes.alarmEdit(it.id)) },
                 onNew = { navController.navigate(Routes.alarmEdit(0)) },
                 onHome = goHome,
+                justRemoved = justRemovedAlarm,
+                onPutItBack = {
+                    justRemovedAlarm?.let { alarm ->
+                        scope.launch { alarmStore.save(alarm) }
+                        if (alarm.enabled) AlarmScheduler.schedule(activity, alarm)
+                        justRemovedAlarm = null
+                    }
+                },
             )
         }
 
@@ -278,6 +288,7 @@ fun LauncherNav(
                     {
                         AlarmScheduler.cancel(activity, it)
                         scope.launch { alarmStore.delete(it.id) }
+                        justRemovedAlarm = it
                         goBack()
                     }
                 },

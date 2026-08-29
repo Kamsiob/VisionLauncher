@@ -113,6 +113,22 @@ class AlarmRingActivity : ComponentActivity() {
         )
     }
 
+    /**
+     * Stop the sound the moment this screen is no longer in front of the person.
+     *
+     * The ringtone loops and the vibration repeats forever, and this activity is
+     * singleInstance and excluded from recents, so anything that took the
+     * foreground before Stop was pressed left an alarm ringing with no reachable
+     * way to silence it. Stopping on background is the lesser failure of the
+     * two. The proper answer is a foreground service with a Stop action in a
+     * notification, which is tracked as its own piece of work.
+     */
+    override fun onStop() {
+        super.onStop()
+        stopRinging()
+        if (!isFinishing) finish()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         stopRinging()

@@ -31,6 +31,7 @@
     <string name="attention_repair_ringer">Turn ringer on</string>
     <string name="attention_dnd_on">Do Not Disturb is on. Calls and messages will stay silent.</string>
     <string name="attention_repair_dnd">Turn Do Not Disturb off</string>
+    <string name="attention_repair_dnd_open">Open Do Not Disturb settings</string>
     <string name="attention_battery_low">Battery is at %d percent. Plug the phone in soon.</string>
     <string name="attention_airplane_on">Airplane mode is on. Calls and messages cannot reach you.</string>
     <string name="attention_repair_airplane">Open airplane mode settings</string>
@@ -93,6 +94,8 @@
     <string name="more_apps_search_hint">Search apps</string>
     <string name="a11y_search_field">Search your apps by name</string>
     <string name="more_apps_work_profile">%1$s, work profile</string>
+    <string name="more_apps_none_found">No app is called %1$s.</string>
+    <string name="contacts_none">There are no contacts on this phone yet.</string>
 
     <!-- Not built yet -->
     <string name="not_built_title">Not built yet</string>

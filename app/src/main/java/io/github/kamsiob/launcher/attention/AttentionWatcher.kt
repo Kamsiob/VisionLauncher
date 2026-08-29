@@ -150,6 +150,13 @@ class AttentionWatcher(private val context: Context) {
         audioManager.ringerMode == AudioManager.RINGER_MODE_NORMAL
     }.getOrDefault(false)
 
+    /**
+     * Whether this app can turn Do Not Disturb off itself. It needs a special
+     * access the app never requests, so on an ordinary device this is false and
+     * the lamp key has to offer a handoff instead of a fix.
+     */
+    fun canToggleDnd(): Boolean = notificationManager.isNotificationPolicyAccessGranted
+
     fun repairDnd(): Boolean {
         if (!notificationManager.isNotificationPolicyAccessGranted) return false
         return runCatching {

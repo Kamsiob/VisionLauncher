@@ -14,6 +14,7 @@ import io.github.kamsiob.launcher.R
  */
 enum class SystemDestination(val id: String, @param:StringRes val labelRes: Int) {
     SOUND("sound", R.string.dest_sound_settings),
+    DND("dnd", R.string.dest_dnd_settings),
     AIRPLANE("airplane", R.string.dest_airplane_settings),
     NETWORK("network", R.string.dest_network_settings),
     STORAGE("storage", R.string.dest_storage_settings),
@@ -28,6 +29,7 @@ enum class SystemDestination(val id: String, @param:StringRes val labelRes: Int)
 
     fun intent(context: Context): Intent = when (this) {
         SOUND -> Intent(Settings.ACTION_SOUND_SETTINGS)
+        DND -> Intent("android.settings.ZEN_MODE_SETTINGS")
         AIRPLANE -> Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS)
         NETWORK -> Intent(Settings.ACTION_WIRELESS_SETTINGS)
         STORAGE -> Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)

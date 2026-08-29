@@ -26,6 +26,7 @@ import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.data.AppsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import io.github.kamsiob.launcher.ui.components.NoteText
 import io.github.kamsiob.launcher.ui.components.RowKey
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
 import io.github.kamsiob.launcher.ui.components.ScreenTitle
@@ -97,6 +98,9 @@ fun MoreAppsScreen(
                 .fillMaxWidth()
                 .semantics { contentDescription = searchDescription },
         )
+        if (query.isNotBlank() && shown.isEmpty()) {
+            NoteText(stringResource(R.string.more_apps_none_found, query.trim()))
+        }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Dimens.gap),

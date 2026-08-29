@@ -32,6 +32,7 @@ import io.github.kamsiob.launcher.ui.components.RowKey
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
 import io.github.kamsiob.launcher.ui.components.ScreenTitle
 import io.github.kamsiob.launcher.ui.components.TopBar
+import io.github.kamsiob.launcher.ui.components.UndoStrip
 import io.github.kamsiob.launcher.ui.theme.Dimens
 import io.github.kamsiob.launcher.ui.theme.LocalPalette
 import io.github.kamsiob.launcher.ui.theme.TypeScale
@@ -60,6 +61,8 @@ fun AlarmListScreen(
     onEdit: (Alarm) -> Unit,
     onNew: () -> Unit,
     onHome: () -> Unit,
+    justRemoved: Alarm? = null,
+    onPutItBack: () -> Unit = {},
 ) {
     ScreenFrame(topBar = { TopBar(onHome = onHome) }) {
         ScreenTitle(stringResource(R.string.alarms_title))
@@ -92,6 +95,16 @@ fun AlarmListScreen(
                     modifier = Modifier.weight(0.5f),
                 )
             }
+        }
+        // Every other removal in this app offers the lamp strip and an undo.
+        // Taking an alarm off was the one that did neither, and the sentence
+        // written for it had never been used.
+        justRemoved?.let {
+            UndoStrip(
+                message = stringResource(R.string.alarm_deleted),
+                actionLabel = stringResource(R.string.put_it_back),
+                onAction = onPutItBack,
+            )
         }
         Spacer(modifier = Modifier.weight(1f))
         ApplianceKey(
