@@ -8,7 +8,7 @@ Update and commit this file at every commit, before any pause, when context runs
 
 ## Current state
 
-**Status:** Stage 1 is built, running, and verified on a real Pixel 8 running API 37. Every Stage 1 screen from `MASTER_SPEC.md` section 8 exists and was exercised on the device, not only compiled.
+**Status:** Stage 1 is built, running, and verified on a real Pixel 8 running API 37. Every Stage 1 screen from `MASTER_SPEC.md` section 8 exists and was exercised on the device, not only compiled. A second pass then found and fixed five defects where the interface asserted something the code did not guarantee, and enlarged every icon in the app at the user's request.
 
 **Stage:** Stage 1 complete. Stage 2, messaging, has not been started.
 
@@ -42,6 +42,11 @@ Specifically verified on the device, with evidence:
 - 36 rapid navigation inputs, process death mid navigation, and rotation all survived with no crash.
 - The em dash gate was proven by planting an em dash, watching the build fail, and removing it.
 - The merged manifest carries no INTERNET permission, and a build gate now fails if one ever appears.
+- "Put my screen back" was announcing success while changing nothing. Reproduced, fixed, and the full round trip re-verified: keep a change, restore it, and the layout genuinely returns.
+- The Emergency alert key promised a text it could not send, because SEND_SMS and location were checked but never requested. Both are now requested when the helper chooses the person, and the key's subtitle states what is actually possible. Verified by denying both and reading "Calls only, because sending a text was not allowed".
+- "Call always stays first" was breakable by choosing Call as a move destination. Reproduced, fixed in HomeLayout so no screen can bypass it, and re-verified.
+- Threshold dismissal is per destination and survives process death; "Bring back all warnings" makes a dismissed destination warn again.
+- Every icon in the app was enlarged, twice, at the user's request, and the stroke weight was reduced in step so the shapes do not fuse.
 
 **The app is not the home screen on the Pixel 8.** The role request was tested and then cancelled on purpose, because Messages, Magnifier, and Photos belong to later stages and making an incomplete launcher the daily home screen would be disruptive. Set it deliberately when Stage 2 and Stage 3 land.
 
@@ -55,9 +60,10 @@ Stage 2 messaging, Stage 3 magnifier, reader, and photos, and Stage 4 Today, the
 
 ## Next actions
 
-1. Start Stage 2, the messaging pipeline, from issue #14. Build it defensively: the notification listener, Room persistence, the unified inbox, reading a message, reply by voice and phrases, redaction handling, the missing reply action case, and the open the app escape hatch.
-2. Delete the not built interstitial for Messages in the same commit that ships the inbox.
-3. Localization has not started. Every user facing string is already in `strings.xml` with plurals and formatted arguments, so no sentence is built by concatenation. Arabic RTL has never been tested.
+1. Icons no longer scale with the user's text step; they are fixed dp. Doing it safely needs the app icon bitmap cache keyed by size, a cap so a scaled app icon does not overrun the row key, and the reflow threshold recomputed. Tracked in issue #17's follow up. This is small and worth doing before Stage 2 grows the surface.
+2. Start Stage 2, the messaging pipeline, from issue #14. Build it defensively: the notification listener, Room persistence, the unified inbox, reading a message, reply by voice and phrases, redaction handling, the missing reply action case, and the open the app escape hatch.
+3. Delete the not built interstitial for Messages in the same commit that ships the inbox.
+4. Localization has not started. Every user facing string is already in `strings.xml` with plurals and formatted arguments, so no sentence is built by concatenation. Arabic RTL has never been tested.
 
 ---
 
@@ -74,7 +80,7 @@ Stage 2 messaging, Stage 3 magnifier, reader, and photos, and Stage 4 Today, the
 
 ## Decisions made this session
 
-D20 superseded with the settled name and application ID. D21 signed commits from the first commit with no history rewriting. D22 one application ID with no debug suffix, so exactly one copy exists per device. D23 unbuilt tiles are honest rather than hidden. D24 the tile grid drops to one column at large font scales. D25 Settings is reached from More apps. D26 every key carries its own TalkBack label. D27 adding an app happens inside the arranging session. D28 the threshold only promises the Home return when it holds the home role. D29 the zero network promise is a build gate rather than a sentence.
+D20 superseded with the settled name and application ID. D21 signed commits from the first commit with no history rewriting. D22 one application ID with no debug suffix, so exactly one copy exists per device. D23 unbuilt tiles are honest rather than hidden. D24 the tile grid drops to one column at large font scales. D25 Settings is reached from More apps. D26 every key carries its own TalkBack label. D27 adding an app happens inside the arranging session. D28 the threshold only promises the Home return when it holds the home role. D29 the zero network promise is a build gate rather than a sentence. D30 the restore point is the layout before the change, so "Put my screen back" stops confirming an undo it never performed. D31 the Emergency key states what this phone can actually do, and the permissions behind the promise are requested when the promise is made. D32 the Call lock is enforced on both sides of a trade. D33 the 911 key fills the dialer and says so. D34 the icons were too small and the grid was corrected rather than followed.
 
 All are recorded in full in `DECISIONS.md`.
 
@@ -100,7 +106,7 @@ All are recorded in full in `DECISIONS.md`.
 - Color inversion: checked against the requirement rather than the pixels, because `screencap` captures before the compositor inverts. Nothing carries meaning by color alone, so inversion cannot destroy meaning. A human eye on an inverted screen would still be worth having.
 - Color correction modes: none.
 - Screenshots captured: yes, in `docs/screenshots`, all from the running app on the device.
-- Unit tests: 15, covering the home layout operations and the next alarm arithmetic, run against the code the screens actually call.
+- Unit tests: 22, covering the home layout operations, the Call lock invariant, the restore semantics, and the next alarm arithmetic, run against the code the screens actually call.
 - Build gates: the em dash gate and the no INTERNET permission gate, both proven to fail when violated.
 
 ---
