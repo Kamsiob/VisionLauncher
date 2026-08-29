@@ -73,7 +73,7 @@ the full helper tools (Stage 4).
 specification, `DESIGN.md` the visual system, and `design/design-grid-v4.html` is the
 measurement authority for every screen.
 
-![The home screen](docs/screenshots/01-home-tiles.png)
+![The home screen: a navy masthead with a serif clock over six large tiles, and a green status pill reading "All is well."](docs/screenshots/01-home.png)
 
 ## License
 
