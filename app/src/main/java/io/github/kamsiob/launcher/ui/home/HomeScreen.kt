@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.attention.AttentionState
@@ -37,6 +38,7 @@ import io.github.kamsiob.launcher.data.BuiltIn
 import io.github.kamsiob.launcher.data.SavedTile
 import io.github.kamsiob.launcher.home.DayPart
 import io.github.kamsiob.launcher.nav.SystemDestination
+import io.github.kamsiob.launcher.support.Haptics
 import io.github.kamsiob.launcher.ui.components.ApplianceKey
 import io.github.kamsiob.launcher.ui.components.AttentionLamp
 import io.github.kamsiob.launcher.ui.components.LampItem
@@ -229,6 +231,7 @@ private fun lampItems(
     onHandoff: (SystemDestination) -> Unit,
 ): List<LampItem> {
     val context = LocalContext.current
+    val view = LocalView.current
     val items = mutableListOf<LampItem>()
     if (state.ringerSilent || state.ringerVibrate) {
         items += LampItem(
@@ -240,7 +243,15 @@ private fun lampItems(
             icon = LineIcons.bellOff,
             repairLabel = stringResource(R.string.attention_repair_ringer),
             onRepair = {
-                if (!watcher.repairRinger()) onHandoff(SystemDestination.SOUND)
+                // Confirm only if the ringer actually came back on. Otherwise
+                // this is a handoff, and saying so with the reject haptic is
+                // the honest signal.
+                if (watcher.repairRinger()) {
+                    Haptics.confirm(view)
+                } else {
+                    Haptics.reject(view)
+                    onHandoff(SystemDestination.SOUND)
+                }
             },
         )
     }
@@ -251,7 +262,12 @@ private fun lampItems(
             icon = LineIcons.bellQuiet,
             repairLabel = stringResource(R.string.attention_repair_dnd),
             onRepair = {
-                if (!watcher.repairDnd()) onHandoff(SystemDestination.SOUND)
+                if (watcher.repairDnd()) {
+                    Haptics.confirm(view)
+                } else {
+                    Haptics.reject(view)
+                    onHandoff(SystemDestination.SOUND)
+                }
             },
         )
     }
@@ -261,7 +277,10 @@ private fun lampItems(
             sentence = stringResource(R.string.attention_airplane_on),
             icon = LineIcons.airplane,
             repairLabel = stringResource(R.string.attention_repair_airplane),
-            onRepair = { onHandoff(SystemDestination.AIRPLANE) },
+            onRepair = {
+                Haptics.tap(view)
+                onHandoff(SystemDestination.AIRPLANE)
+            },
         )
     } else if (state.noNetwork) {
         items += LampItem(
@@ -269,7 +288,10 @@ private fun lampItems(
             sentence = stringResource(R.string.attention_no_network),
             icon = LineIcons.noNetwork,
             repairLabel = stringResource(R.string.attention_repair_network),
-            onRepair = { onHandoff(SystemDestination.NETWORK) },
+            onRepair = {
+                Haptics.tap(view)
+                onHandoff(SystemDestination.NETWORK)
+            },
         )
     }
     if (state.batteryLow) {
@@ -285,7 +307,10 @@ private fun lampItems(
             sentence = stringResource(R.string.attention_storage_full),
             icon = LineIcons.storage,
             repairLabel = stringResource(R.string.attention_repair_storage),
-            onRepair = { onHandoff(SystemDestination.STORAGE) },
+            onRepair = {
+                Haptics.tap(view)
+                onHandoff(SystemDestination.STORAGE)
+            },
         )
     }
     if (state.batteryOptimizationOn) {
@@ -295,6 +320,7 @@ private fun lampItems(
             icon = LineIcons.sleep,
             repairLabel = stringResource(R.string.attention_repair_battery_optimization),
             onRepair = {
+                Haptics.tap(view)
                 val intent = Intent(
                     Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
                     android.net.Uri.parse("package:${context.packageName}"),

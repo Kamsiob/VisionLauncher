@@ -78,6 +78,7 @@ fun KeypadScreen(
                         modifier = Modifier.weight(1f),
                         minHeight = Dimens.keypadKey,
                         fontSize = TypeScale.padKey,
+                        repeatable = true,
                     )
                 }
             }
@@ -89,6 +90,7 @@ fun KeypadScreen(
                 modifier = Modifier.weight(1f),
                 minHeight = Dimens.keypadKey,
                 fontSize = TypeScale.keyLabelSmall,
+                repeatable = true,
             )
             ApplianceKey(
                 label = "0",
@@ -96,6 +98,7 @@ fun KeypadScreen(
                 modifier = Modifier.weight(1f),
                 minHeight = Dimens.keypadKey,
                 fontSize = TypeScale.padKey,
+                repeatable = true,
             )
             ApplianceKey(
                 label = stringResource(R.string.keypad_clear),

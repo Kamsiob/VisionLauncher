@@ -209,7 +209,10 @@ fun PickContactScreen(
                     label = contact.name,
                     avatarInitial = initialOf(contact.name),
                     avatarColor = avatarColorFor(contact.name),
-                    committing = true,
+                    // Only a commit when the pick finishes here. On the
+                    // relationship path this row just opens the next step and
+                    // the Done key there does the confirming.
+                    committing = !askRelationship,
                     onClick = {
                         if (askRelationship) {
                             pending = contact

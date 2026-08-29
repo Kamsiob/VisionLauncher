@@ -109,9 +109,11 @@ fun ArrangeScreen(
             currentLayout = working,
             apps = apps,
             onAdd = { tile ->
+                // The row that was tapped already fired the confirmation. A
+                // second one here reads as one longer, mushier buzz rather
+                // than the distinct signal the design relies on.
                 working = HomeLayout.add(working, tile)
                 addingApp = false
-                Haptics.confirm(view)
             },
             onHome = exitKeepingChanges,
             onBack = { addingApp = false },
@@ -158,6 +160,7 @@ fun ArrangeScreen(
             layout = working,
             apps = apps,
             liftedIndex = liftedIndex,
+            movingLabel = movingIndex?.let { tileLabel(working[it], apps) },
             dimOthers = chosenIndex != null,
             onTapTile = { index ->
                 when {
@@ -280,6 +283,7 @@ private fun ArrangeGrid(
     layout: List<SavedTile>,
     apps: AppsRepository,
     liftedIndex: Int?,
+    movingLabel: String?,
     dimOthers: Boolean,
     onTapTile: (Int) -> Unit,
 ) {
@@ -319,6 +323,7 @@ private fun ArrangeGrid(
                             apps = apps,
                             iconPx = iconPx,
                             lifted = lifted,
+                            movingLabel = movingLabel,
                             onClick = { onTapTile(index) },
                         )
                     }
@@ -335,13 +340,23 @@ private fun ArrangeTile(
     apps: AppsRepository,
     iconPx: Int,
     lifted: Boolean,
+    movingLabel: String?,
     onClick: () -> Unit,
 ) {
     val feature = BuiltIn.fromId(tile.builtIn)
     val label = tileLabel(tile, apps)
     val description = when {
         lifted -> stringResource(R.string.a11y_arrange_lifted, label)
+        // Call refuses to be a destination, so it must say that rather than
+        // offer itself as one.
         isLocked(tile) -> stringResource(R.string.a11y_arrange_locked)
+        // While an app is moving, every other tile is a destination, and
+        // saying "tap to move it or take it off" would describe the wrong
+        // mode entirely to the one person who cannot see the lifted ring.
+        movingLabel != null && tile.isEmpty ->
+            stringResource(R.string.a11y_arrange_destination_empty, movingLabel)
+        movingLabel != null ->
+            stringResource(R.string.a11y_arrange_destination, movingLabel, label)
         tile.isEmpty -> stringResource(R.string.a11y_arrange_empty)
         else -> stringResource(R.string.a11y_arrange_tile, label)
     }

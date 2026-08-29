@@ -321,13 +321,16 @@ fun AttentionLamp(items: List<LampItem>, modifier: Modifier = Modifier) {
                     )
                 }
                 if (item.repairLabel != null && item.onRepair != null) {
+                    // Not committing. These repairs can fail: turning Do Not
+                    // Disturb off needs a policy access this app never asks
+                    // for, and the ringer can refuse. The lambda knows the
+                    // outcome and fires the haptic that matches it.
                     ApplianceKey(
                         label = item.repairLabel,
                         onClick = item.onRepair,
                         style = KeyStyle.PRIMARY,
                         minHeight = Dimens.keySmall,
                         fontSize = TypeScale.keyLabelSmall,
-                        committing = true,
                     )
                 }
             }
@@ -429,8 +432,10 @@ fun PromptBar(
         Box(
             modifier = Modifier
                 .background(Tokens.cream, RoundedCornerShape(Dimens.radiusDoneChip))
-                .debouncedClickable {
-                    Haptics.confirm(view)
+                .debouncedClickable(onSuppressed = { Haptics.tap(view) }) {
+                    // Done leaves the mode or opens the Keep preview. Neither
+                    // writes anything, and the Keep key does the committing.
+                    Haptics.tap(view)
                     onDone()
                 }
                 .defaultMinSize(minWidth = 72.dp, minHeight = 48.dp)

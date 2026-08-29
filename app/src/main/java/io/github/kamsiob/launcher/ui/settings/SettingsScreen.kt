@@ -131,9 +131,16 @@ fun SettingsScreen(
             label = stringResource(R.string.settings_restore),
             meta = stringResource(R.string.settings_restore_sub),
             icon = LineIcons.restore,
-            committing = true,
+            // Not committing. The restore is a suspend call that reports
+            // whether it changed anything, and the haptic has to wait for that
+            // answer like the pill does. Confirming at tap time was the same
+            // false confirmation D30 was written about, on the touch channel.
             onClick = {
-                scope.launch { restoreResult = onRestore() }
+                scope.launch {
+                    val changed = onRestore()
+                    restoreResult = changed
+                    if (changed) Haptics.confirm(view) else Haptics.reject(view)
+                }
             },
         )
         restoreResult?.let { didChange ->

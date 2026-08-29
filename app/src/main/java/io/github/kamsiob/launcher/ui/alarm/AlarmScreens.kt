@@ -143,12 +143,14 @@ fun AlarmEditScreen(
                 onClick = { hour = (hour + 23) % 24 },
                 modifier = Modifier.weight(1f),
                 fontSize = TypeScale.keyLabelSmall,
+                repeatable = true,
             )
             ApplianceKey(
                 label = stringResource(R.string.alarm_plus_hour),
                 onClick = { hour = (hour + 1) % 24 },
                 modifier = Modifier.weight(1f),
                 fontSize = TypeScale.keyLabelSmall,
+                repeatable = true,
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
@@ -157,12 +159,14 @@ fun AlarmEditScreen(
                 onClick = { minute = (minute + 55) % 60 },
                 modifier = Modifier.weight(1f),
                 fontSize = TypeScale.keyLabelSmall,
+                repeatable = true,
             )
             ApplianceKey(
                 label = stringResource(R.string.alarm_plus_minute),
                 onClick = { minute = (minute + 5) % 60 },
                 modifier = Modifier.weight(1f),
                 fontSize = TypeScale.keyLabelSmall,
+                repeatable = true,
             )
         }
         OutlinedTextField(

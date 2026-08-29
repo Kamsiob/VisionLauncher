@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kamsiob.launcher.support.Haptics
+import io.github.kamsiob.launcher.support.TouchTiming
 import io.github.kamsiob.launcher.support.debouncedClickable
 import io.github.kamsiob.launcher.ui.theme.AtkinsonMono
 import io.github.kamsiob.launcher.ui.theme.Dimens
@@ -127,6 +128,9 @@ fun ApplianceKey(
     sublabel: String? = null,
     contentDescription: String? = null,
     committing: Boolean = false,
+    // True for a key a person legitimately presses in a row, such as a keypad
+    // digit or a plus key. See TouchTiming.
+    repeatable: Boolean = false,
     enabled: Boolean = true,
 ) {
     val view = LocalView.current
@@ -137,7 +141,14 @@ fun ApplianceKey(
         modifier = modifier
             .fillMaxWidth()
             .keySurface(style = style)
-            .debouncedClickable(enabled = enabled, onClickLabel = null) {
+            .debouncedClickable(
+                enabled = enabled,
+                onClickLabel = null,
+                windowMs = if (repeatable) TouchTiming.REPEAT_MS else TouchTiming.COMMIT_MS,
+                // A press the window swallows still ticks, so the key never
+                // feels dead under the finger.
+                onSuppressed = { Haptics.tap(view) },
+            ) {
                 if (committing) Haptics.confirm(view) else Haptics.tap(view)
                 onClick()
             }
@@ -216,7 +227,10 @@ fun Tile(
         modifier = modifier
             .fillMaxWidth()
             .keySurface()
-            .debouncedClickable(enabled = enabled) {
+            .debouncedClickable(
+                enabled = enabled,
+                onSuppressed = { Haptics.tap(view) },
+            ) {
                 Haptics.tap(view)
                 onClick()
             }
@@ -299,7 +313,10 @@ fun RowKey(
         modifier = modifier
             .fillMaxWidth()
             .keySurface()
-            .debouncedClickable(enabled = enabled) {
+            .debouncedClickable(
+                enabled = enabled,
+                onSuppressed = { Haptics.tap(view) },
+            ) {
                 if (committing) Haptics.confirm(view) else Haptics.tap(view)
                 onClick()
             }
