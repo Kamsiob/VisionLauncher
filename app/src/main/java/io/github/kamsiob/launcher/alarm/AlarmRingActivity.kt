@@ -1,9 +1,11 @@
 package io.github.kamsiob.launcher.alarm
 
 import android.media.AudioAttributes
-import android.media.Ringtone
+import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.activity.ComponentActivity
@@ -35,7 +37,7 @@ import java.util.Calendar
  */
 class AlarmRingActivity : ComponentActivity() {
 
-    private var ringtone: Ringtone? = null
+    private var player: MediaPlayer? = null
     private var vibrator: Vibrator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,27 +76,51 @@ class AlarmRingActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Plays on the alarm stream, which is the whole point.
+     *
+     * This used a Ringtone with USAGE_ALARM set on it after construction, and
+     * the platform logged the player as USAGE_NOTIFICATION_RINGTONE anyway:
+     * attributes assigned to an already built Ringtone are not honored on
+     * current Android. An alarm on the ringtone stream follows the ringer, so a
+     * phone left on vibrate would have shown the ringing screen in silence.
+     * This audience is exactly the one likely to keep a ringer down.
+     *
+     * MediaPlayer takes the attributes at prepare time and cannot be
+     * reinterpreted, so the stream is certain. The vibration carries matching
+     * alarm attributes for the same reason.
+     */
     private fun startRinging() {
         val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        ringtone = RingtoneManager.getRingtone(this, uri)?.apply {
-            audioAttributes = AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_ALARM)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build()
-            isLooping = true
-            play()
-        }
+            ?: return
+        val attributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ALARM)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+        player = runCatching {
+            MediaPlayer().apply {
+                setAudioAttributes(attributes)
+                setDataSource(this@AlarmRingActivity, uri)
+                isLooping = true
+                prepare()
+                start()
+            }
+        }.getOrNull()
         vibrator = getSystemService(Vibrator::class.java)?.apply {
-            vibrate(
-                VibrationEffect.createWaveform(longArrayOf(0, 700, 700), 0),
-            )
+            val effect = VibrationEffect.createWaveform(longArrayOf(0, 700, 700), 0)
+            if (Build.VERSION.SDK_INT >= 33) {
+                vibrate(effect, VibrationAttributes.createForUsage(VibrationAttributes.USAGE_ALARM))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrate(effect, attributes)
+            }
         }
     }
 
     private fun stopRinging() {
-        ringtone?.stop()
-        ringtone = null
+        player?.let { runCatching { it.stop() }; it.release() }
+        player = null
         vibrator?.cancel()
         vibrator = null
     }

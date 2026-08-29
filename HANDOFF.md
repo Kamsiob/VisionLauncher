@@ -122,6 +122,7 @@ All are recorded in full in `DECISIONS.md`.
 ## Verification state
 
 - Real device verification: Pixel 8, API 37. Every Stage 1 screen opened and exercised.
+- Alarms verified end to end: scheduled through the app, fired on their own at the minute, rang on the alarm stream with the ringer on vibrate, stopped, and showed the undo strip when taken off.
 - Every device setting changed during testing was restored afterward: font scale, color inversion, TalkBack, airplane mode, and the ringer, which was found on vibrate and put back on vibrate.
 - TalkBack pass: done on Home and the arranging screens, with the accessibility tree inspected on Call, the keypad, Settings, Helper settings, and Add an app. Not yet swept screen by screen with TalkBack actually speaking on every screen.
 - 200 percent font scale pass: done on Home. Not yet swept across every screen.

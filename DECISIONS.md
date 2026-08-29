@@ -237,3 +237,13 @@ The layout mirrors correctly everywhere: the masthead right aligns, the tile gri
 Two things were wrong. Every text style inherited its direction from the layout, so an English sentence in an Arabic layout was laid out right to left and its full stop appeared at the visual left: the attention lamp read ".appearing". Styles now use `TextDirection.Content`, so each run of text follows its own script. That is also what keeps a Latin app name upright inside an Arabic sentence once translations land, which is the case that will actually matter.
 
 And "Outlined" broke into "Outline / d" on the Look card, because D24's rule that a single word never splits had been applied to every key in the app and not to those three cards. It steps down in size instead now.
+
+## D40. The alarm plays on the alarm stream, proven rather than requested
+
+The ringing screen asked for `USAGE_ALARM` by assigning audio attributes to a `Ringtone` after it was built, and the platform ignored it: the player logged as `USAGE_NOTIFICATION_RINGTONE`. An alarm on the ringtone stream follows the ringer, so a phone left on vibrate would have shown the ringing screen in silence. This audience is exactly the one likely to keep a ringer down.
+
+It uses `MediaPlayer` now, which takes the attributes at prepare time and cannot reinterpret them, and the vibration carries matching alarm attributes for the same reason.
+
+Verified rather than assumed. With the device ringer on vibrate, an alarm was scheduled through the app, allowed to fire on its own, and `dumpsys audio` showed one player in `state:started` with `usage=USAGE_ALARM`. Pressing Stop returned zero playing streams.
+
+The whole path is now tested end to end on a device: set an alarm, watch it fire at the minute, see the big face screen, stop it, and see the undo strip when it is taken off.
