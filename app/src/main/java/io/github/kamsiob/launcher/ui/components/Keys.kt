@@ -1,5 +1,6 @@
 package io.github.kamsiob.launcher.ui.components
 
+import android.icu.text.BreakIterator
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
@@ -58,6 +59,28 @@ import io.github.kamsiob.launcher.ui.theme.monoStyle
 import io.github.kamsiob.launcher.ui.theme.stepSp
 
 enum class KeyStyle { NORMAL, PRIMARY, EMERGENCY }
+
+/**
+ * Whether this label has anywhere legal to break.
+ *
+ * D24's rule is that a phrase may wrap across lines and a single word never
+ * splits. The first version tested for a space, which is a Latin proxy: Chinese,
+ * Japanese, Thai and Khmer write without spaces and break between characters,
+ * so the test denied a second line to exactly the scripts that wrap most
+ * freely, and a name like a Chinese bank's was squeezed to the metadata floor
+ * on one line. ICU knows where every script may break.
+ */
+private fun hasBreakOpportunity(label: String): Boolean {
+    if (label.length < 2) return false
+    val iterator = BreakIterator.getLineInstance()
+    iterator.setText(label)
+    var boundary = iterator.first()
+    while (boundary != BreakIterator.DONE) {
+        if (boundary > 0 && boundary < label.length) return true
+        boundary = iterator.next()
+    }
+    return false
+}
 
 /**
  * One separation device per element: a key gets a soft shadow, or in the
@@ -212,7 +235,7 @@ fun ApplianceKey(
             // to, so the type steps down instead of breaking into "Eras e".
             val style = bodyStyle(size = fontSize, weight = FontWeight.Bold, lineHeightFactor = 1.2f)
                 .copy(color = content, textAlign = TextAlign.Center)
-            if (label.contains(' ')) {
+            if (hasBreakOpportunity(label)) {
                 Text(text = label, style = style)
             } else {
                 BasicText(
@@ -311,7 +334,7 @@ fun Tile(
         BasicText(
             text = label,
             style = labelStyle,
-            maxLines = if (label.contains(' ')) 2 else 1,
+            maxLines = if (hasBreakOpportunity(label)) 2 else 1,
             autoSize = TextAutoSize.StepBased(
                 minFontSize = stepSp(TypeScale.rowMeta),
                 maxFontSize = stepSp(TypeScale.tileLabel),

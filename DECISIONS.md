@@ -247,3 +247,19 @@ It uses `MediaPlayer` now, which takes the attributes at prepare time and cannot
 Verified rather than assumed. With the device ringer on vibrate, an alarm was scheduled through the app, allowed to fire on its own, and `dumpsys audio` showed one player in `state:started` with `usage=USAGE_ALARM`. Pressing Stop returned zero playing streams.
 
 The whole path is now tested end to end on a device: set an alarm, watch it fire at the minute, see the big face screen, stop it, and see the undo strip when it is taken off.
+
+## D41. The app survives the settings it sends people to change
+
+`configChanges` covered rotation and left out `fontScale` and `density`, which are precisely the two settings "See and hear better" hands people to. The first row of that six row tour opens Android's text and display size sliders, both of which apply live, so every person who used the feature came back to a launcher that had been destroyed and recreated, losing whatever they were doing. A screen built to help someone make text bigger was the screen most likely to throw away their place.
+
+Both are declared now, along with `smallestScreenSize` and `fontWeightAdjustment`, since a display size change reports several bits at once and an undeclared one still triggers the restart. Verified on the device: an arranging session survives both a font scale change and a display size change.
+
+The alarm's ringing screen declares the same set, for a different reason recorded in D42.
+
+## D42. A rotation is not a person leaving
+
+The ringing screen stopped its alarm in `onStop`, which was the right answer to an alarm that could ring with no reachable Stop. It could not tell a configuration change from a real background, so turning the phone on a nightstand destroyed and recreated the activity, and the stop ran on the way out: the alarm was silenced for good by rotating the phone.
+
+`onStop` returns early on `isChangingConfigurations` now, and the ringing screen also declares the configuration changes it can absorb so most of them never restart it at all. `onDestroy` still releases the player on the recreate path, so nothing is orphaned either way.
+
+This was a regression introduced in the same session that fixed the original defect, which is the ordinary cost of fixing something under a deadline and the reason the second review pass was worth running.

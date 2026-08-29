@@ -151,6 +151,12 @@ class AlarmRingActivity : ComponentActivity() {
      */
     override fun onStop() {
         super.onStop()
+        // A configuration change stops this activity too, and treating that as
+        // leaving meant turning the phone on a nightstand silenced the alarm
+        // for good. onDestroy still releases the player on the recreate path
+        // and onCreate starts it again, so nothing is orphaned and there is no
+        // silent gap.
+        if (isChangingConfigurations) return
         stopRinging()
         if (!isFinishing) finish()
     }
