@@ -58,10 +58,31 @@ class AppsRepository(private val context: Context) {
             .sortedWith(compareBy(collator) { it.label })
     }
 
+    /**
+     * The entry behind one home tile.
+     *
+     * This asks LauncherApps for a single package rather than enumerating every
+     * launchable activity on the device and searching the result. The
+     * enumerating version ran once per third party tile, during composition, on
+     * the main thread, and each pass resolved a label for all of them and sorted
+     * the lot with a Collator. It was invisible on a phone with a hundred apps
+     * and would not have stayed that way.
+     */
     fun entryFor(tile: SavedTile): AppEntry? {
         val pkg = tile.packageName ?: return null
-        return launchableApps().firstOrNull {
-            it.packageName == pkg && (tile.activity == null || it.activity == tile.activity)
+        val self = Process.myUserHandle()
+        return userManager.userProfiles.firstNotNullOfOrNull { user ->
+            launcherApps.getActivityList(pkg, user)
+                .firstOrNull { tile.activity == null || it.name == tile.activity }
+                ?.let { info ->
+                    AppEntry(
+                        label = info.label.toString(),
+                        packageName = info.applicationInfo.packageName,
+                        activity = info.name,
+                        user = user,
+                        isWorkProfile = user != self,
+                    )
+                }
         }
     }
 

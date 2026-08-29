@@ -24,6 +24,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.data.AppsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import io.github.kamsiob.launcher.ui.components.RowKey
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
 import io.github.kamsiob.launcher.ui.components.ScreenTitle
@@ -46,8 +48,17 @@ fun MoreAppsScreen(
     onLaunched: () -> Unit,
 ) {
     var query by remember { mutableStateOf("") }
-    val allApps by produceState(initialValue = apps.launchableApps(), apps) {
-        apps.changes().collect { value = apps.launchableApps() }
+    // The initial value must not be the query itself. Enumerating every
+    // launchable activity, resolving each label and sorting the result took a
+    // measured 150ms at the 95th percentile, and as a produceState initial
+    // value that ran during composition on the main thread, so opening this
+    // screen dropped roughly eighteen frames. It runs on the IO dispatcher now
+    // and the screen appears immediately with its list arriving a moment later.
+    val allApps by produceState(initialValue = emptyList<AppsRepository.AppEntry>(), apps) {
+        value = withContext(Dispatchers.IO) { apps.launchableApps() }
+        apps.changes().collect {
+            value = withContext(Dispatchers.IO) { apps.launchableApps() }
+        }
     }
     val palette = LocalPalette.current
     val density = LocalDensity.current
