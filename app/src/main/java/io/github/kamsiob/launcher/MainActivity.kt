@@ -222,6 +222,7 @@ fun LauncherNav(
                 },
                 onMoreApps = { navController.navigate(Routes.MORE_APPS) },
                 onHandoff = handoff,
+                onMissingTile = { navController.navigate(Routes.ARRANGE) },
             )
         }
 

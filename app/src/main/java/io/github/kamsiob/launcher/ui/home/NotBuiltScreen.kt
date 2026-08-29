@@ -3,6 +3,10 @@ package io.github.kamsiob.launcher.ui.home
 import android.content.Intent
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -10,6 +14,7 @@ import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.data.BuiltIn
 import io.github.kamsiob.launcher.ui.components.ApplianceKey
 import io.github.kamsiob.launcher.ui.components.BodyText
+import io.github.kamsiob.launcher.ui.components.NoteText
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
 import io.github.kamsiob.launcher.ui.components.ScreenTitle
 import io.github.kamsiob.launcher.ui.components.TopBar
@@ -25,9 +30,11 @@ fun NotBuiltScreen(
     onHome: () -> Unit,
 ) {
     val context = LocalContext.current
+    var nothingOpened by remember { mutableStateOf(false) }
     ScreenFrame(topBar = { TopBar(onHome = onHome) }) {
         ScreenTitle(feature.label())
         BodyText(stringResource(R.string.not_built_body))
+        if (nothingOpened) NoteText(stringResource(R.string.no_app_for_that))
         Spacer(modifier = Modifier.weight(1f))
         when (feature) {
             BuiltIn.MESSAGES -> ApplianceKey(
@@ -36,7 +43,7 @@ fun NotBuiltScreen(
                     val intent = Intent.makeMainSelectorActivity(
                         Intent.ACTION_MAIN, Intent.CATEGORY_APP_MESSAGING
                     ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    runCatching { context.startActivity(intent) }
+                    nothingOpened = runCatching { context.startActivity(intent) }.isFailure
                 },
             )
             BuiltIn.PHOTOS -> ApplianceKey(
@@ -45,7 +52,7 @@ fun NotBuiltScreen(
                     val intent = Intent.makeMainSelectorActivity(
                         Intent.ACTION_MAIN, Intent.CATEGORY_APP_GALLERY
                     ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    runCatching { context.startActivity(intent) }
+                    nothingOpened = runCatching { context.startActivity(intent) }.isFailure
                 },
             )
             else -> {}

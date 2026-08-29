@@ -47,15 +47,18 @@ enum class SystemDestination(val id: String, @param:StringRes val labelRes: Int)
 
     /** Fires the handoff, falling back to the main settings screen if the
      *  device lacks the specific one. */
-    fun launch(context: Context) {
+    /**
+     * Fires the handoff, falling back to the main settings screen where the
+     * device lacks the specific one. Returns false when neither could be
+     * opened, so the caller can say so rather than appearing to do nothing.
+     * The fallback was previously unguarded and would have thrown out of the
+     * launcher on a device without a settings app.
+     */
+    fun launch(context: Context): Boolean {
         val primary = intent(context).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        if (primary.resolveActivity(context.packageManager) != null) {
-            context.startActivity(primary)
-        } else {
-            context.startActivity(
-                Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
-        }
+        if (runCatching { context.startActivity(primary) }.isSuccess) return true
+        val fallback = Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        return runCatching { context.startActivity(fallback) }.isSuccess
     }
 
     companion object {

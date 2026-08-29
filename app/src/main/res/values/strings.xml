@@ -20,6 +20,8 @@
     <string name="feature_photos">Photos</string>
     <string name="feature_alarms">Alarms</string>
     <string name="empty_spot">Empty spot</string>
+    <string name="tile_app_missing">Not here now</string>
+    <string name="a11y_tile_app_missing">This app is not on the phone right now. Tap to choose another one for this spot.</string>
 
     <!-- Attention queue -->
     <plurals name="attention_count">
@@ -100,6 +102,7 @@
     <!-- Not built yet -->
     <string name="not_built_title">Not built yet</string>
     <string name="not_built_body">This part of VisionLauncher is still being built. It arrives with a later update.</string>
+    <string name="no_app_for_that">This phone has no app for that.</string>
     <string name="open_message_app">Open a message app</string>
     <string name="open_photos_app">Open the phone\'s photos</string>
 

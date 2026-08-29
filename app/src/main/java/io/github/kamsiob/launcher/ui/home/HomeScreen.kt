@@ -87,6 +87,7 @@ fun HomeScreen(
     onOpenFeature: (BuiltIn) -> Unit,
     onMoreApps: () -> Unit,
     onHandoff: (SystemDestination) -> Unit,
+    onMissingTile: () -> Unit,
 ) {
     val context = LocalContext.current
     val palette = LocalPalette.current
@@ -135,7 +136,12 @@ fun HomeScreen(
             } else {
                 StatusPill(text = stringResource(R.string.all_is_well))
             }
-            TileGrid(layout = layout, apps = apps, onOpenFeature = onOpenFeature)
+            TileGrid(
+                layout = layout,
+                apps = apps,
+                onOpenFeature = onOpenFeature,
+                onMissingTile = onMissingTile,
+            )
             ApplianceKey(
                 label = stringResource(R.string.more_apps),
                 onClick = onMoreApps,
@@ -151,6 +157,7 @@ private fun TileGrid(
     layout: List<SavedTile>,
     apps: AppsRepository,
     onOpenFeature: (BuiltIn) -> Unit,
+    onMissingTile: () -> Unit,
 ) {
     val density = LocalDensity.current
     val iconPx = with(density) { Dimens.appIcon.roundToPx() }
@@ -167,7 +174,7 @@ private fun TileGrid(
             ) {
                 row.forEach { tile ->
                     Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                        HomeTile(tile, apps, iconPx, onOpenFeature)
+                        HomeTile(tile, apps, iconPx, onOpenFeature, onMissingTile)
                     }
                 }
                 repeat(columns - row.size) {
@@ -184,6 +191,7 @@ private fun HomeTile(
     apps: AppsRepository,
     iconPx: Int,
     onOpenFeature: (BuiltIn) -> Unit,
+    onMissingTile: () -> Unit,
 ) {
     val feature = BuiltIn.fromId(tile.builtIn)
     when {
@@ -199,12 +207,20 @@ private fun HomeTile(
                 Tile(
                     label = entry.label,
                     appIcon = icon,
-                    onClick = { apps.launch(entry) },
+                    // A launch can fail if the app went away between drawing
+                    // this tile and pressing it.
+                    onClick = { if (!apps.launch(entry)) onMissingTile() },
                 )
             } else {
-                // The app behind this tile is gone. The spot stays; arranging
-                // mode is where it gets refilled.
-                EmptySpot()
+                // The app is not there right now: uninstalled, or on a profile
+                // that is turned off. Drawing nothing removed a tile from the
+                // layout the hands learned and said nothing about it.
+                Tile(
+                    label = stringResource(R.string.tile_app_missing),
+                    icon = LineIcons.plus,
+                    contentDescription = stringResource(R.string.a11y_tile_app_missing),
+                    onClick = onMissingTile,
+                )
             }
         }
         else -> EmptySpot()

@@ -86,12 +86,27 @@ class AppsRepository(private val context: Context) {
         }
     }
 
-    fun launch(entry: AppEntry) {
+    /**
+     * Returns false when the app could not be started, which happens when it was
+     * uninstalled or its profile was turned off between drawing the tile and
+     * pressing it. Unguarded, that throws out of the launcher itself, which is
+     * the one app on the phone that has nowhere to fall back to.
+     */
+    fun launch(entry: AppEntry): Boolean = runCatching {
         val component = android.content.ComponentName(entry.packageName, entry.activity)
         launcherApps.startMainActivity(component, entry.user, null, null)
-    }
+        true
+    }.getOrDefault(false)
 
-    fun icon(entry: AppEntry, sizePx: Int): ImageBitmap = iconCache.getOrPut(entry.key) {
+    /**
+     * The cache key carries the profile and the pixel size as well as the
+     * component. A work app and its personal twin share a package name, and the
+     * same app is drawn at more than one size, so keying on the component alone
+     * hands back the wrong bitmap.
+     */
+    fun icon(entry: AppEntry, sizePx: Int): ImageBitmap {
+        val cacheKey = entry.key + "#" + entry.user.hashCode() + "@" + sizePx
+        return iconCache.getOrPut(cacheKey) {
         val info: LauncherActivityInfo? = launcherApps
             .getActivityList(entry.packageName, entry.user)
             .firstOrNull { it.name == entry.activity }
@@ -99,6 +114,7 @@ class AppsRepository(private val context: Context) {
         (drawable ?: context.packageManager.defaultActivityIcon)
             .toBitmap(width = sizePx, height = sizePx)
             .asImageBitmap()
+        }
     }
 
     /** Emits whenever apps are installed, removed, or changed. */
