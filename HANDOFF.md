@@ -163,6 +163,28 @@ Roughly fifteen commits, each verified on the device. The themes, in the order t
 - Nineteen strings are unreachable, several of them fossils of features that were wired differently in the end.
 - Icons do not scale with the user's text step, deferred with reasons in issue #18.
 
+## Screenshots
+
+`docs/screenshots/` now covers all four stages, captured from the running app.
+The Today one is populated the way grid 13 shows it, one card done and one
+still to do, so it documents the rule that green appears only on completion.
+
+## A note on driving this app from a script
+
+Two hours were lost to test harness artifacts that looked exactly like app
+bugs. Both are worth knowing before the next session:
+
+- `adb install -r` fails with `INSTALL_FAILED_UPDATE_INCOMPATIBLE` when a
+  release build is installed and you are pushing a debug one. Redirecting the
+  output hides it, and you then test fixes against a build that never landed.
+  Uninstall between the two, and never redirect install output.
+- The soft keyboard swallows taps. After typing into any text field, dismiss it
+  with `input keyevent KEYCODE_BACK` and confirm with
+  `dumpsys input_method | grep mInputShown` before tapping the key below it.
+  Tapping elsewhere on screen does not close it, and a raw `input tap` at the
+  key's reported coordinates lands on the keyboard instead. This made Today
+  look as though it silently refused to save.
+
 ## Next actions
 
 1. Icons no longer scale with the user's text step; they are fixed dp. Doing it safely needs the app icon bitmap cache keyed by size, a cap so a scaled app icon does not overrun the row key, and the reflow threshold recomputed. Tracked in issue #17's follow up. This is small and worth doing before Stage 2 grows the surface.
