@@ -46,6 +46,7 @@ import io.github.kamsiob.launcher.ui.components.SectLabel
 import io.github.kamsiob.launcher.ui.components.StatusPill
 import io.github.kamsiob.launcher.ui.components.TopBar
 import io.github.kamsiob.launcher.ui.components.keySurface
+import io.github.kamsiob.launcher.ui.components.liftedRing
 import io.github.kamsiob.launcher.support.Haptics
 import io.github.kamsiob.launcher.support.debouncedClickable
 import io.github.kamsiob.launcher.ui.theme.Dimens
@@ -253,21 +254,12 @@ fun SelectionRing(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val palette = LocalPalette.current
     Box(
         modifier = modifier
-            .then(
-                if (selected) {
-                    Modifier.border(
-                        Dimens.liftedRing,
-                        palette.accent,
-                        RoundedCornerShape(Dimens.radiusKey + Dimens.liftedRingOffset),
-                    )
-                } else {
-                    Modifier
-                }
-            )
-            .padding(Dimens.liftedRingOffset + 2.dp),
+            .liftedRing(selected)
+            // The ring is drawn outside the card, so the only inset needed is
+            // enough room between neighbours for it to sit in.
+            .padding(Dimens.liftedRingOffset + Dimens.liftedRing),
     ) {
         content()
     }

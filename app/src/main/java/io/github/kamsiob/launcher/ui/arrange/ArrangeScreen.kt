@@ -62,6 +62,7 @@ import io.github.kamsiob.launcher.data.SavedTile
 import io.github.kamsiob.launcher.support.Haptics
 import io.github.kamsiob.launcher.ui.components.ApplianceKey
 import io.github.kamsiob.launcher.ui.components.KeyStyle
+import io.github.kamsiob.launcher.ui.components.liftedRing
 import io.github.kamsiob.launcher.ui.components.NoteText
 import io.github.kamsiob.launcher.ui.components.PromptBar
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
@@ -457,17 +458,7 @@ private fun ArrangeGrid(
                             .offset { slide }
                             .onGloballyPositioned { trade.remember(index, it.positionInRoot()) }
                             .then(if (dimmed) Modifier.alpha(0.38f) else Modifier)
-                            .then(
-                                if (lifted) {
-                                    Modifier.border(
-                                        Dimens.liftedRing,
-                                        palette.accent,
-                                        RoundedCornerShape(Dimens.radiusKey + Dimens.liftedRingOffset),
-                                    ).padding(Dimens.liftedRingOffset)
-                                } else {
-                                    Modifier
-                                }
-                            ),
+                            .liftedRing(lifted),
                     ) {
                         ArrangeTile(
                             tile = tile,

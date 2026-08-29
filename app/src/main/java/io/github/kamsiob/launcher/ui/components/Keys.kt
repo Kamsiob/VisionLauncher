@@ -22,6 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -90,6 +95,34 @@ fun Modifier.keySurface(
                 spotColor = palette.shadow,
             )
             .background(face, shape)
+    }
+}
+
+/**
+ * The navy ring that marks a lifted or chosen element.
+ *
+ * Drawn outside the element rather than reserving space inside it. The first
+ * version added padding only when lifted, so lifting a tile made it 6dp smaller
+ * than the tile beside it and shifted the row, which is exactly the sort of
+ * movement this audience should never have to track. This costs no layout at
+ * all: nothing moves, nothing resizes, the ring simply appears around it.
+ */
+@Composable
+fun Modifier.liftedRing(on: Boolean, radius: Dp = Dimens.radiusKey): Modifier {
+    val accent = LocalPalette.current.accent
+    if (!on) return this
+    return drawWithContent {
+        drawContent()
+        val stroke = Dimens.liftedRing.toPx()
+        val gap = Dimens.liftedRingOffset.toPx()
+        val out = gap + stroke / 2f
+        drawRoundRect(
+            color = accent,
+            topLeft = Offset(-out, -out),
+            size = Size(size.width + out * 2, size.height + out * 2),
+            cornerRadius = CornerRadius((radius.toPx() + out)),
+            style = Stroke(width = stroke),
+        )
     }
 }
 
