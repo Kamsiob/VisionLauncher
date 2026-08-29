@@ -1,9 +1,12 @@
 package io.github.kamsiob.launcher
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -342,6 +345,13 @@ fun LauncherNav(
         }
 
         composable(Routes.PICK_EMERGENCY) {
+            // Choosing the person is the moment the alert key's promise is made,
+            // so it is the moment to ask for what that promise needs. Asking
+            // here rather than during an emergency also means nobody is granting
+            // permissions while something is wrong.
+            val emergencyPermissions = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestMultiplePermissions()
+            ) { goBack() }
             PickContactScreen(
                 contacts = contacts,
                 title = activity.getString(R.string.helper_emergency_person),
@@ -350,7 +360,12 @@ fun LauncherNav(
                     scope.launch {
                         app.settingsStore.setEmergencyContact(EmergencyContact(name, number))
                     }
-                    goBack()
+                    emergencyPermissions.launch(
+                        arrayOf(
+                            Manifest.permission.SEND_SMS,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                        )
+                    )
                 },
                 onHome = goHome,
                 onBack = goBack,

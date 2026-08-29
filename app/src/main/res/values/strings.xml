@@ -77,6 +77,10 @@
     <string name="emergency_call_911_sub">Opens the phone\'s own emergency call screen</string>
     <string name="emergency_alert_person">Alert %1$s</string>
     <string name="emergency_alert_person_sub">Calls and texts where you are</string>
+    <string name="emergency_alert_person_sub_text_only">Calls and sends a text</string>
+    <string name="emergency_alert_person_sub_call_only">Calls only, because sending a text was not allowed</string>
+    <string name="onboarding_emergency_title">The emergency text</string>
+    <string name="onboarding_emergency_body">To send a text with your location when you press the alert key, this app needs permission to send messages and to see where the phone is.</string>
     <string name="emergency_no_person">Choose a person to alert</string>
     <string name="emergency_no_person_sub">A helper can set this up in Settings</string>
     <string name="emergency_honesty">Both need a cell signal. This is not a monitored medical alert service.</string>

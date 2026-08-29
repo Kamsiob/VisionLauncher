@@ -87,7 +87,7 @@ Do not use a table like the one above in any user facing text. It is here for th
 ### 5.4 Emergency (grid 05)
 
 - Call 911: hands off to the system emergency flow. Never reimplement emergency calling.
-- Alert Sarah, or whoever the helper set: places a call to that contact and sends a text with the current location.
+- Alert Sarah, or whoever the helper set: places a call to that contact and sends a text with the current location. `SEND_SMS` and location are requested when the helper chooses the person, and the key's subtitle states what is actually possible with the permissions currently granted, down to "Calls only, because sending a text was not allowed". See `DECISIONS.md` D31.
 - Honesty line stays on the screen: both need a cell signal, and this is not a monitored medical alert service.
 - Do not build or claim fall detection. There is no third party API for it.
 

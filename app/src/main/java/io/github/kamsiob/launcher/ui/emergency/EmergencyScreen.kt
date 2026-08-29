@@ -9,6 +9,7 @@ import android.net.Uri
 import android.telephony.SmsManager
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -37,6 +38,23 @@ fun EmergencyScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
+    // The alert key describes what this phone can actually do right now. The
+    // permissions behind the text are requested when the helper chooses the
+    // person, but they can be refused there or revoked later, and a key that
+    // still promised a text would be exactly the silent failure D7 exists to
+    // prevent.
+    val canText = remember(context) { granted(context, Manifest.permission.SEND_SMS) }
+    val canLocate = remember(context) {
+        granted(context, Manifest.permission.ACCESS_FINE_LOCATION) ||
+            granted(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+    }
+    val alertSubtitle = stringResource(
+        when {
+            canText && canLocate -> R.string.emergency_alert_person_sub
+            canText -> R.string.emergency_alert_person_sub_text_only
+            else -> R.string.emergency_alert_person_sub_call_only
+        }
+    )
     ScreenFrame(topBar = { TopBar(onHome = onHome, onBack = onBack) }) {
         ScreenTitle(stringResource(R.string.emergency_title))
         ApplianceKey(
@@ -50,7 +68,7 @@ fun EmergencyScreen(
         if (emergencyContact != null) {
             ApplianceKey(
                 label = stringResource(R.string.emergency_alert_person, emergencyContact.name),
-                sublabel = stringResource(R.string.emergency_alert_person_sub),
+                sublabel = alertSubtitle,
                 onClick = { alertPerson(context, emergencyContact) },
                 style = KeyStyle.PRIMARY,
                 minHeight = Dimens.bigKey,
@@ -95,9 +113,7 @@ private fun alertPerson(context: Context, person: EmergencyContact) {
     } else {
         context.getString(R.string.emergency_sms_body_no_location)
     }
-    if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS)
-        == PackageManager.PERMISSION_GRANTED
-    ) {
+    if (granted(context, Manifest.permission.SEND_SMS)) {
         runCatching {
             val sms = context.getSystemService(SmsManager::class.java)
             sms.sendMultipartTextMessage(
@@ -108,14 +124,13 @@ private fun alertPerson(context: Context, person: EmergencyContact) {
     placeCall(context, person.number)
 }
 
+private fun granted(context: Context, permission: String): Boolean =
+    ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+
 private fun lastKnownLocation(context: Context): Pair<Double, Double>? {
-    val fineGranted = ContextCompat.checkSelfPermission(
-        context, Manifest.permission.ACCESS_FINE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
-    val coarseGranted = ContextCompat.checkSelfPermission(
-        context, Manifest.permission.ACCESS_COARSE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
-    if (!fineGranted && !coarseGranted) return null
+    if (!granted(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
+        !granted(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+    ) return null
     val manager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     return runCatching {
         val providers = manager.getProviders(true)

@@ -149,3 +149,13 @@ This turns the README's claim from a promise into a checkable fact, which is the
 A false confirmation is the worst defect this app can carry. Every other promise it makes, the attention queue's repair keys, the undo strip, the honesty line on Emergency, rests on the interface telling the truth about what it just did. One key that confirms an action it did not perform undermines all of them.
 
 The snapshot now holds the layout as it was *before* the most recent Keep, so the restore key undoes the last arranging session. The restore also reports whether it changed anything, and the screen says "Your home screen has not changed" when there was nothing to undo, rather than confirming an undo that did not happen. Five tests pin the semantics.
+
+## D31. The Emergency key says what this phone can actually do
+
+The alert key promised "Calls and texts where you are" while `SEND_SMS` and the location permissions were only ever checked, never requested. Onboarding asks for contacts and phone and nothing else, so on a real device the alert placed the call and the text silently never sent.
+
+That is precisely the failure D7 was written to avoid, on the one screen where overpromising is unforgivable, and it survived because the code checked a permission it never asked for. A check without a request is not a safeguard, it is a silent failure with a conditional in front of it.
+
+Two changes. The permissions are requested at the moment the promise is made, when the helper chooses the person to alert, which is also the moment nobody is in an emergency. And the key's subtitle is computed from what is actually granted: "Calls and texts where you are" when both are available, "Calls and sends a text" with messaging but no location, and "Calls only, because sending a text was not allowed" when the text cannot be sent. Refusing at setup, or revoking later, changes the words on the key.
+
+The general lesson, and the third instance of it this session after D30 and the Add an app note: search the interface for sentences that assert something the code does not guarantee, then either guarantee it or change the sentence.
