@@ -376,3 +376,46 @@ a lifetime of muscle memory now dials the wrong number.
 This is the same reasoning as D39, which pins the dialed number itself left to
 right so a phone number is never reordered, and it is the other half of that
 fix. The number was already safe; the keys that produce it were not.
+
+## D47. The launcher is portrait on a phone, and lets a tablet decide
+
+`MainActivity` declares `screenOrientation="portrait"`.
+
+Every one of the twenty four screens in `design/design-grid-v4.html` is drawn on
+a 412dp portrait frame, and that file is the measurement authority for the
+project. Nothing in it describes what any screen becomes when it is turned
+sideways, so a landscape layout would be invented rather than specified.
+
+Turning the phone sideways was tested and it showed the cost. On the magnifier
+the viewfinder took the width, which in landscape is the long edge, and pushed
+the zoom keys and Hold still below the fold. Nothing was unreachable, because
+the screen scrolls, but a person holding a phone over a pill bottle should not
+have to scroll to find the zoom key. The other screens fare better and none of
+them is better sideways.
+
+Every comparable launcher does the same. The Pixel Launcher is portrait on a
+phone. A home screen that changes shape when somebody leans back in a chair is
+exactly the kind of surprise this app exists to remove.
+
+From Android 16 the system ignores an orientation restriction on a screen wider
+than 600dp, so this declaration binds on phones and is disregarded on tablets
+and foldables, where landscape is the natural shape and the reflow threshold
+already handles the width. That is the behavior wanted, and it needs no code.
+
+The magnifier is still written for both shapes, because that is where a large
+screen will land: upright the picture sits above the keys, sideways it sits
+beside them. Stacking it sideways made the picture a letterbox and pushed Hold
+still off the bottom, which is the one key somebody is reaching for while
+holding the phone over a pill bottle.
+
+Two things were briefly mistaken for bugs while testing this and were not. The
+preview appeared rotated ninety degrees, which turned out to be the emulator's
+virtual scene having been physically rotated by the same commands used to test
+rotation, and it came back upright once the scene was turned back. Pinning
+CameraX's target rotation to the window was tried as a fix for that phantom and
+made the preview genuinely sideways, because `PreviewView` already reconciles
+sensor orientation with the view it draws into. Both were reverted.
+
+This does not weaken D42. Rotation is still not a person leaving, and the alarm
+still survives a configuration change; there is simply one fewer configuration
+change to survive.

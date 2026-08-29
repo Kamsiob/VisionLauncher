@@ -121,6 +121,18 @@ code, the printable sheet, the setup file, and three translations.
 - The helper code is four digits on the same keypad as dialing. It is deliberately not a security feature and the screen says so.
 - Translated to Spanish, simplified Chinese and Arabic. 335 strings each, every format specifier checked, and the whole app driven in Arabic and Spanish on the emulator.
 
+Also settled here: the launcher declares portrait, and on a phone the system
+honors it. The magnifier is still written for both shapes because from Android
+16 a large screen ignores that declaration, and sideways it puts the picture
+beside the keys rather than above them. See `DECISIONS.md` D47.
+
+**A testing trap worth knowing about.** `adb install -r` fails with
+`INSTALL_FAILED_UPDATE_INCOMPATIBLE` when a release build is already installed,
+because the signatures differ. That failure was being swallowed by output
+redirection, so roughly half an hour was spent testing fixes against a build
+that never landed, and two phantom bugs were chased as a result. Uninstall
+before switching between debug and release, and do not redirect install output.
+
 Defects found in this stage, none of them visible in the code:
 
 - The dial pad mirrored in Arabic, so it read 3 2 1. See `DECISIONS.md` D46.

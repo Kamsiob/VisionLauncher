@@ -53,6 +53,12 @@ class Magnifier(private val context: Context) {
                 return@addListener
             }
             provider = cameraProvider
+            // Target rotation is deliberately left to CameraX and PreviewView.
+            // Pinning it to the window's own orientation was tried, on the
+            // theory that a portrait-locked app should ignore a rotated
+            // display, and it turned the preview sideways: PreviewView already
+            // reconciles the sensor orientation with the view it draws into,
+            // and a second correction on top of that is one too many.
             val preview = Preview.Builder().build().also {
                 it.surfaceProvider = view.surfaceProvider
             }
