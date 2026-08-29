@@ -133,7 +133,7 @@ fun HelperScreen(
             },
         )
         if (warningsRestored) {
-            StatusPill(text = stringResource(R.string.helper_warnings_restored))
+            StatusPill(text = stringResource(R.string.helper_warnings_restored), announce = true)
         }
         RowKey(
             label = stringResource(R.string.helper_about),

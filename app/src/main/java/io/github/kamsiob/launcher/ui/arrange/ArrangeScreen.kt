@@ -17,6 +17,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -267,7 +271,20 @@ fun ArrangeScreen(
                     undo = null
                 },
             )
-            UndoState.CallLocked -> NoteText(stringResource(R.string.arrange_call_stays))
+            // Spoken as well as shown. For a screen reader the refusal was a
+            // reject buzz and nothing else, which is a phone that did nothing.
+            UndoState.CallLocked -> {
+                val refusal = stringResource(R.string.arrange_call_stays)
+                Text(
+                    text = refusal,
+                    style = bodyStyle(size = TypeScale.sect, weight = FontWeight.Bold, lineHeightFactor = 1.3f),
+                    color = LocalPalette.current.text,
+                    modifier = Modifier.semantics {
+                        contentDescription = refusal
+                        liveRegion = LiveRegionMode.Assertive
+                    },
+                )
+            }
             null -> {}
         }
 

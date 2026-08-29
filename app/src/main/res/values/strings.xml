@@ -92,7 +92,7 @@
     <string name="emergency_sms_body_no_location">Emergency alert. I need help. My location is not available.</string>
 
     <!-- More apps -->
-    <string name="more_apps_title">All your apps</string>
+    <string name="more_apps_title">More apps</string>
     <string name="more_apps_search_hint">Search apps</string>
     <string name="a11y_search_field">Search your apps by name</string>
     <string name="more_apps_work_profile">%1$s, work profile</string>
@@ -116,6 +116,8 @@
     <string name="settings_look_dark">Dark</string>
     <string name="settings_look_outlined">Outlined</string>
     <string name="a11y_look_selected">%1$s, selected</string>
+    <string name="a11y_look_on">%1$s, on</string>
+    <string name="a11y_look_off">%1$s, off</string>
     <string name="settings_choose_apps">Choose your apps</string>
     <string name="settings_choose_apps_sub">Pick and arrange your home screen</string>
     <string name="settings_restore">Put my screen back</string>

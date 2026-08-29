@@ -36,7 +36,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -227,7 +229,7 @@ fun Masthead(
  * Outlined theme it gains a 2dp green border, as the grid specifies.
  */
 @Composable
-fun StatusPill(text: String, modifier: Modifier = Modifier) {
+fun StatusPill(text: String, modifier: Modifier = Modifier, announce: Boolean = false) {
     val palette = LocalPalette.current
     val outlined = LocalOutlined.current
     val shape = RoundedCornerShape(Dimens.radiusPill)
@@ -237,7 +239,13 @@ fun StatusPill(text: String, modifier: Modifier = Modifier) {
             .background(palette.statusBg)
             .then(if (outlined) Modifier.border(Dimens.statusBorder, palette.green, shape) else Modifier)
             .padding(horizontal = 18.dp, vertical = 10.dp)
-            .clearAndSetSemantics { contentDescription = text },
+            .clearAndSetSemantics {
+                contentDescription = text
+                // Only when this pill is the answer to something the person
+                // just did. The home screen's standing "All is well." must not
+                // speak on every return to home, which is many times a day.
+                if (announce) liveRegion = LiveRegionMode.Assertive
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -349,6 +357,8 @@ fun UndoStrip(
     onAction: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // The strip appears because something was removed, and the row that had
+    // focus is usually gone with it, so nothing would be spoken at all.
     val palette = LocalPalette.current
     val outlined = LocalOutlined.current
     val view = LocalView.current
@@ -376,7 +386,9 @@ fun UndoStrip(
             text = message,
             style = bodyStyle(size = TypeScale.undo, weight = FontWeight.Bold, lineHeightFactor = 1.25f),
             color = palette.lampText,
-            modifier = Modifier.weight(1f, fill = false),
+            modifier = Modifier
+                .weight(1f, fill = false)
+                .semantics { liveRegion = LiveRegionMode.Polite },
         )
         Text(
             text = actionLabel,
@@ -426,7 +438,9 @@ fun PromptBar(
             text = text,
             style = bodyStyle(size = TypeScale.promptBar, weight = FontWeight.Bold, lineHeightFactor = 1.3f),
             color = Tokens.cream,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .semantics { liveRegion = LiveRegionMode.Polite },
         )
         val doneLabel = stringResource(R.string.key_done)
         Box(

@@ -154,7 +154,8 @@ fun SettingsScreen(
                 text = stringResource(
                     if (didChange) R.string.settings_restore_done
                     else R.string.settings_restore_nothing
-                )
+                ),
+                announce = true,
             )
         }
         RowKey(
@@ -215,6 +216,11 @@ private fun ThemeChoices(
                 preview = { MiniPreview(background = Tokens.paper, border = Tokens.ink) },
                 onClick = onToggleOutlined,
                 modifier = m,
+                // Light and Dark are a choice of one. Outlined is independent
+                // and combines with either, and announcing it as a radio
+                // button told a screen reader user that turning it on would
+                // turn Dark off.
+                toggle = true,
             )
         },
     )
@@ -321,12 +327,14 @@ private fun ThemeCard(
     preview: @Composable () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    toggle: Boolean = false,
 ) {
     val palette = LocalPalette.current
-    val cardDescription = if (selected) {
-        stringResource(R.string.a11y_look_selected, label)
-    } else {
-        label
+    val cardDescription = when {
+        toggle && selected -> stringResource(R.string.a11y_look_on, label)
+        toggle -> stringResource(R.string.a11y_look_off, label)
+        selected -> stringResource(R.string.a11y_look_selected, label)
+        else -> label
     }
     SelectionRing(selected = selected, modifier = modifier) {
         Column(
@@ -340,7 +348,7 @@ private fun ThemeCard(
                 .clearAndSetSemantics {
                     contentDescription = cardDescription
                     this.selected = selected
-                    role = Role.RadioButton
+                    role = if (toggle) Role.Switch else Role.RadioButton
                 },
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
