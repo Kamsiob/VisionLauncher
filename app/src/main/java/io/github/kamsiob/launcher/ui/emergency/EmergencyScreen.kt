@@ -88,9 +88,13 @@ fun EmergencyScreen(
 }
 
 /**
- * The dialer opens with 911 ready. ACTION_DIAL is the sanctioned handoff a
- * non dialer app has; the phone's own emergency machinery takes over from
- * there.
+ * The dialer opens with 911 entered and waits for the person to press call.
+ *
+ * ACTION_DIAL rather than ACTION_CALL is deliberate and must stay that way. A
+ * stray tap is exactly the failure this audience is prone to, and it is the
+ * reason the Call screen's red key opens this screen instead of dialing. An
+ * accidental emergency call is a worse outcome than one extra press, and the
+ * key says "with 911 ready" rather than claiming to place the call.
  */
 private fun dialEmergency(context: Context) {
     val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:911"))

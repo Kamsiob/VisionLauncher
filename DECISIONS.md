@@ -167,3 +167,11 @@ The general lesson, and the third instance of it this session after D30 and the 
 The guard now lives in `HomeLayout.swap`, which refuses a trade when either side is locked, so the invariant holds at the data layer and no screen can violate it by forgetting a branch. The arranging screen keeps the app lifted and shows "Call always stays first." so the refusal is explained and a different destination can be chosen without starting over.
 
 This is the fourth sentence this session that asserted something the code did not guarantee, after D30, the Add an app note, and D31. The pattern is consistent enough to name as a review technique: read every sentence the interface states as fact, then hunt for the code path that could make it false.
+
+## D33. The 911 key fills the dialer, it does not place the call
+
+`ACTION_DIAL` with `tel:911` opens the phone's dialer with the number entered and waits for the person to press call. `ACTION_CALL` would place it directly. The dial path is deliberate: a stray tap is the failure mode this audience is prone to, which is the same reason the Call screen's red key opens the Emergency screen rather than dialing. One extra press is a smaller cost than an accidental emergency call.
+
+The key's subtitle said "Opens the phone's own emergency call screen", which overstated it, and now says "Opens the phone's own call screen with 911 ready".
+
+Verified by reading the code path rather than by pressing it. Testing this key on a device with a live SIM risks placing a real emergency call, which is not a thing to do to find out what a button does. Test it on an emulator or a device with no SIM.

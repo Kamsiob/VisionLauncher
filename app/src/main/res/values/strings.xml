@@ -74,7 +74,7 @@
     <!-- Emergency -->
     <string name="emergency_title">Emergency</string>
     <string name="emergency_call_911">Call 911</string>
-    <string name="emergency_call_911_sub">Opens the phone\'s own emergency call screen</string>
+    <string name="emergency_call_911_sub">Opens the phone\'s own call screen with 911 ready</string>
     <string name="emergency_alert_person">Alert %1$s</string>
     <string name="emergency_alert_person_sub">Calls and texts where you are</string>
     <string name="emergency_alert_person_sub_text_only">Calls and sends a text</string>
