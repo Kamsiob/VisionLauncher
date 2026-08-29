@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VisionLauncher</string>
+
+    <!-- Home -->
+    <string name="all_is_well">كل شيء على ما يرام.</string>
+    <string name="more_apps">تطبيقات أخرى</string>
+    <string name="day_part_morning">صباح %1$s</string>
+    <string name="day_part_afternoon">بعد ظهر %1$s</string>
+    <string name="day_part_evening">مساء %1$s</string>
+    <string name="a11y_masthead">%1$s. %2$s. %3$s.</string>
+
+    <!-- Built in feature names -->
+    <string name="feature_call">اتصال</string>
+    <string name="feature_messages">الرسائل</string>
+    <string name="feature_magnifier">عدسة مكبرة</string>
+    <string name="feature_camera">الكاميرا</string>
+    <string name="feature_photos">الصور</string>
+    <string name="feature_alarms">المنبهات</string>
+    <string name="empty_spot">مكان فارغ</string>
+    <string name="tile_app_missing">غير موجود الآن</string>
+    <string name="a11y_tile_app_missing">هذا التطبيق غير موجود على الهاتف الآن. اضغط لاختيار تطبيق آخر لهذا المكان.</string>
+
+    <!-- Attention queue -->
+    <plurals name="attention_count">
+        <item quantity="zero">%d أمور تحتاج انتباهك</item>
+        <item quantity="one">%d أمر يحتاج انتباهك</item>
+        <item quantity="two">%d أمران يحتاجان انتباهك</item>
+        <item quantity="few">%d أمور تحتاج انتباهك</item>
+        <item quantity="many">%d أمرا يحتاج انتباهك</item>
+        <item quantity="other">%d أمر يحتاج انتباهك</item>
+    </plurals>
+    <string name="attention_ringer_off">الرنين مغلق. لن تسمع المكالمات.</string>
+    <string name="attention_ringer_vibrate">الهاتف على الاهتزاز فقط. لن تسمع المكالمات.</string>
+    <string name="attention_repair_ringer">تشغيل الرنين</string>
+    <string name="attention_dnd_on">وضع عدم الإزعاج مشغل. ستبقى المكالمات والرسائل صامتة.</string>
+    <string name="attention_repair_dnd">إيقاف عدم الإزعاج</string>
+    <string name="attention_repair_dnd_open">فتح إعدادات عدم الإزعاج</string>
+    <string name="attention_battery_low">شحن البطارية %d بالمئة. صل الهاتف بالشاحن قريبا.</string>
+    <string name="attention_airplane_on">وضع الطيران مشغل. لا تستطيع المكالمات والرسائل الوصول إليك.</string>
+    <string name="attention_repair_airplane">فتح إعدادات وضع الطيران</string>
+    <string name="attention_no_network">هذا الهاتف بلا اتصال الآن. لا تستطيع المكالمات والرسائل الوصول إليك.</string>
+    <string name="attention_repair_network">فتح إعدادات الاتصال</string>
+    <string name="attention_storage_full">مساحة هذا الهاتف تكاد تنتهي. قد لا تحفظ الصور الجديدة.</string>
+    <string name="attention_repair_storage">فتح إعدادات المساحة</string>
+    <string name="attention_battery_optimization">قد يوقف أندرويد هذا التطبيق. وقد تتوقف الرسائل عن الظهور.</string>
+    <string name="attention_repair_battery_optimization">استمرار وصول الرسائل</string>
+
+    <!-- Common keys -->
+    <string name="key_home">الرئيسية</string>
+    <string name="key_back">رجوع</string>
+    <string name="key_done">تم</string>
+    <string name="key_skip">ليس الآن</string>
+    <string name="key_never_mind">لا داعي</string>
+    <string name="a11y_home_key">الذهاب إلى الشاشة الرئيسية</string>
+    <string name="a11y_back_key">الرجوع إلى الشاشة السابقة</string>
+
+    <!-- Call -->
+    <string name="call_title">اتصال</string>
+    <string name="call_all_contacts">كل جهات الاتصال</string>
+    <string name="call_dial_a_number">طلب رقم</string>
+    <string name="call_emergency">طوارئ</string>
+    <string name="a11y_emergency_key">طوارئ. يفتح شاشة الطوارئ. لا يجري مكالمة.</string>
+    <string name="a11y_call_person">الاتصال بـ%1$s، %2$s</string>
+    <string name="a11y_call_person_no_relation">الاتصال بـ%1$s</string>
+    <string name="call_no_contacts_permission">لا يستطيع هذا التطبيق رؤية جهات اتصالك بعد. ما زال بإمكانك طلب رقم.</string>
+    <string name="call_grant_contacts">السماح برؤية جهات اتصالك</string>
+    <string name="call_no_favorites">تختار المفضلة من إعدادات المساعد.</string>
+
+    <!-- Keypad -->
+    <string name="keypad_title">طلب رقم</string>
+    <string name="keypad_erase">حذف</string>
+    <string name="keypad_clear">مسح الكل</string>
+    <string name="keypad_call_this_number">الاتصال بهذا الرقم</string>
+    <string name="a11y_dialed_number">الأرقام حتى الآن: %1$s</string>
+    <string name="a11y_dialed_empty">لم تدخل أي أرقام بعد</string>
+
+    <!-- Emergency -->
+    <string name="emergency_title">طوارئ</string>
+    <!-- The emergency number follows the phone's country, not its reading
+         language: a Spanish speaker in the United States still dials 911.
+         Translate the wording around it, never the number itself. -->
+    <string name="emergency_call_number">الاتصال بـ%1$s</string>
+    <string name="emergency_call_number_sub">يفتح شاشة الاتصال في الهاتف والرقم %1$s جاهز</string>
+    <string name="emergency_alert_person">تنبيه %1$s</string>
+    <string name="emergency_alert_person_sub">يتصل ويرسل رسالة بمكانك</string>
+    <string name="emergency_alert_person_sub_text_only">يتصل ويرسل رسالة</string>
+    <string name="emergency_alert_person_sub_call_only">يتصل فقط، لأن إرسال الرسالة غير مسموح</string>
+    <string name="emergency_alert_person_sub_no_texting">يتصل فقط، لأن هذا الهاتف لا يستطيع إرسال الرسائل</string>
+    <string name="emergency_no_person">اختر شخصا لتنبيهه</string>
+    <string name="emergency_no_person_sub">يستطيع المساعد ضبط هذا من الإعدادات</string>
+    <string name="emergency_honesty">كلاهما يحتاج إلى تغطية الشبكة. هذه ليست خدمة تنبيه طبي تحت المراقبة.</string>
+    <string name="emergency_sms_body">تنبيه طوارئ. أحتاج إلى المساعدة. موقعي: %1$s</string>
+    <string name="emergency_sms_body_no_location">تنبيه طوارئ. أحتاج إلى المساعدة. موقعي غير متاح.</string>
+
+    <!-- More apps -->
+    <string name="more_apps_title">تطبيقات أخرى</string>
+    <string name="more_apps_search_hint">ابحث عن تطبيق</string>
+    <string name="a11y_search_field">ابحث عن تطبيقاتك بالاسم</string>
+    <string name="more_apps_work_profile">%1$s، ملف العمل</string>
+    <string name="more_apps_none_found">لا يوجد تطبيق باسم %1$s.</string>
+    <string name="contacts_none">لا توجد جهات اتصال على هذا الهاتف بعد.</string>
+
+    <string name="open_message_app">فتح تطبيق رسائل</string>
+
+    <!-- Helper tools, spec 5.10 -->
+    <string name="helper_phrases">عبارات الرد</string>
+    <string name="helper_phrases_meta">الردود الستة بضغطة واحدة</string>
+    <string name="phrases_title">عبارات الرد</string>
+    <string name="phrases_explain">هذه هي الردود التي تعرض بضغطة واحدة عند الرد على رسالة. اضغط على واحدة لتغييرها.</string>
+    <string name="phrases_edit_title">تغيير هذه العبارة</string>
+    <string name="phrases_hint">ماذا تريدها أن تقول؟</string>
+    <string name="phrases_save">احتفظ بها</string>
+    <string name="phrases_reset">أعد الستة المعتادة</string>
+    <string name="a11y_phrase_slot">العبارة %1$d، %2$s. اضغط لتغييرها.</string>
+
+    <string name="helper_pin">قفل إعدادات المساعد</string>
+    <string name="helper_pin_on">مشغل. يلزم رمز من أربعة أرقام.</string>
+    <string name="helper_pin_off">متوقف. يستطيع أي شخص فتح إعدادات المساعد.</string>
+    <string name="pin_title">رمز المساعد</string>
+    <string name="pin_explain">رمز من أربعة أرقام يمنع تغيير إعدادات المساعد بالخطأ. لا يقفل الهاتف ولا يخفي أي شيء آخر.</string>
+    <string name="pin_enter">أدخل الرمز</string>
+    <string name="pin_set">اختر رمزا من أربعة أرقام</string>
+    <string name="pin_wrong">هذا الرمز غير صحيح.</string>
+    <string name="pin_forgot">نسيت الرمز؟ امسح بيانات التطبيق من إعدادات أندرويد، وهذا يعيد كل شيء إلى البداية.</string>
+    <string name="a11y_pin_entered">أدخلت %1$d من أربعة أرقام</string>
+
+    <string name="helper_setup_section">الاحتفاظ بهذا الإعداد</string>
+    <string name="helper_save_setup">احفظ هذا الإعداد في ملف</string>
+    <string name="helper_load_setup">حمل إعدادا من ملف</string>
+    <string name="helper_print_sheet">اصنع ورقة إعداد للطباعة</string>
+    <string name="setup_saved">تم حفظ الإعداد.</string>
+    <string name="setup_save_failed">تعذر حفظ الإعداد.</string>
+    <string name="setup_loaded">تم تحميل الإعداد.</string>
+    <string name="setup_load_failed">هذا الملف ليس إعدادا لهذا التطبيق.</string>
+    <string name="setup_sheet_saved">تم حفظ الورقة. افتحها لطباعتها.</string>
+    <string name="setup_default_name">VisionLauncher setup.json</string>
+    <string name="sheet_default_name">VisionLauncher setup sheet.html</string>
+
+    <!-- Today, spec 5.9, grid 13 -->
+    <string name="feature_today">اليوم</string>
+    <string name="today_title">اليوم</string>
+    <string name="today_none">لا شيء مكتوب لليوم.</string>
+    <string name="today_add">أضف شيئا</string>
+    <string name="today_done">تم</string>
+    <string name="today_done_at">تم في %1$s</string>
+    <string name="today_undo_done">لم يتم فعلا</string>
+    <string name="today_change">غير هذا</string>
+    <string name="today_not_medical">كتبته أنت أو مساعدك. ليس نصيحة طبية.</string>
+    <string name="today_edit_title">ماذا سيحدث؟</string>
+    <string name="today_what_hint">ما هو؟</string>
+    <string name="today_save">احتفظ به</string>
+    <string name="today_remove">أزله</string>
+    <string name="a11y_today_not_done">لم يتم بعد. اضغط للإشارة إلى أنه تم.</string>
+    <string name="a11y_today_done">تم في %1$s. اضغط إن كان ذلك بالخطأ.</string>
+    <string name="helper_today">ما يحدث اليوم</string>
+    <string name="helper_today_meta">%1$d مكتوبة</string>
+
+    <!-- Magnifier and Reader, spec 5.7, grid 10 and 11 -->
+    <string name="magnifier_zoom_in">أكبر</string>
+    <string name="magnifier_zoom_out">أصغر</string>
+    <string name="magnifier_light">إضاءة</string>
+    <string name="magnifier_light_off">إطفاء</string>
+    <string name="magnifier_hold_still">تثبيت</string>
+    <string name="magnifier_live_again">تحريك</string>
+    <string name="magnifier_no_camera">هذا الهاتف لا يفتح الكاميرا. والعدسة المكبرة تحتاج إليها.</string>
+    <string name="magnifier_no_permission">تحتاج العدسة المكبرة إلى استخدام الكاميرا.</string>
+    <string name="magnifier_allow_camera">السماح باستخدام الكاميرا</string>
+    <string name="magnifier_no_torch">لا توجد في هذا الهاتف إضاءة لتشغيلها.</string>
+    <string name="magnifier_capture_failed">لم تثبت الصورة. حاول مرة أخرى.</string>
+    <string name="magnifier_frozen">الصورة ثابتة. لا يجري تسجيل أي شيء.</string>
+    <string name="a11y_zoom_level">تكبير %1$d بالمئة</string>
+    <string name="magnifier_colors_now">الألوان: %1$s</string>
+    <string name="a11y_colors_now">الألوان %1$s. اضغط لتجربة التالي.</string>
+    <string name="filter_normal">عادية</string>
+    <string name="filter_gray">رمادية</string>
+    <string name="filter_high_contrast">أوضح</string>
+    <string name="filter_inverted">معكوسة</string>
+    <string name="filter_yellow_on_black">أصفر على أسود</string>
+
+    <!-- Photos, spec 5.8, grid 12 -->
+    <string name="photos_position">الصورة %1$d من %2$d</string>
+    <string name="photos_from">من %1$s</string>
+    <string name="photos_back">السابقة</string>
+    <string name="photos_next">التالية</string>
+    <string name="photos_read_caption">اقرأ اسم المرسل بصوت عال</string>
+    <string name="photos_none">لا توجد صور على هذا الهاتف بعد.</string>
+    <string name="photos_no_permission">لعرض صورك، يحتاج هذا التطبيق إلى رؤيتها.</string>
+    <string name="photos_allow">السماح برؤية صوري</string>
+    <string name="photos_open_gallery">فتح تطبيق صور</string>
+    <string name="reader_read_this">اقرأ لي هذا</string>
+    <string name="reader_reading_now">يقرأ الآن بصوت عال</string>
+    <string name="reader_stop">أوقف القراءة</string>
+    <string name="reader_again">اقرأ مرة أخرى</string>
+    <string name="reader_working">جار النظر في الكلمات.</string>
+    <string name="reader_nothing_found">لم يعثر على كلمات. اقترب أكثر، وثبت الهاتف، وحاول مرة أخرى.</string>
+    <string name="reader_no_voice">لا يوجد صوت مثبت على هذا الهاتف، لذلك تظهر الكلمات دون أن تقرأ.</string>
+    <string name="reader_privacy">كل شيء يحدث على هذا الهاتف. لا يرسل أي شيء إلى أي مكان.</string>
+
+    <!-- Messages, spec 5.6, grid 07 08 09 -->
+    <string name="messages_title">الرسائل</string>
+    <string name="time_yesterday">أمس</string>
+    <plurals name="messages_new_today">
+        <item quantity="zero">%d رسائل جديدة اليوم.</item>
+        <item quantity="one">%d رسالة جديدة اليوم.</item>
+        <item quantity="two">%d رسالتان جديدتان اليوم.</item>
+        <item quantity="few">%d رسائل جديدة اليوم.</item>
+        <item quantity="many">%d رسالة جديدة اليوم.</item>
+        <item quantity="other">%d رسالة جديدة اليوم.</item>
+    </plurals>
+    <string name="messages_none_yet">لا توجد رسائل بعد.</string>
+    <string name="messages_kept_here">تحفظ الرسائل على هذا الهاتف لتعود إليها متى شئت.</string>
+    <string name="messages_no_access">هذا التطبيق لا يتابع الرسائل بعد.</string>
+    <string name="messages_grant_access">السماح بمتابعة الرسائل</string>
+    <string name="messages_row_meta">%1$s، %2$s، %3$s</string>
+    <string name="messages_hidden_body">الرسالة مخفية</string>
+    <string name="messages_sent_something">أرسل شيئا</string>
+    <string name="a11y_message_row">%1$s. %2$s</string>
+    <string name="message_from">%1$s، عبر %2$s، %3$s</string>
+    <string name="message_hidden_explained">هذا الهاتف يخفي ما تقوله الرسالة. افتح %1$s لقراءتها.</string>
+    <string name="message_open_app">افتح %1$s</string>
+    <string name="message_read_aloud">اقرأها بصوت عال</string>
+    <string name="message_stop_reading">أوقف القراءة</string>
+    <string name="message_reply">رد</string>
+    <string name="message_cannot_reply">لا يمكن الرد على هذه الرسالة من هنا.</string>
+    <string name="replies_travel">تمر الردود عبر %1$s نفسه.</string>
+
+    <string name="reply_title">الرد على %1$s</string>
+    <string name="reply_speak">قل ردك</string>
+    <string name="reply_listening">جار الاستماع. قل ردك.</string>
+    <string name="reply_or_send_one">أو أرسل واحدا من هذه</string>
+    <string name="reply_type_instead">اكتب بدلا من ذلك</string>
+    <string name="reply_send">أرسل هذا</string>
+    <string name="reply_say_again">قلها مرة أخرى</string>
+    <string name="reply_voice_note">يفهم صوتك على هذا الهاتف. لا يرسل أي شيء إلى أي مكان.</string>
+    <string name="reply_sent">تم إرسال ردك.</string>
+    <string name="reply_failed">لم يخرج الرد. افتح %1$s وأرسله من هناك.</string>
+    <string name="reply_heard_nothing">لم يسمع شيء. حاول مرة أخرى، أو استخدم أحد الردود في الأسفل.</string>
+    <string name="reply_phrase_yes">نعم</string>
+    <string name="reply_phrase_no">لا</string>
+    <string name="reply_phrase_call_me">اتصل بي</string>
+    <string name="reply_phrase_thank_you">شكرا لك!</string>
+    <string name="reply_phrase_love_you">أحبك</string>
+    <string name="reply_phrase_on_my_way">في الطريق</string>
+    <string name="a11y_reply_confirm">قلت: %1$s</string>
+
+    <string name="attention_no_message_access">تم إيقاف متابعة الرسائل. لن تظهر الرسائل الجديدة هنا.</string>
+    <string name="attention_repair_message_access">تشغيل متابعة الرسائل</string>
+    <string name="dest_notification_access">إعدادات الوصول إلى الإشعارات</string>
+
+    <!-- Settings -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_text_size">حجم الخط</string>
+    <string name="settings_size_now">الآن</string>
+    <string name="a11y_text_size_step">حجم الخط %1$d من 3</string>
+    <string name="settings_look">المظهر</string>
+    <string name="settings_look_light">فاتح</string>
+    <string name="settings_look_dark">داكن</string>
+    <string name="settings_look_outlined">بإطارات</string>
+    <string name="a11y_look_selected">%1$s، محدد</string>
+    <string name="a11y_look_on">%1$s، مشغل</string>
+    <string name="a11y_look_off">%1$s، متوقف</string>
+    <string name="settings_choose_apps">اختر تطبيقاتك</string>
+    <string name="settings_choose_apps_sub">اختر ورتب شاشتك الرئيسية</string>
+    <string name="settings_restore">أعد شاشتي كما كانت</string>
+    <string name="settings_restore_sub">يتراجع عن التغييرات في شاشتك الرئيسية</string>
+    <string name="settings_restore_done">عادت شاشتك الرئيسية كما كانت.</string>
+    <string name="settings_restore_nothing">لم تتغير شاشتك الرئيسية.</string>
+    <string name="settings_see_hear">رؤية وسمع أفضل</string>
+    <string name="settings_see_hear_sub">اضبط أدوات المساعدة المدمجة في هذا الهاتف</string>
+    <string name="settings_helper">إعدادات المساعد</string>
+    <string name="settings_helper_sub">للشخص الذي يساعدك</string>
+    <string name="settings_undo_note">يمكن التراجع عن كل تغيير هنا.</string>
+    <string name="settings_support_sub">اختياري، وغير مطلوب أبدا</string>
+
+    <!-- See and hear better -->
+    <string name="seehear_bigger">كبر كل شيء</string>
+    <string name="seehear_bigger_sub">يفتح إعداد حجم العرض في أندرويد</string>
+    <string name="seehear_magnify">تكبير الشاشة</string>
+    <string name="seehear_magnify_sub">قرب أي شيء، في أي تطبيق</string>
+    <string name="seehear_hearing">سماعات الأذن</string>
+    <string name="seehear_hearing_sub">اربطها بهذا الهاتف</string>
+    <string name="seehear_captions">الترجمة المكتوبة</string>
+    <string name="seehear_captions_sub">كلمات على الشاشة للفيديو والمكالمات</string>
+    <string name="seehear_sound">صوت أعلى وأوضح</string>
+    <string name="seehear_sound_sub">يقوي الأصوات من حولك</string>
+    <string name="seehear_medical">معلوماتك الطبية</string>
+    <string name="seehear_medical_sub">يراها المسعفون حتى والهاتف مقفل</string>
+
+    <!-- Helper settings -->
+    <string name="helper_title">إعدادات المساعد</string>
+    <string name="helper_favorites">المفضلة</string>
+    <string name="helper_add_favorite">أضف إلى المفضلة</string>
+    <string name="helper_remove_favorite">أزل %1$s من القائمة</string>
+    <string name="helper_favorite_removed">تمت إزالة %1$s من المفضلة.</string>
+    <string name="helper_relationship_hint">الصلة، مثل ابنة أو طبيب</string>
+    <string name="a11y_relationship_field">صلة هذا الشخص بك</string>
+    <string name="a11y_alarm_label_field">لماذا هذا المنبه</string>
+    <string name="helper_emergency_person">شخص الطوارئ</string>
+    <string name="helper_emergency_person_sub">من تنبهه شاشة الطوارئ</string>
+    <string name="helper_restore_warnings">أعد كل التحذيرات</string>
+    <string name="helper_restore_warnings_sub">يعرض تحذير كل شاشة من جديد</string>
+    <string name="helper_warnings_restored">ستظهر كل التحذيرات من جديد.</string>
+    <string name="helper_about">عن هذا التطبيق</string>
+    <string name="about_title">عن التطبيق</string>
+    <string name="about_body">VisionLauncher شاشة رئيسية مبنية حول ضعف البصر والتقدم في العمر. كل شيء يحدث على هذا الهاتف. لا يرسل أي شيء إلى أي مكان.</string>
+    <string name="about_version">الإصدار %1$s</string>
+    <string name="about_license">هذا التطبيق برنامج حر بموجب رخصة AGPL 3.0. والخطوط هي Atkinson Hyperlegible Next وAtkinson Hyperlegible Mono وYoung Serif، وكلها بموجب رخصة الخطوط المفتوحة SIL.</string>
+    <string name="about_support">ادعم هذا العمل</string>
+    <string name="put_it_back">أعده كما كان</string>
+
+    <!-- Choose your apps -->
+    <string name="arrange_prompt">اضغط على تطبيق لنقله أو إزالته.</string>
+    <string name="arrange_prompt_destination">اضغط على المكان الذي يذهب إليه %1$s.</string>
+    <string name="arrange_move_it">انقله</string>
+    <string name="arrange_put_first">ضعه أولا</string>
+    <string name="arrange_take_off">أزله من الشاشة الرئيسية</string>
+    <string name="arrange_taken_off">تمت إزالة %1$s.</string>
+    <string name="arrange_call_stays">الاتصال يبقى أولا دائما.</string>
+    <string name="arrange_undo_last">تراجع عن آخر نقلة</string>
+    <string name="arrange_kept_partial">تغييراتك حتى الآن محفوظة.</string>
+    <string name="arrange_keep_title">هذه شاشتك الرئيسية الجديدة</string>
+    <string name="arrange_keep_it">احتفظ بها</string>
+    <string name="arrange_revert">أعدها كما كانت</string>
+    <string name="arrange_add_app">أضف تطبيقا</string>
+    <string name="arrange_add_app_note">يحل التطبيق الجديد في أسفل شاشتك الرئيسية.</string>
+    <string name="arrange_add_app_note_gap">يذهب التطبيق الجديد إلى أول مكان فارغ.</string>
+    <string name="a11y_arrange_tile">%1$s. اضغط لنقله أو إزالته.</string>
+    <string name="a11y_arrange_empty">مكان فارغ. اضغط لوضع تطبيق هنا.</string>
+    <string name="a11y_arrange_locked">اتصال. الاتصال يبقى أولا دائما.</string>
+    <string name="a11y_arrange_lifted">%1$s مرفوع. اضغط على مكان لنقله إليه، أو اضغط عليه مرة أخرى للإلغاء.</string>
+    <string name="a11y_arrange_chosen">تم اختيار %1$s. اختر ما تفعله به في الأسفل.</string>
+    <string name="a11y_arrange_destination">ضع %1$s هنا، مكان %2$s</string>
+    <string name="a11y_arrange_destination_empty">ضع %1$s هنا، في المكان الفارغ</string>
+
+    <!-- Threshold -->
+    <string name="threshold_title">أنت على وشك مغادرة هذا التطبيق</string>
+    <string name="threshold_body">الشاشة التالية هي %1$s. تبدو مختلفة عن هنا، وخطها أصغر.</string>
+    <string name="threshold_return">عند الانتهاء، اضغط زر الرئيسية وستعود إلى هنا مباشرة.</string>
+    <string name="threshold_return_not_home">عند الانتهاء، عد بالطريقة التي تعتادها.</string>
+    <string name="threshold_continue">تابع إلى %1$s</string>
+    <string name="threshold_stay">ابق هنا</string>
+    <string name="threshold_dont_warn">لا تحذرني من %1$s مرة أخرى</string>
+    <string name="dest_sound_settings">إعدادات الصوت</string>
+    <string name="dest_dnd_settings">إعدادات عدم الإزعاج</string>
+    <string name="dest_airplane_settings">إعدادات وضع الطيران</string>
+    <string name="dest_network_settings">إعدادات الاتصال</string>
+    <string name="dest_storage_settings">إعدادات المساحة</string>
+    <string name="dest_battery_settings">إعدادات البطارية</string>
+    <string name="dest_display_settings">إعدادات حجم العرض</string>
+    <string name="dest_accessibility_settings">إعدادات إمكانية الوصول</string>
+    <string name="dest_hearing_settings">إعدادات أجهزة السمع</string>
+    <string name="dest_caption_settings">إعدادات الترجمة المكتوبة</string>
+    <string name="dest_sound_amplifier">مقوي الصوت</string>
+    <string name="dest_medical_info">شاشة المعلومات الطبية</string>
+    <string name="dest_home_settings">إعدادات تطبيق الشاشة الرئيسية</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_cant_break">لا يمكنك أن تفسد شيئا.</string>
+    <string name="onboarding_cant_break_body">يمكن التراجع عن كل تغيير. لا شيء تضغط عليه يؤذي الهاتف. خذ وقتك.</string>
+    <string name="onboarding_own_phone">أضبط هاتفي أنا</string>
+    <string name="onboarding_helping">أساعد شخصا في ضبط هاتفه</string>
+    <string name="onboarding_set_home_title">اجعل هذه شاشتك الرئيسية</string>
+    <string name="onboarding_set_home_body">عندما تضغط زر الرئيسية، هذه هي الشاشة التي ستستقبلك.</string>
+    <string name="onboarding_set_home_key">اجعلها الشاشة الرئيسية</string>
+    <string name="onboarding_contacts_title">أهلك ومعارفك</string>
+    <string name="onboarding_contacts_body">لعرض من تتصل بهم، يحتاج هذا التطبيق إلى رؤية جهات اتصالك. وهي تبقى على هذا الهاتف.</string>
+    <string name="onboarding_contacts_key">السماح برؤية جهات الاتصال</string>
+    <string name="onboarding_phone_title">الاتصال</string>
+    <string name="onboarding_phone_body">لإجراء المكالمات عندما تضغط على شخص، يحتاج هذا التطبيق إلى إذن الاتصال.</string>
+    <string name="onboarding_phone_key">السماح بإجراء المكالمات</string>
+    <string name="onboarding_battery_title">استمرار وصول الرسائل</string>
+    <string name="onboarding_battery_body">لتوفير البطارية، يوقف أندرويد التطبيقات أحيانا. وإن أوقف هذا التطبيق، فقد تتوقف الرسائل الجديدة عن الظهور هنا.</string>
+    <string name="onboarding_battery_key">السماح له بالاستمرار</string>
+    <string name="onboarding_battery_skipped">إن أوقف أندرويد هذا التطبيق، فسيخبرك مصباح التنبيه.</string>
+    <string name="onboarding_skipped_consequence">يمكنك السماح بهذا لاحقا من الإعدادات. وحتى ذلك الحين، يبقى هذا الجزء متوقفا.</string>
+    <string name="onboarding_all_set">كل شيء جاهز.</string>
+    <string name="onboarding_helper_note">إعدادات المساعد تضم المفضلة وشخص الطوارئ. وهي في أسفل الإعدادات.</string>
+    <string name="onboarding_go_home">اذهب إلى شاشتك الرئيسية</string>
+
+    <!-- Alarms -->
+    <string name="alarms_title">المنبهات</string>
+    <string name="alarm_new">منبه جديد</string>
+    <string name="alarm_label_hint">لماذا هذا المنبه</string>
+    <string name="alarm_save">احفظ هذا المنبه</string>
+    <string name="alarm_delete">أزل هذا المنبه</string>
+    <string name="alarm_deleted">تمت إزالة المنبه.</string>
+    <string name="alarm_on">مشغل</string>
+    <string name="alarm_off">متوقف</string>
+    <string name="a11y_alarm_row">منبه في %1$s، %2$s. اضغط لتغييره.</string>
+    <string name="a11y_alarm_toggle_on">تشغيل منبه %1$s</string>
+    <string name="a11y_alarm_toggle_off">إيقاف منبه %1$s</string>
+    <string name="alarm_stop">إيقاف</string>
+    <string name="alarm_ten_more">10 دقائق أخرى</string>
+    <string name="alarm_none_yet">لا توجد منبهات بعد.</string>
+    <!-- Reserved for the alarm's foreground service, issue #20. The manifest
+         already declares the permissions it needs. -->
+    <string name="alarm_am">ص</string>
+    <string name="alarm_pm">م</string>
+    <string name="alarm_plus_hour">ساعة لاحقا</string>
+    <string name="alarm_minus_hour">ساعة أبكر</string>
+    <string name="alarm_plus_minute">خمس دقائق لاحقا</string>
+    <string name="alarm_minus_minute">خمس دقائق أبكر</string>
+
+    <!-- Misc -->
+    <!-- Reserved for the reader and reply screens in Stages 2 and 3, where
+         DESIGN.md names this sentence as brand furniture. -->
+</resources>

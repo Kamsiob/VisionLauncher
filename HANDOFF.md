@@ -107,10 +107,24 @@ would put readable text in front of the lens, so the camera to recognizer link
 has been verified in its two halves rather than in one pass. Do this on the
 Pixel by pointing it at a real label.
 
-## What is not built
+## Stage 4, the helper and the finish
 
-Stage 4: Today, the printable setup sheet, the setup file, the helper PIN, the
-reply phrase editor, and localization to Spanish, Chinese and Arabic.
+Grid 13 and the rest of grid 15. Today, the reply phrase editor, the helper
+code, the printable sheet, the setup file, and three translations.
+
+- Today holds cards written by the person or their helper. Green appears only on completion, and a completion is stamped with the day it belongs to so a card marked done yesterday is not still green this morning.
+- Today is also a home tile now, so it is reachable without going through helper settings.
+- The setup file is readable JSON a helper can save and load, covering favorites, the emergency person, the phrases, the cards, the theme, the text size and the home layout. Verified by saving it, reading the file off the device, and checking every field.
+- The printable sheet is a self contained HTML page with no external anything, so it prints the same from a phone with no network. Verified by generating one and reading it.
+- The helper code is four digits on the same keypad as dialing. It is deliberately not a security feature and the screen says so.
+- Translated to Spanish, simplified Chinese and Arabic. 335 strings each, every format specifier checked, and the whole app driven in Arabic and Spanish on the emulator.
+
+Defects found in this stage, none of them visible in the code:
+
+- The dial pad mirrored in Arabic, so it read 3 2 1. See `DECISIONS.md` D46.
+- The setup file carried today's completions, so loading it on another phone would show a pill as already taken that nobody took.
+- A Today card's spoken label ended with "tap to mark it done" on the target that opens the editor.
+- Android lint had never been run on this project. It found a genuine crash: `InputStream.readNBytes` is API 33 and this app runs from 29, so loading a setup file would have died on an Android 10 phone. It also found that Photos would ignore Android 14's "select photos" partial grant and keep asking for access it already had.
 
 ---
 

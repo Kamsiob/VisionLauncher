@@ -60,6 +60,16 @@ data class Settings(
      * switched to Spanish.
      */
     val replyPhrases: List<String> = emptyList(),
+    /**
+     * The four digit code on helper settings, or null when it is off.
+     *
+     * Stored in the clear on purpose, and the screen says what it is for: it
+     * stops a setting being changed by accident, and it is not a lock on the
+     * phone or on anybody's data. Hashing it would imply a security property
+     * this does not have and cannot have, since anybody holding the phone can
+     * clear the app's data and reset everything anyway.
+     */
+    val helperPin: String? = null,
 )
 
 /**
@@ -79,6 +89,7 @@ class SettingsStore(private val context: Context) {
         val favorites = stringPreferencesKey("favorites")
         val emergencyContact = stringPreferencesKey("emergency_contact")
         val replyPhrases = stringPreferencesKey("reply_phrases")
+        val helperPin = stringPreferencesKey("helper_pin")
     }
 
     private val json = Json { ignoreUnknownKeys = true }
@@ -105,6 +116,7 @@ class SettingsStore(private val context: Context) {
             replyPhrases = prefs[Keys.replyPhrases]?.let { stored ->
                 runCatching { json.decodeFromString<List<String>>(stored) }.getOrDefault(emptyList())
             } ?: emptyList(),
+            helperPin = prefs[Keys.helperPin]?.takeIf { it.length == 4 },
         )
     }
 
@@ -144,6 +156,26 @@ class SettingsStore(private val context: Context) {
 
     suspend fun setReplyPhrases(phrases: List<String>) {
         context.settingsData.edit { it[Keys.replyPhrases] = json.encodeToString(phrases) }
+    }
+
+    suspend fun setHelperPin(pin: String?) {
+        context.settingsData.edit { prefs ->
+            if (pin == null) prefs.remove(Keys.helperPin) else prefs[Keys.helperPin] = pin
+        }
+    }
+
+    /** Applies a whole setup file at once. Absent fields are left alone. */
+    suspend fun applySetup(setup: Setup) {
+        context.settingsData.edit { prefs ->
+            prefs[Keys.favorites] = json.encodeToString(setup.favorites)
+            prefs[Keys.replyPhrases] = json.encodeToString(setup.replyPhrases)
+            setup.emergencyContact?.let {
+                prefs[Keys.emergencyContact] = json.encodeToString(it)
+            } ?: prefs.remove(Keys.emergencyContact)
+            setup.look?.let { prefs[Keys.look] = it }
+            setup.outlined?.let { prefs[Keys.outlined] = it }
+            setup.textStep?.let { prefs[Keys.textStep] = it }
+        }
     }
 
     suspend fun setEmergencyContact(contact: EmergencyContact?) {

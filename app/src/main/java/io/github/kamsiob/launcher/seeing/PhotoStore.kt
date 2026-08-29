@@ -26,14 +26,26 @@ data class Photo(
  */
 class PhotoStore(private val context: Context) {
 
+    /**
+     * Whether any pictures can be read at all.
+     *
+     * From Android 14 somebody can grant access to only the photos they picked
+     * rather than to all of them. That is a real yes: the media store returns
+     * exactly those pictures and the screen works. Checking only for the
+     * all-photos permission would have read a deliberate partial grant as a
+     * refusal and kept asking for access the app already had.
+     */
     fun hasPermission(): Boolean {
-        val permission = if (Build.VERSION.SDK_INT >= 33) {
-            android.Manifest.permission.READ_MEDIA_IMAGES
-        } else {
-            android.Manifest.permission.READ_EXTERNAL_STORAGE
+        val granted = android.content.pm.PackageManager.PERMISSION_GRANTED
+        val permissions = when {
+            Build.VERSION.SDK_INT >= 34 -> listOf(
+                android.Manifest.permission.READ_MEDIA_IMAGES,
+                android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED,
+            )
+            Build.VERSION.SDK_INT >= 33 -> listOf(android.Manifest.permission.READ_MEDIA_IMAGES)
+            else -> listOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
         }
-        return context.checkSelfPermission(permission) ==
-            android.content.pm.PackageManager.PERMISSION_GRANTED
+        return permissions.any { context.checkSelfPermission(it) == granted }
     }
 
     fun load(limit: Int = 500): List<Photo> {

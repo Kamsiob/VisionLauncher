@@ -1,11 +1,10 @@
-package io.github.kamsiob.launcher.ui.alarm
+package io.github.kamsiob.launcher.ui.today
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -16,23 +15,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import io.github.kamsiob.launcher.R
-import io.github.kamsiob.launcher.alarm.Alarm
+import io.github.kamsiob.launcher.today.TodayCard
+import io.github.kamsiob.launcher.ui.alarm.alarmTimeText
 import io.github.kamsiob.launcher.ui.components.ApplianceKey
 import io.github.kamsiob.launcher.ui.components.KeyStyle
 import io.github.kamsiob.launcher.ui.components.NoteText
-import io.github.kamsiob.launcher.ui.components.RowKey
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
 import io.github.kamsiob.launcher.ui.components.ScreenTitle
 import io.github.kamsiob.launcher.ui.components.TopBar
-import io.github.kamsiob.launcher.ui.components.UndoStrip
 import io.github.kamsiob.launcher.ui.theme.Dimens
 import io.github.kamsiob.launcher.ui.theme.LocalPalette
 import io.github.kamsiob.launcher.ui.theme.TypeScale
@@ -40,112 +38,30 @@ import io.github.kamsiob.launcher.ui.theme.bodyStyle
 import io.github.kamsiob.launcher.ui.theme.serifStyle
 import io.github.kamsiob.launcher.ui.theme.stepSp
 
-/** Formats an alarm time the way the ringing screen shows it. */
-@Composable
-fun alarmTimeText(hour: Int, minute: Int): String =
-    clockLabel(LocalContext.current, hour, minute)
-
 /**
- * The same formatting without a composition, so screens that need to pass a
- * formatter down as a plain function can share it rather than growing a second
- * one that drifts.
- */
-fun clockLabel(context: android.content.Context, hour: Int, minute: Int): String =
-    if (android.text.format.DateFormat.is24HourFormat(context)) {
-        "%d:%02d".format(hour, minute)
-    } else {
-        val display = if (hour % 12 == 0) 12 else hour % 12
-        val suffix = context.getString(
-            if (hour < 12) R.string.alarm_am else R.string.alarm_pm
-        )
-        "%d:%02d %s".format(display, minute, suffix)
-    }
-
-/** Big digits, one tap to turn an alarm on or off. */
-@Composable
-fun AlarmListScreen(
-    alarms: List<Alarm>,
-    onToggle: (Alarm) -> Unit,
-    onEdit: (Alarm) -> Unit,
-    onNew: () -> Unit,
-    onHome: () -> Unit,
-    justRemoved: Alarm? = null,
-    onPutItBack: () -> Unit = {},
-) {
-    ScreenFrame(topBar = { TopBar(onHome = onHome) }) {
-        ScreenTitle(stringResource(R.string.alarms_title))
-        if (alarms.isEmpty()) {
-            NoteText(stringResource(R.string.alarm_none_yet))
-        }
-        alarms.forEach { alarm ->
-            val time = alarmTimeText(alarm.hour, alarm.minute)
-            val state = stringResource(if (alarm.enabled) R.string.alarm_on else R.string.alarm_off)
-            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
-                RowKey(
-                    label = time,
-                    meta = alarm.label.ifBlank { null },
-                    contentDescription = stringResource(R.string.a11y_alarm_row, time, state),
-                    onClick = { onEdit(alarm) },
-                    modifier = Modifier.weight(1f),
-                )
-                ApplianceKey(
-                    label = state,
-                    onClick = { onToggle(alarm) },
-                    style = if (alarm.enabled) KeyStyle.PRIMARY else KeyStyle.NORMAL,
-                    minHeight = Dimens.rowKey,
-                    fontSize = TypeScale.keyLabelSmall,
-                    committing = true,
-                    contentDescription = stringResource(
-                        if (alarm.enabled) R.string.a11y_alarm_toggle_off
-                        else R.string.a11y_alarm_toggle_on,
-                        time,
-                    ),
-                    modifier = Modifier.weight(0.5f),
-                )
-            }
-        }
-        // Every other removal in this app offers the lamp strip and an undo.
-        // Taking an alarm off was the one that did neither, and the sentence
-        // written for it had never been used.
-        justRemoved?.let {
-            UndoStrip(
-                message = stringResource(R.string.alarm_deleted),
-                actionLabel = stringResource(R.string.put_it_back),
-                onAction = onPutItBack,
-            )
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        ApplianceKey(
-            label = stringResource(R.string.alarm_new),
-            onClick = onNew,
-            style = KeyStyle.PRIMARY,
-        )
-    }
-}
-
-/**
- * Setting a time with keys rather than a wheel, because a wheel is a drag and
- * this app requires no dragging anywhere.
+ * Adding or changing one thing on the Today screen.
+ *
+ * The same shape as the alarm editor on purpose: the time is set with four
+ * large keys rather than a wheel, because a wheel needs a drag that a tremor
+ * turns into a fling.
  */
 @Composable
-fun AlarmEditScreen(
-    existing: Alarm?,
-    onSave: (hour: Int, minute: Int, label: String) -> Unit,
+fun TodayEditScreen(
+    existing: TodayCard?,
+    onSave: (hour: Int, minute: Int, what: String) -> Unit,
     onDelete: (() -> Unit)?,
     onHome: () -> Unit,
     onBack: () -> Unit,
 ) {
     val palette = LocalPalette.current
-    var hour by remember { mutableIntStateOf(existing?.hour ?: 8) }
+    var hour by remember { mutableIntStateOf(existing?.hour ?: 9) }
     var minute by remember { mutableIntStateOf(existing?.minute ?: 0) }
-    var label by remember { mutableStateOf(existing?.label.orEmpty()) }
-    val labelFieldDescription = stringResource(R.string.a11y_alarm_label_field)
+    var what by remember { mutableStateOf(existing?.what.orEmpty()) }
+    val fieldDescription = stringResource(R.string.today_what_hint)
 
     ScreenFrame(topBar = { TopBar(onHome = onHome, onBack = onBack) }) {
-        ScreenTitle(stringResource(if (existing == null) R.string.alarm_new else R.string.alarms_title))
-        // "8:00 AM" is wider than the clock's 94sp allows, so the time holds
-        // the clock size and steps down only as far as it must to stay on one
-        // line.
+        ScreenTitle(stringResource(R.string.today_edit_title))
+
         BasicText(
             text = alarmTimeText(hour, minute),
             style = serifStyle(size = TypeScale.clock, lineHeightFactor = 1.05f)
@@ -190,13 +106,14 @@ fun AlarmEditScreen(
                 repeatable = true,
             )
         }
+
         OutlinedTextField(
-            value = label,
-            onValueChange = { label = it },
+            value = what,
+            onValueChange = { what = it },
             textStyle = bodyStyle(size = TypeScale.keyLabelSmall, weight = FontWeight.Medium),
             placeholder = {
                 Text(
-                    text = stringResource(R.string.alarm_label_hint),
+                    text = stringResource(R.string.today_what_hint),
                     style = bodyStyle(size = TypeScale.keyLabelSmall, weight = FontWeight.Medium),
                     color = palette.textSoft,
                 )
@@ -213,21 +130,26 @@ fun AlarmEditScreen(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .semantics { contentDescription = labelFieldDescription },
+                .semantics { contentDescription = fieldDescription },
         )
+
         Spacer(modifier = Modifier.weight(1f))
+
         ApplianceKey(
-            label = stringResource(R.string.alarm_save),
-            onClick = { onSave(hour, minute, label) },
+            label = stringResource(R.string.today_save),
+            onClick = { onSave(hour, minute, what.trim()) },
             style = KeyStyle.PRIMARY,
             committing = true,
+            // A card with no words would show an empty box nobody could act on.
+            enabled = what.isNotBlank(),
         )
         if (onDelete != null) {
             ApplianceKey(
-                label = stringResource(R.string.alarm_delete),
+                label = stringResource(R.string.today_remove),
                 onClick = onDelete,
                 committing = true,
             )
         }
+        NoteText(stringResource(R.string.today_not_medical))
     }
 }

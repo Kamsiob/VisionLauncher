@@ -168,6 +168,11 @@ private fun smsManager(context: Context): SmsManager? = runCatching {
     }
 }.getOrNull()
 
+// Both location permissions are checked on the first two lines of the body, and
+// the read itself is inside runCatching, so a revoked permission returns null
+// rather than throwing. Lint cannot follow the check through the `granted`
+// helper and reports it as unguarded.
+@android.annotation.SuppressLint("MissingPermission")
 private fun lastKnownLocation(context: Context): Pair<Double, Double>? {
     if (!granted(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
         !granted(context, Manifest.permission.ACCESS_COARSE_LOCATION)

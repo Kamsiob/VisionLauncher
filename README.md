@@ -87,7 +87,15 @@ and five contrast treatments. A reader that recognizes the words on the frozen
 frame and speaks them aloud, entirely on the phone. And photos, one at a time,
 edge to edge, with Back and Next as large keys and no pinching.
 
-Not built yet: the Today screen and the full helper tools, which are Stage 4.
+Stage 4 is built: Today, where you or your helper write down what is happening
+and mark it done; the helper tools, including editable one tap replies, an
+optional four digit code, a setup file that can be saved and loaded, and a
+printable sheet to leave beside the phone. The app is translated into Spanish,
+simplified Chinese, and Arabic, and lays out right to left where the language
+does.
+
+All four stages are built. What remains is acceptance testing on real phones
+and the Play listing.
 
 `HANDOFF.md` carries the current state, `MASTER_SPEC.md` the screen by screen
 specification, `DESIGN.md` the visual system, and `design/design-grid-v4.html` is the

@@ -64,6 +64,15 @@ fun HelperScreen(
     onSetFavorites: (List<Favorite>) -> Unit,
     onSetEmergencyContact: (EmergencyContact?) -> Unit,
     onRestoreWarnings: () -> Unit,
+    todayCount: Int,
+    pinOn: Boolean,
+    onToday: () -> Unit,
+    onPhrases: () -> Unit,
+    onPin: () -> Unit,
+    onSaveSetup: () -> Unit,
+    onLoadSetup: () -> Unit,
+    onPrintSheet: () -> Unit,
+    notice: String?,
     onAddFavorite: () -> Unit,
     onChooseEmergencyPerson: () -> Unit,
     onAbout: () -> Unit,
@@ -124,6 +133,55 @@ fun HelperScreen(
             icon = LineIcons.shield,
             onClick = onChooseEmergencyPerson,
         )
+
+        SectLabel(stringResource(R.string.helper_today))
+        RowKey(
+            label = stringResource(R.string.helper_today),
+            meta = stringResource(R.string.helper_today_meta, todayCount),
+            icon = LineIcons.check,
+            onClick = onToday,
+        )
+
+        SectLabel(stringResource(R.string.helper_phrases))
+        RowKey(
+            label = stringResource(R.string.helper_phrases),
+            meta = stringResource(R.string.helper_phrases_meta),
+            icon = LineIcons.messages,
+            onClick = onPhrases,
+        )
+
+        RowKey(
+            label = stringResource(R.string.helper_pin),
+            meta = stringResource(if (pinOn) R.string.helper_pin_on else R.string.helper_pin_off),
+            icon = LineIcons.lock,
+            onClick = onPin,
+        )
+
+        SectLabel(stringResource(R.string.helper_setup_section))
+        RowKey(
+            label = stringResource(R.string.helper_print_sheet),
+            icon = LineIcons.door,
+            committing = true,
+            onClick = onPrintSheet,
+        )
+        RowKey(
+            label = stringResource(R.string.helper_save_setup),
+            icon = LineIcons.storage,
+            committing = true,
+            onClick = onSaveSetup,
+        )
+        RowKey(
+            label = stringResource(R.string.helper_load_setup),
+            icon = LineIcons.restore,
+            committing = true,
+            onClick = onLoadSetup,
+        )
+        // Whatever the last save, load, or print actually did. Announced,
+        // because these three keys hand off to a system file picker and come
+        // back with nothing else on screen to show what happened.
+        if (notice != null) {
+            StatusPill(text = notice, announce = true)
+        }
 
         RowKey(
             label = stringResource(R.string.helper_restore_warnings),

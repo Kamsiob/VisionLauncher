@@ -98,11 +98,62 @@
     <string name="more_apps_none_found">No app is called %1$s.</string>
     <string name="contacts_none">There are no contacts on this phone yet.</string>
 
-    <string name="no_app_for_that">This phone has no app for that.</string>
     <string name="open_message_app">Open a message app</string>
 
+    <!-- Helper tools, spec 5.10 -->
+    <string name="helper_phrases">Reply phrases</string>
+    <string name="helper_phrases_meta">The six one-tap answers</string>
+    <string name="phrases_title">Reply phrases</string>
+    <string name="phrases_explain">These are the answers offered with one tap when replying to a message. Tap one to change it.</string>
+    <string name="phrases_edit_title">Change this phrase</string>
+    <string name="phrases_hint">What should it say?</string>
+    <string name="phrases_save">Keep it</string>
+    <string name="phrases_reset">Put the usual six back</string>
+    <string name="a11y_phrase_slot">Phrase %1$d, %2$s. Tap to change it.</string>
+
+    <string name="helper_pin">Lock helper settings</string>
+    <string name="helper_pin_on">On. A four digit code is needed.</string>
+    <string name="helper_pin_off">Off. Anyone can open helper settings.</string>
+    <string name="pin_title">Helper code</string>
+    <string name="pin_explain">A four digit code keeps helper settings from being changed by accident. It does not lock the phone and it does not hide anything else.</string>
+    <string name="pin_enter">Enter the code</string>
+    <string name="pin_set">Choose a four digit code</string>
+    <string name="pin_wrong">That code is not right.</string>
+    <string name="pin_forgot">Forgotten the code? Clear the app data in Android settings, which resets everything.</string>
+    <string name="a11y_pin_entered">%1$d of four digits entered</string>
+
+    <string name="helper_setup_section">Keeping this setup</string>
+    <string name="helper_save_setup">Save this setup to a file</string>
+    <string name="helper_load_setup">Load a setup from a file</string>
+    <string name="helper_print_sheet">Make a setup sheet to print</string>
+    <string name="setup_saved">The setup was saved.</string>
+    <string name="setup_save_failed">The setup could not be saved.</string>
+    <string name="setup_loaded">The setup was loaded.</string>
+    <string name="setup_load_failed">That file is not a setup for this app.</string>
+    <string name="setup_sheet_saved">The sheet was saved. Open it to print.</string>
+    <string name="setup_default_name">VisionLauncher setup.json</string>
+    <string name="sheet_default_name">VisionLauncher setup sheet.html</string>
+
+    <!-- Today, spec 5.9, grid 13 -->
+    <string name="feature_today">Today</string>
+    <string name="today_title">Today</string>
+    <string name="today_none">Nothing is written down for today.</string>
+    <string name="today_add">Add something</string>
+    <string name="today_done">Done</string>
+    <string name="today_done_at">Done at %1$s</string>
+    <string name="today_undo_done">Not done after all</string>
+    <string name="today_change">Change this</string>
+    <string name="today_not_medical">Written by you or your helper. Not medical advice.</string>
+    <string name="today_edit_title">What is happening?</string>
+    <string name="today_what_hint">What is it?</string>
+    <string name="today_save">Keep it</string>
+    <string name="today_remove">Take it off</string>
+    <string name="a11y_today_not_done">Not done yet.</string>
+    <string name="a11y_today_done">Done at %1$s.</string>
+    <string name="helper_today">Things that happen today</string>
+    <string name="helper_today_meta">%1$d written down</string>
+
     <!-- Magnifier and Reader, spec 5.7, grid 10 and 11 -->
-    <string name="magnifier_title">Magnifier</string>
     <string name="magnifier_zoom_in">Bigger</string>
     <string name="magnifier_zoom_out">Smaller</string>
     <string name="magnifier_light">Light</string>
@@ -124,10 +175,7 @@
     <string name="filter_inverted">Reversed</string>
     <string name="filter_yellow_on_black">Yellow on black</string>
 
-    <string name="reader_title">Reader</string>
-
     <!-- Photos, spec 5.8, grid 12 -->
-    <string name="photos_title">Photos</string>
     <string name="photos_position">Photo %1$d of %2$d</string>
     <string name="photos_from">from %1$s</string>
     <string name="photos_back">Back</string>
@@ -137,7 +185,6 @@
     <string name="photos_no_permission">To show your pictures, this app needs to see them.</string>
     <string name="photos_allow">Let it see my photos</string>
     <string name="photos_open_gallery">Open a photo app</string>
-    <string name="a11y_photo">%1$s. Tap Next for the following one.</string>
     <string name="reader_read_this">Read this to me</string>
     <string name="reader_reading_now">Reading aloud now</string>
     <string name="reader_stop">Stop reading</string>
@@ -159,7 +206,6 @@
     <string name="messages_no_access">This app is not watching for messages yet.</string>
     <string name="messages_grant_access">Let it watch for messages</string>
     <string name="messages_row_meta">%1$s, %2$s, %3$s</string>
-    <string name="messages_row_meta_no_body">%1$s, %2$s</string>
     <string name="messages_hidden_body">the message is hidden</string>
     <string name="messages_sent_something">sent something</string>
     <string name="a11y_message_row">%1$s. %2$s</string>
@@ -194,7 +240,6 @@
     <string name="attention_no_message_access">Message watching was turned off. New messages will not appear here.</string>
     <string name="attention_repair_message_access">Turn message watching on</string>
     <string name="dest_notification_access">the notification access settings</string>
-    <string name="open_photos_app">Open the phone\'s photos</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
@@ -343,9 +388,6 @@
     <string name="alarm_none_yet">No alarms yet.</string>
     <!-- Reserved for the alarm's foreground service, issue #20. The manifest
          already declares the permissions it needs. -->
-    <string name="alarm_channel_name">Alarms</string>
-    <string name="alarm_channel_description">Alarm clock ringing</string>
-    <string name="alarm_notification_title">Alarm</string>
     <string name="alarm_am">AM</string>
     <string name="alarm_pm">PM</string>
     <string name="alarm_plus_hour">One hour later</string>
@@ -356,5 +398,4 @@
     <!-- Misc -->
     <!-- Reserved for the reader and reply screens in Stages 2 and 3, where
          DESIGN.md names this sentence as brand furniture. -->
-    <string name="privacy_promise">Everything happens on this phone. Nothing is sent anywhere.</string>
 </resources>

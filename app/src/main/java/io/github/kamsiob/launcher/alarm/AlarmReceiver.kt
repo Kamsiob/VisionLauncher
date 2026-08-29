@@ -47,9 +47,19 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 }
 
+private val ACTIONS = setOf(
+    Intent.ACTION_BOOT_COMPLETED,
+    Intent.ACTION_TIME_CHANGED,
+    Intent.ACTION_TIMEZONE_CHANGED,
+)
+
 /** Alarms survive a reboot and a clock change. */
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        // Only the three actions this receiver is registered for. The receiver
+        // is not exported, but checking the action costs nothing and means a
+        // stray intent cannot make the app do work at boot time.
+        if (intent.action !in ACTIONS) return
         val pending = goAsync()
         val appContext = context.applicationContext
         CoroutineScope(Dispatchers.IO).launch {

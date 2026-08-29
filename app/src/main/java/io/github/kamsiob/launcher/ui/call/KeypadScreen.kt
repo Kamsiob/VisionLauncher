@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
@@ -21,6 +23,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import io.github.kamsiob.launcher.R
@@ -78,6 +81,13 @@ fun KeypadScreen(
         // One grid with one gap in both directions, as the grid draws it. The
         // rows were direct children of the screen column, so they inherited its
         // 16dp and the pad had unequal gutters.
+        //
+        // Pinned left to right. A telephone keypad is a physical arrangement,
+        // not a line of text: 1 is at the top left on every phone ever made,
+        // and Android's own dialer does not mirror it either. In an Arabic
+        // layout the rows flipped to 3 2 1, which puts a lifetime of muscle
+        // memory in the wrong place for the people least able to absorb that.
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Column(verticalArrangement = Arrangement.spacedBy(Dimens.gap)) {
             rows.forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
@@ -118,6 +128,7 @@ fun KeypadScreen(
                     fontSize = TypeScale.keyLabelSmall,
                 )
             }
+        }
         }
         ApplianceKey(
             label = stringResource(R.string.keypad_call_this_number),

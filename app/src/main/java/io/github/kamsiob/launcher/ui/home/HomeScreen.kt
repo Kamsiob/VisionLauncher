@@ -63,6 +63,7 @@ fun BuiltIn.label(): String = stringResource(
         BuiltIn.CAMERA -> R.string.feature_camera
         BuiltIn.PHOTOS -> R.string.feature_photos
         BuiltIn.ALARMS -> R.string.feature_alarms
+        BuiltIn.TODAY -> R.string.feature_today
     }
 )
 
@@ -73,6 +74,7 @@ fun BuiltIn.icon() = when (this) {
     BuiltIn.CAMERA -> LineIcons.camera
     BuiltIn.PHOTOS -> LineIcons.photos
     BuiltIn.ALARMS -> LineIcons.alarms
+    BuiltIn.TODAY -> LineIcons.check
 }
 
 /**

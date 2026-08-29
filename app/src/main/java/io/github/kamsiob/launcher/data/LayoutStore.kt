@@ -32,7 +32,8 @@ enum class BuiltIn(val id: String) {
     MAGNIFIER("magnifier"),
     CAMERA("camera"),
     PHOTOS("photos"),
-    ALARMS("alarms");
+    ALARMS("alarms"),
+    TODAY("today");
 
     companion object {
         fun fromId(id: String?): BuiltIn? = entries.firstOrNull { it.id == id }

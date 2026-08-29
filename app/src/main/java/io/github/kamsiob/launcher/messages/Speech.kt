@@ -33,7 +33,11 @@ class Dictation(private val context: Context) {
         onNothingHeard: () -> Unit,
         onLevel: (Float) -> Unit = {},
     ) {
-        if (!available) {
+        // The API level is checked here as well as in `available`, because the
+        // on-device recognizer only exists from 31 and this app runs from 29.
+        // Relying on the property alone left the call itself unguarded as far
+        // as any reader, or any tool, could tell.
+        if (Build.VERSION.SDK_INT < 31 || !available) {
             onNothingHeard()
             return
         }

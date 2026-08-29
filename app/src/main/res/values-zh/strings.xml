@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VisionLauncher</string>
+
+    <!-- Home -->
+    <string name="all_is_well">一切都好。</string>
+    <string name="more_apps">更多应用</string>
+    <string name="day_part_morning">%1$s上午</string>
+    <string name="day_part_afternoon">%1$s下午</string>
+    <string name="day_part_evening">%1$s晚上</string>
+    <string name="a11y_masthead">%1$s。%2$s。%3$s。</string>
+
+    <!-- Built in feature names -->
+    <string name="feature_call">电话</string>
+    <string name="feature_messages">消息</string>
+    <string name="feature_magnifier">放大镜</string>
+    <string name="feature_camera">相机</string>
+    <string name="feature_photos">照片</string>
+    <string name="feature_alarms">闹钟</string>
+    <string name="empty_spot">空位</string>
+    <string name="tile_app_missing">暂时不在</string>
+    <string name="a11y_tile_app_missing">这个应用现在不在手机上。点按可以为这个位置另选一个。</string>
+
+    <!-- Attention queue -->
+    <plurals name="attention_count">
+        <item quantity="other">有 %d 件事需要留意</item>
+    </plurals>
+    <string name="attention_ringer_off">您的铃声已关闭。来电时您听不到声音。</string>
+    <string name="attention_ringer_vibrate">手机现在只振动。来电时您听不到声音。</string>
+    <string name="attention_repair_ringer">打开铃声</string>
+    <string name="attention_dnd_on">勿扰模式已打开。来电和消息都不会出声。</string>
+    <string name="attention_repair_dnd">关闭勿扰模式</string>
+    <string name="attention_repair_dnd_open">打开勿扰模式设置</string>
+    <string name="attention_battery_low">电量还剩百分之 %d。请尽快给手机充电。</string>
+    <string name="attention_airplane_on">飞行模式已打开。来电和消息都到不了您这里。</string>
+    <string name="attention_repair_airplane">打开飞行模式设置</string>
+    <string name="attention_no_network">手机现在没有网络。来电和消息都到不了您这里。</string>
+    <string name="attention_repair_network">打开网络设置</string>
+    <string name="attention_storage_full">手机的存储空间快满了。新拍的照片可能存不下。</string>
+    <string name="attention_repair_storage">打开存储设置</string>
+    <string name="attention_battery_optimization">安卓可能让这个应用休眠。这样新消息就不会再出现。</string>
+    <string name="attention_repair_battery_optimization">让消息继续到达</string>
+
+    <!-- Common keys -->
+    <string name="key_home">主屏幕</string>
+    <string name="key_back">返回</string>
+    <string name="key_done">完成</string>
+    <string name="key_skip">暂时跳过</string>
+    <string name="key_never_mind">先不用</string>
+    <string name="a11y_home_key">回到主屏幕</string>
+    <string name="a11y_back_key">返回上一屏</string>
+
+    <!-- Call -->
+    <string name="call_title">电话</string>
+    <string name="call_all_contacts">全部联系人</string>
+    <string name="call_dial_a_number">拨打号码</string>
+    <string name="call_emergency">紧急求助</string>
+    <string name="a11y_emergency_key">紧急求助。打开紧急求助屏幕,不会直接拨出电话。</string>
+    <string name="a11y_call_person">打电话给 %1$s,%2$s</string>
+    <string name="a11y_call_person_no_relation">打电话给 %1$s</string>
+    <string name="call_no_contacts_permission">这个应用还看不到您的联系人。您仍然可以直接拨号码。</string>
+    <string name="call_grant_contacts">允许这个应用查看联系人</string>
+    <string name="call_no_favorites">常用联系人在帮手设置里挑选。</string>
+
+    <!-- Keypad -->
+    <string name="keypad_title">拨打号码</string>
+    <string name="keypad_erase">删除</string>
+    <string name="keypad_clear">清空</string>
+    <string name="keypad_call_this_number">拨打这个号码</string>
+    <string name="a11y_dialed_number">已经拨入:%1$s</string>
+    <string name="a11y_dialed_empty">还没有拨入数字</string>
+
+    <!-- Emergency -->
+    <string name="emergency_title">紧急求助</string>
+    <!-- The emergency number follows the phone's country, not its reading
+         language: a Spanish speaker in the United States still dials 911.
+         Translate the wording around it, never the number itself. -->
+    <string name="emergency_call_number">拨打 %1$s</string>
+    <string name="emergency_call_number_sub">打开手机自带的拨号屏幕,并已填好 %1$s</string>
+    <string name="emergency_alert_person">通知 %1$s</string>
+    <string name="emergency_alert_person_sub">拨打电话,并发出您所在的位置</string>
+    <string name="emergency_alert_person_sub_text_only">拨打电话,并发出一条短信</string>
+    <string name="emergency_alert_person_sub_call_only">只拨打电话,因为发短信没有获得允许</string>
+    <string name="emergency_alert_person_sub_no_texting">只拨打电话,因为这部手机发不了短信</string>
+    <string name="emergency_no_person">选一位要通知的人</string>
+    <string name="emergency_no_person_sub">帮手可以在设置里安排好</string>
+    <string name="emergency_honesty">两种方式都需要手机信号。这不是有人值守的医疗求助服务。</string>
+    <string name="emergency_sms_body">紧急求助。我需要帮助。我的位置:%1$s</string>
+    <string name="emergency_sms_body_no_location">紧急求助。我需要帮助。我的位置现在拿不到。</string>
+
+    <!-- More apps -->
+    <string name="more_apps_title">更多应用</string>
+    <string name="more_apps_search_hint">搜索应用</string>
+    <string name="a11y_search_field">按名称搜索您的应用</string>
+    <string name="more_apps_work_profile">%1$s,工作资料</string>
+    <string name="more_apps_none_found">没有叫 %1$s 的应用。</string>
+    <string name="contacts_none">这部手机里还没有联系人。</string>
+
+    <string name="open_message_app">打开一个消息应用</string>
+
+    <!-- Helper tools, spec 5.10 -->
+    <string name="helper_phrases">常用回复</string>
+    <string name="helper_phrases_meta">一点就发的六句话</string>
+    <string name="phrases_title">常用回复</string>
+    <string name="phrases_explain">回复消息时,这几句话一点就能发出去。点按其中一句可以修改。</string>
+    <string name="phrases_edit_title">修改这句话</string>
+    <string name="phrases_hint">这句话说什么?</string>
+    <string name="phrases_save">保存</string>
+    <string name="phrases_reset">换回原来的六句</string>
+    <string name="a11y_phrase_slot">第 %1$d 句,%2$s。点按可以修改。</string>
+
+    <string name="helper_pin">锁住帮手设置</string>
+    <string name="helper_pin_on">已打开。需要输入四位数字。</string>
+    <string name="helper_pin_off">已关闭。任何人都能打开帮手设置。</string>
+    <string name="pin_title">帮手密码</string>
+    <string name="pin_explain">四位数字的密码可以防止帮手设置被误改。它不会锁住手机,也不会藏起别的东西。</string>
+    <string name="pin_enter">输入密码</string>
+    <string name="pin_set">设一个四位数字的密码</string>
+    <string name="pin_wrong">这个密码不对。</string>
+    <string name="pin_forgot">忘了密码?可以在安卓设置里清除这个应用的数据,不过所有内容都会恢复原样。</string>
+    <string name="a11y_pin_entered">四位数字已经输入 %1$d 位</string>
+
+    <string name="helper_setup_section">保管这份设置</string>
+    <string name="helper_save_setup">把这份设置存成文件</string>
+    <string name="helper_load_setup">从文件里读入一份设置</string>
+    <string name="helper_print_sheet">做一张可以打印的设置单</string>
+    <string name="setup_saved">这份设置已经存好了。</string>
+    <string name="setup_save_failed">这份设置没能存下来。</string>
+    <string name="setup_loaded">这份设置已经读入了。</string>
+    <string name="setup_load_failed">这个文件不是本应用的设置。</string>
+    <string name="setup_sheet_saved">设置单已经存好。打开它就可以打印。</string>
+    <string name="setup_default_name">VisionLauncher setup.json</string>
+    <string name="sheet_default_name">VisionLauncher setup sheet.html</string>
+
+    <!-- Today, spec 5.9, grid 13 -->
+    <string name="feature_today">今天</string>
+    <string name="today_title">今天</string>
+    <string name="today_none">今天没有记下什么事。</string>
+    <string name="today_add">添一件事</string>
+    <string name="today_done">完成</string>
+    <string name="today_done_at">%1$s 已完成</string>
+    <string name="today_undo_done">其实还没做</string>
+    <string name="today_change">改一改这件事</string>
+    <string name="today_not_medical">由您或您的帮手写下。这不是医疗建议。</string>
+    <string name="today_edit_title">有什么事?</string>
+    <string name="today_what_hint">是什么事?</string>
+    <string name="today_save">保存</string>
+    <string name="today_remove">去掉它</string>
+    <string name="a11y_today_not_done">还没有完成。点按可以标记为完成。</string>
+    <string name="a11y_today_done">%1$s 已完成。如果标错了,点按可以改回来。</string>
+    <string name="helper_today">今天要做的事</string>
+    <string name="helper_today_meta">已记下 %1$d 件</string>
+
+    <!-- Magnifier and Reader, spec 5.7, grid 10 and 11 -->
+    <string name="magnifier_zoom_in">放大</string>
+    <string name="magnifier_zoom_out">缩小</string>
+    <string name="magnifier_light">开灯</string>
+    <string name="magnifier_light_off">关灯</string>
+    <string name="magnifier_hold_still">停住画面</string>
+    <string name="magnifier_live_again">继续移动</string>
+    <string name="magnifier_no_camera">这部手机打不开相机。放大镜要用相机才行。</string>
+    <string name="magnifier_no_permission">放大镜需要使用相机。</string>
+    <string name="magnifier_allow_camera">允许它使用相机</string>
+    <string name="magnifier_no_torch">这部手机没有可以点亮的灯。</string>
+    <string name="magnifier_capture_failed">画面没有停稳。请再试一次。</string>
+    <string name="magnifier_frozen">画面已经停住。没有录下任何东西。</string>
+    <string name="a11y_zoom_level">放大到百分之 %1$d</string>
+    <string name="magnifier_colors_now">颜色:%1$s</string>
+    <string name="a11y_colors_now">颜色是 %1$s。点按可以换下一种。</string>
+    <string name="filter_normal">正常</string>
+    <string name="filter_gray">灰色</string>
+    <string name="filter_high_contrast">更清楚</string>
+    <string name="filter_inverted">反色</string>
+    <string name="filter_yellow_on_black">黑底黄字</string>
+
+    <!-- Photos, spec 5.8, grid 12 -->
+    <string name="photos_position">第 %1$d 张,共 %2$d 张</string>
+    <string name="photos_from">来自 %1$s</string>
+    <string name="photos_back">上一张</string>
+    <string name="photos_next">下一张</string>
+    <string name="photos_read_caption">读出是谁发来的</string>
+    <string name="photos_none">这部手机里还没有照片。</string>
+    <string name="photos_no_permission">要显示您的照片,这个应用需要能看到它们。</string>
+    <string name="photos_allow">允许它看到我的照片</string>
+    <string name="photos_open_gallery">打开一个照片应用</string>
+    <string name="reader_read_this">读给我听</string>
+    <string name="reader_reading_now">正在读给您听</string>
+    <string name="reader_stop">停止朗读</string>
+    <string name="reader_again">再读一遍</string>
+    <string name="reader_working">正在辨认上面的字。</string>
+    <string name="reader_nothing_found">没有找到文字。请靠近一些,拿稳手机,再试一次。</string>
+    <string name="reader_no_voice">这部手机没有装朗读用的声音,所以字会显示出来,但读不出声。</string>
+    <string name="reader_privacy">一切都在这部手机上完成。没有任何内容被发出去。</string>
+
+    <!-- Messages, spec 5.6, grid 07 08 09 -->
+    <string name="messages_title">消息</string>
+    <string name="time_yesterday">昨天</string>
+    <plurals name="messages_new_today">
+        <item quantity="other">今天有 %d 条新消息。</item>
+    </plurals>
+    <string name="messages_none_yet">还没有消息。</string>
+    <string name="messages_kept_here">消息都存在这部手机上,您随时可以回头再看。</string>
+    <string name="messages_no_access">这个应用还不能接收新消息。</string>
+    <string name="messages_grant_access">允许它接收新消息</string>
+    <string name="messages_row_meta">%1$s,%2$s,%3$s</string>
+    <string name="messages_hidden_body">消息内容被藏起来了</string>
+    <string name="messages_sent_something">发来了一条内容</string>
+    <string name="a11y_message_row">%1$s。%2$s</string>
+    <string name="message_from">%1$s,通过 %2$s,%3$s</string>
+    <string name="message_hidden_explained">这部手机把消息内容藏了起来。打开 %1$s 就能读到。</string>
+    <string name="message_open_app">打开 %1$s</string>
+    <string name="message_read_aloud">读给我听</string>
+    <string name="message_stop_reading">停止朗读</string>
+    <string name="message_reply">回复</string>
+    <string name="message_cannot_reply">这条消息不能在这里回复。</string>
+    <string name="replies_travel">回复会通过 %1$s 本身发出去。</string>
+
+    <string name="reply_title">回复 %1$s</string>
+    <string name="reply_speak">说出您的回复</string>
+    <string name="reply_listening">正在听。请说出您的回复。</string>
+    <string name="reply_or_send_one">也可以直接发下面一句</string>
+    <string name="reply_type_instead">改成打字</string>
+    <string name="reply_send">发出去</string>
+    <string name="reply_say_again">再说一遍</string>
+    <string name="reply_voice_note">您的话就在这部手机上听懂。没有任何内容被发出去。</string>
+    <string name="reply_sent">您的回复已经发出去了。</string>
+    <string name="reply_failed">这条回复没有发出去。请打开 %1$s,在那里发送。</string>
+    <string name="reply_heard_nothing">没有听到声音。请再试一次,或者用下面的一句回复。</string>
+    <string name="reply_phrase_yes">好的</string>
+    <string name="reply_phrase_no">不用了</string>
+    <string name="reply_phrase_call_me">给我打电话</string>
+    <string name="reply_phrase_thank_you">谢谢你!</string>
+    <string name="reply_phrase_love_you">我爱你</string>
+    <string name="reply_phrase_on_my_way">我这就过去</string>
+    <string name="a11y_reply_confirm">您说的是:%1$s</string>
+
+    <string name="attention_no_message_access">接收消息的权限被关掉了。新消息不会再出现在这里。</string>
+    <string name="attention_repair_message_access">重新允许接收消息</string>
+    <string name="dest_notification_access">通知使用权设置</string>
+
+    <!-- Settings -->
+    <string name="settings_title">设置</string>
+    <string name="settings_text_size">文字大小</string>
+    <string name="settings_size_now">现在</string>
+    <string name="a11y_text_size_step">文字大小,三档中的第 %1$d 档</string>
+    <string name="settings_look">外观</string>
+    <string name="settings_look_light">浅色</string>
+    <string name="settings_look_dark">深色</string>
+    <string name="settings_look_outlined">描边</string>
+    <string name="a11y_look_selected">%1$s,已选中</string>
+    <string name="a11y_look_on">%1$s,已打开</string>
+    <string name="a11y_look_off">%1$s,已关闭</string>
+    <string name="settings_choose_apps">挑选您的应用</string>
+    <string name="settings_choose_apps_sub">挑选并安排您的主屏幕</string>
+    <string name="settings_restore">把我的屏幕改回去</string>
+    <string name="settings_restore_sub">撤销对主屏幕做过的改动</string>
+    <string name="settings_restore_done">您的主屏幕已经回到原来的样子。</string>
+    <string name="settings_restore_nothing">您的主屏幕没有改动过。</string>
+    <string name="settings_see_hear">看得更清,听得更清</string>
+    <string name="settings_see_hear_sub">用好手机自带的辅助功能</string>
+    <string name="settings_helper">帮手设置</string>
+    <string name="settings_helper_sub">给帮您照看手机的人用</string>
+    <string name="settings_undo_note">这里的每一项改动都可以撤销。</string>
+    <string name="settings_support_sub">完全自愿,从不强求</string>
+
+    <!-- See and hear better -->
+    <string name="seehear_bigger">把所有内容变大</string>
+    <string name="seehear_bigger_sub">打开安卓的显示大小设置</string>
+    <string name="seehear_magnify">放大屏幕</string>
+    <string name="seehear_magnify_sub">在任何应用里都能放大任何内容</string>
+    <string name="seehear_hearing">助听器</string>
+    <string name="seehear_hearing_sub">让它和这部手机配对</string>
+    <string name="seehear_captions">屏幕字幕</string>
+    <string name="seehear_captions_sub">看视频和通话时在屏幕上显示文字</string>
+    <string name="seehear_sound">声音更大更清楚</string>
+    <string name="seehear_sound_sub">放大您身边的说话声</string>
+    <string name="seehear_medical">您的医疗信息</string>
+    <string name="seehear_medical_sub">手机锁着时救护的人也能看到</string>
+
+    <!-- Helper settings -->
+    <string name="helper_title">帮手设置</string>
+    <string name="helper_favorites">常用联系人</string>
+    <string name="helper_add_favorite">添加常用联系人</string>
+    <string name="helper_remove_favorite">把 %1$s 从名单里去掉</string>
+    <string name="helper_favorite_removed">%1$s 已经从常用联系人里去掉了。</string>
+    <string name="helper_relationship_hint">关系,比如女儿或者医生</string>
+    <string name="a11y_relationship_field">这个人和您是什么关系</string>
+    <string name="a11y_alarm_label_field">这个闹钟是做什么用的</string>
+    <string name="helper_emergency_person">紧急联系人</string>
+    <string name="helper_emergency_person_sub">紧急求助屏幕会通知的人</string>
+    <string name="helper_restore_warnings">把所有提醒找回来</string>
+    <string name="helper_restore_warnings_sub">让每一条离开提醒重新出现</string>
+    <string name="helper_warnings_restored">所有提醒都会重新出现。</string>
+    <string name="helper_about">关于这个应用</string>
+    <string name="about_title">关于</string>
+    <string name="about_body">VisionLauncher 是一个为视力不好和上了年纪的人做的主屏幕。一切都在这部手机上完成。没有任何内容被发出去。</string>
+    <string name="about_version">版本 %1$s</string>
+    <string name="about_license">这个应用是自由软件,采用 AGPL 3.0 许可证。所用字体为 Atkinson Hyperlegible Next、Atkinson Hyperlegible Mono 和 Young Serif,均采用 SIL 开放字体许可证。</string>
+    <string name="about_support">支持这项工作</string>
+    <string name="put_it_back">放回去</string>
+
+    <!-- Choose your apps -->
+    <string name="arrange_prompt">点按一个应用,可以挪动它或者把它去掉。</string>
+    <string name="arrange_prompt_destination">点按您想把 %1$s 放到的位置。</string>
+    <string name="arrange_move_it">挪动它</string>
+    <string name="arrange_put_first">放到最前面</string>
+    <string name="arrange_take_off">从主屏幕上去掉</string>
+    <string name="arrange_taken_off">%1$s 已经去掉了。</string>
+    <string name="arrange_call_stays">电话始终排在最前面。</string>
+    <string name="arrange_undo_last">撤销上一步</string>
+    <string name="arrange_kept_partial">到现在为止的改动都留着。</string>
+    <string name="arrange_keep_title">这就是您新的主屏幕</string>
+    <string name="arrange_keep_it">就这样</string>
+    <string name="arrange_revert">改回原来的样子</string>
+    <string name="arrange_add_app">添加一个应用</string>
+    <string name="arrange_add_app_note">新应用会放在主屏幕的最下面。</string>
+    <string name="arrange_add_app_note_gap">新应用会放进第一个空位。</string>
+    <string name="a11y_arrange_tile">%1$s。点按可以挪动它或者把它去掉。</string>
+    <string name="a11y_arrange_empty">空位。点按可以在这里放一个应用。</string>
+    <string name="a11y_arrange_locked">电话。电话始终排在最前面。</string>
+    <string name="a11y_arrange_lifted">已经拿起 %1$s。点按一个位置就能把它放过去,再点一次可以放下。</string>
+    <string name="a11y_arrange_chosen">已经选中 %1$s。请在下面选择要对它做什么。</string>
+    <string name="a11y_arrange_destination">把 %1$s 放在这里,换下 %2$s</string>
+    <string name="a11y_arrange_destination_empty">把 %1$s 放在这里的空位上</string>
+
+    <!-- Threshold -->
+    <string name="threshold_title">您就要离开这个应用了</string>
+    <string name="threshold_body">接下来的屏幕是%1$s。它和这里不一样,上面的字更小。</string>
+    <string name="threshold_return">用完以后,按一下主屏幕键,就能直接回到这里。</string>
+    <string name="threshold_return_not_home">用完以后,按您平时的办法回来就行。</string>
+    <string name="threshold_continue">继续前往%1$s</string>
+    <string name="threshold_stay">留在这里</string>
+    <string name="threshold_dont_warn">以后不用再为%1$s提醒我</string>
+    <string name="dest_sound_settings">声音设置</string>
+    <string name="dest_dnd_settings">勿扰模式设置</string>
+    <string name="dest_airplane_settings">飞行模式设置</string>
+    <string name="dest_network_settings">网络设置</string>
+    <string name="dest_storage_settings">存储设置</string>
+    <string name="dest_battery_settings">电池设置</string>
+    <string name="dest_display_settings">显示大小设置</string>
+    <string name="dest_accessibility_settings">无障碍设置</string>
+    <string name="dest_hearing_settings">助听设备设置</string>
+    <string name="dest_caption_settings">字幕设置</string>
+    <string name="dest_sound_amplifier">声音放大器</string>
+    <string name="dest_medical_info">医疗信息屏幕</string>
+    <string name="dest_home_settings">主屏幕应用设置</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_cant_break">您弄不坏任何东西。</string>
+    <string name="onboarding_cant_break_body">每一项改动都可以撤销。您按下的任何东西都不会伤到这部手机。慢慢来就好。</string>
+    <string name="onboarding_own_phone">我在设置自己的手机</string>
+    <string name="onboarding_helping">我在帮别人设置手机</string>
+    <string name="onboarding_set_home_title">把这里设成您的主屏幕</string>
+    <string name="onboarding_set_home_body">以后按下主屏幕键,迎接您的就是这个屏幕。</string>
+    <string name="onboarding_set_home_key">设为主屏幕</string>
+    <string name="onboarding_contacts_title">您的家人朋友</string>
+    <string name="onboarding_contacts_body">为了把您常打电话的人显示出来,这个应用需要查看您的联系人。他们只留在这部手机上。</string>
+    <string name="onboarding_contacts_key">允许查看联系人</string>
+    <string name="onboarding_phone_title">打电话</string>
+    <string name="onboarding_phone_body">为了在您点按一个人时就能拨出电话,这个应用需要打电话的权限。</string>
+    <string name="onboarding_phone_key">允许拨打电话</string>
+    <string name="onboarding_battery_title">让消息继续到达</string>
+    <string name="onboarding_battery_body">为了省电,安卓有时会让应用休眠。如果这个应用被休眠了,新消息可能就不会再出现在这里。</string>
+    <string name="onboarding_battery_key">允许它一直运行</string>
+    <string name="onboarding_battery_skipped">如果安卓让这个应用休眠了,提醒灯会告诉您。</string>
+    <string name="onboarding_skipped_consequence">您以后可以在设置里再允许。在那之前,这一部分不会开启。</string>
+    <string name="onboarding_all_set">都设置好了。</string>
+    <string name="onboarding_helper_note">帮手设置里放着常用联系人和紧急联系人。它在设置的最下面。</string>
+    <string name="onboarding_go_home">去您的主屏幕</string>
+
+    <!-- Alarms -->
+    <string name="alarms_title">闹钟</string>
+    <string name="alarm_new">新闹钟</string>
+    <string name="alarm_label_hint">这个闹钟是做什么用的</string>
+    <string name="alarm_save">保存这个闹钟</string>
+    <string name="alarm_delete">去掉这个闹钟</string>
+    <string name="alarm_deleted">这个闹钟已经去掉了。</string>
+    <string name="alarm_on">开</string>
+    <string name="alarm_off">关</string>
+    <string name="a11y_alarm_row">%1$s 的闹钟,%2$s。点按可以修改。</string>
+    <string name="a11y_alarm_toggle_on">打开 %1$s 的闹钟</string>
+    <string name="a11y_alarm_toggle_off">关闭 %1$s 的闹钟</string>
+    <string name="alarm_stop">停</string>
+    <string name="alarm_ten_more">十分钟后再响</string>
+    <string name="alarm_none_yet">还没有闹钟。</string>
+    <!-- Reserved for the alarm's foreground service, issue #20. The manifest
+         already declares the permissions it needs. -->
+    <string name="alarm_am">上午</string>
+    <string name="alarm_pm">下午</string>
+    <string name="alarm_plus_hour">晚一小时</string>
+    <string name="alarm_minus_hour">早一小时</string>
+    <string name="alarm_plus_minute">晚五分钟</string>
+    <string name="alarm_minus_minute">早五分钟</string>
+
+    <!-- Misc -->
+    <!-- Reserved for the reader and reply screens in Stages 2 and 3, where
+         DESIGN.md names this sentence as brand furniture. -->
+</resources>

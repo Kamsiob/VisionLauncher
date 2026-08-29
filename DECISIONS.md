@@ -356,3 +356,23 @@ screen reader user gets that the press did anything.
 The cost is that the list of options is not visible at once. That is the right
 trade here: this is a setting people arrive at by trying, not by choosing from
 a menu, and five presses returns to where they started.
+
+## D46. Number pads do not mirror in a right to left layout
+
+The dialer's keypad and the helper code pad are pinned left to right, so 1 is
+at the top left in Arabic exactly as it is in English. Everything else on those
+screens mirrors normally.
+
+Found by setting the app to Arabic on the emulator and reading the accessibility
+tree: the rows had become 3 2 1, 6 5 4, 9 8 7. Compose was doing the correct
+thing for a row of content, and the wrong thing for this content.
+
+A telephone keypad is not a line of text. It is a physical arrangement that has
+been identical on every phone, in every country, for sixty years, and Android's
+own dialer does not mirror it either. Mirroring it would mean that for the one
+audience most reliant on remembered position rather than on reading each key,
+a lifetime of muscle memory now dials the wrong number.
+
+This is the same reasoning as D39, which pins the dialed number itself left to
+right so a phone number is never reordered, and it is the other half of that
+fix. The number was already safe; the keys that produce it were not.

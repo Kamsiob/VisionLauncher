@@ -86,6 +86,12 @@ fun MagnifierScreen(
     var filter by remember { mutableStateOf(Filter.NORMAL) }
     var failed by remember { mutableStateOf<String?>(null) }
     var zoomLabel by remember { mutableStateOf(35) }
+    // Read in the composition rather than from the context inside a click
+    // handler, so they follow a language or configuration change instead of
+    // holding whatever was current when the screen first opened.
+    val noTorchMessage = stringResource(R.string.magnifier_no_torch)
+    val captureFailedMessage = stringResource(R.string.magnifier_capture_failed)
+    val noCameraMessage = stringResource(R.string.magnifier_no_camera)
 
     DisposableEffect(Unit) { onDispose { magnifier.stop() } }
 
@@ -153,9 +159,7 @@ fun MagnifierScreen(
                         factory = { ctx ->
                             PreviewView(ctx).also { preview ->
                                 preview.scaleType = PreviewView.ScaleType.FILL_CENTER
-                                magnifier.start(owner, preview) {
-                                    failed = ctx.getString(R.string.magnifier_no_camera)
-                                }
+                                magnifier.start(owner, preview) { failed = noCameraMessage }
                             }
                         },
                         modifier = Modifier
@@ -220,7 +224,7 @@ fun MagnifierScreen(
                         onClick = {
                             if (!magnifier.toggleTorch()) {
                                 Haptics.reject(view)
-                                failed = context.getString(R.string.magnifier_no_torch)
+                                failed = noTorchMessage
                             } else {
                                 failed = null
                             }
@@ -237,7 +241,7 @@ fun MagnifierScreen(
                                 onFrozen = { frozen = it; failed = null },
                                 onFailed = {
                                     Haptics.reject(view)
-                                    failed = context.getString(R.string.magnifier_capture_failed)
+                                    failed = captureFailedMessage
                                 },
                             )
                         },

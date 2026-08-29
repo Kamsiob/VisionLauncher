@@ -21,6 +21,10 @@
          Nothing is recorded and nothing leaves the phone. -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- Android 14 and later let somebody grant only the pictures they chose
+         rather than all of them. Without this the app would not notice that
+         partial grant and would keep asking for access it already has. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
@@ -37,6 +41,9 @@
          covers the moment before the role is granted. -->
     <!-- The camera is how the magnifier works, but a phone without one should
          still be able to install a launcher and use everything else. -->
+    <!-- Calling and the emergency text need telephony, and a tablet without it
+         should still be able to run a launcher and use everything else. -->
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <uses-feature android:name="android.hardware.camera.flash" android:required="false" />

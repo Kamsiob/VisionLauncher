@@ -39,10 +39,16 @@ import io.github.kamsiob.launcher.data.ContactsRepository
 import io.github.kamsiob.launcher.data.EmergencyContact
 import io.github.kamsiob.launcher.data.Favorite
 import io.github.kamsiob.launcher.data.Settings
+import io.github.kamsiob.launcher.data.Setup
+import io.github.kamsiob.launcher.data.SetupIo
+import io.github.kamsiob.launcher.data.SetupSheet
 import io.github.kamsiob.launcher.messages.MessagesState
 import io.github.kamsiob.launcher.nav.SystemDestination
 import io.github.kamsiob.launcher.seeing.SeeingState
+import io.github.kamsiob.launcher.today.TodayCard
+import io.github.kamsiob.launcher.today.TodayStore
 import io.github.kamsiob.launcher.ui.alarm.AlarmEditScreen
+import io.github.kamsiob.launcher.ui.alarm.clockLabel
 import io.github.kamsiob.launcher.ui.alarm.AlarmListScreen
 import io.github.kamsiob.launcher.ui.apps.MoreAppsScreen
 import io.github.kamsiob.launcher.ui.arrange.ArrangeScreen
@@ -60,10 +66,15 @@ import io.github.kamsiob.launcher.ui.seeing.ReaderScreen
 import io.github.kamsiob.launcher.ui.onboarding.OnboardingScreen
 import io.github.kamsiob.launcher.ui.settings.AboutScreen
 import io.github.kamsiob.launcher.ui.settings.HelperScreen
+import io.github.kamsiob.launcher.ui.settings.PhraseEditScreen
+import io.github.kamsiob.launcher.ui.settings.PhrasesScreen
 import io.github.kamsiob.launcher.ui.settings.PickContactScreen
+import io.github.kamsiob.launcher.ui.settings.PinScreen
 import io.github.kamsiob.launcher.ui.settings.SeeHearScreen
 import io.github.kamsiob.launcher.ui.settings.SettingsScreen
 import io.github.kamsiob.launcher.ui.theme.LauncherTheme
+import io.github.kamsiob.launcher.ui.today.TodayEditScreen
+import io.github.kamsiob.launcher.ui.today.TodayScreen
 import io.github.kamsiob.launcher.ui.theme.Look
 import io.github.kamsiob.launcher.ui.threshold.ThresholdScreen
 import kotlinx.coroutines.Dispatchers
@@ -87,6 +98,7 @@ class MainActivity : ComponentActivity() {
         val apps = AppsRepository(this)
         val contacts = ContactsRepository(this)
         val alarmStore = AlarmStore(this)
+        val todayStore = TodayStore(this)
         // Tied to the activity, not to a composition, so a reply in flight
         // survives the recomposition that follows it and the speech engines are
         // built once rather than on every navigation.
@@ -121,6 +133,7 @@ class MainActivity : ComponentActivity() {
                     homePressed = homePressed,
                     messages = messagesState,
                     seeing = seeingState,
+                    todayStore = todayStore,
                 )
             }
         }
@@ -169,6 +182,11 @@ object Routes {
     const val ARRANGE = "arrange"
     const val MESSAGES = "messages"
     const val MAGNIFIER = "magnifier"
+    const val TODAY = "today"
+    const val TODAY_EDIT = "todayedit/{id}"
+    const val PHRASES = "phrases"
+    const val PHRASE_EDIT = "phraseedit/{index}"
+    const val PIN = "pin/{setting}"
     const val READER = "reader"
     const val PHOTOS = "photos"
     const val READ_MESSAGE = "readmessage"
@@ -176,6 +194,9 @@ object Routes {
     const val THRESHOLD = "threshold/{dest}"
 
     fun threshold(dest: SystemDestination) = "threshold/${dest.id}"
+    fun todayEdit(id: Int) = "todayedit/$id"
+    fun phraseEdit(index: Int) = "phraseedit/$index"
+    fun pin(setting: Boolean) = "pin/$setting"
     fun alarmEdit(id: Int) = "alarmedit/$id"
 }
 
@@ -190,6 +211,7 @@ fun LauncherNav(
     homePressed: MutableSharedFlow<Unit>,
     messages: MessagesState,
     seeing: SeeingState,
+    todayStore: TodayStore,
 ) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
@@ -204,6 +226,11 @@ fun LauncherNav(
     var contactsPermissionGeneration by remember { mutableStateOf(0) }
     val hasContacts = remember(contactsPermissionGeneration) { contacts.hasPermission() }
 
+    val todayCards by todayStore.cards.collectAsStateWithLifecycle(initialValue = emptyList())
+    // Recomputed on every recomposition rather than remembered, so a card marked
+    // done yesterday is not still green after midnight while the app sat open.
+    val todayKey = TodayStore.dayKey()
+    var helperNotice by remember { mutableStateOf<String?>(null) }
     val inbox by messages.messages.collectAsStateWithLifecycle(initialValue = emptyList())
     val unreadToday by messages.unreadToday.collectAsStateWithLifecycle(initialValue = 0)
 
@@ -267,6 +294,7 @@ fun LauncherNav(
                         BuiltIn.MAGNIFIER -> navController.navigate(Routes.MAGNIFIER)
                         BuiltIn.PHOTOS -> navController.navigate(Routes.PHOTOS)
                         BuiltIn.ALARMS -> navController.navigate(Routes.ALARMS)
+                        BuiltIn.TODAY -> navController.navigate(Routes.TODAY)
                         BuiltIn.CAMERA -> launchCamera(activity)
                     }
                 },
@@ -383,7 +411,16 @@ fun LauncherNav(
                 onChooseApps = { navController.navigate(Routes.ARRANGE) },
                 onRestore = { app.layoutStore.restoreSnapshot() },
                 onSeeHear = { navController.navigate(Routes.SEE_HEAR) },
-                onHelper = { navController.navigate(Routes.HELPER) },
+                onHelper = {
+                    // The code, when there is one, stands between Settings and
+                    // helper settings rather than inside them, so a wrong code
+                    // never leaves somebody looking at half the screen.
+                    if (settings.helperPin != null) {
+                        navController.navigate(Routes.pin(setting = false))
+                    } else {
+                        navController.navigate(Routes.HELPER)
+                    }
+                },
                 onSupport = { openSupportLink(activity) },
                 onHome = goHome,
             )
@@ -394,7 +431,93 @@ fun LauncherNav(
         }
 
         composable(Routes.HELPER) {
+            val saveSetup = rememberLauncherForActivityResult(
+                ActivityResultContracts.CreateDocument("application/json")
+            ) { uri ->
+                helperNotice = if (uri == null) null else {
+                    val setup = Setup(
+                        favorites = settings.favorites,
+                        emergencyContact = settings.emergencyContact,
+                        replyPhrases = settings.replyPhrases.ifEmpty { defaultPhrases(activity) },
+                        todayCards = todayCards,
+                        look = settings.look.name,
+                        outlined = settings.outlined,
+                        textStep = settings.textStep.ordinal,
+                        homeLayout = layout,
+                    )
+                    val ok = SetupIo.writeText(activity, uri, Setup.write(setup))
+                    activity.getString(
+                        if (ok) R.string.setup_saved else R.string.setup_save_failed
+                    )
+                }
+            }
+            val loadSetup = rememberLauncherForActivityResult(
+                ActivityResultContracts.OpenDocument()
+            ) { uri ->
+                helperNotice = if (uri == null) null else {
+                    val setup = SetupIo.readText(activity, uri)?.let { Setup.read(it) }
+                    if (setup == null) {
+                        activity.getString(R.string.setup_load_failed)
+                    } else {
+                        activity.lifecycleScope.launch {
+                            app.settingsStore.applySetup(setup)
+                            if (setup.homeLayout.isNotEmpty()) {
+                                app.layoutStore.keep(setup.homeLayout)
+                            }
+                            setup.todayCards.forEach { todayStore.save(it) }
+                        }
+                        activity.getString(R.string.setup_loaded)
+                    }
+                }
+            }
+            val printSheet = rememberLauncherForActivityResult(
+                ActivityResultContracts.CreateDocument("text/html")
+            ) { uri ->
+                helperNotice = if (uri == null) null else {
+                    val setup = Setup(
+                        favorites = settings.favorites,
+                        emergencyContact = settings.emergencyContact,
+                        replyPhrases = settings.replyPhrases,
+                        todayCards = todayCards,
+                    )
+                    val html = SetupSheet.build(
+                        activity, setup, activity.getString(R.string.app_name)
+                    )
+                    val ok = SetupIo.writeText(activity, uri, html)
+                    activity.getString(
+                        if (ok) R.string.setup_sheet_saved else R.string.setup_save_failed
+                    )
+                }
+            }
             HelperScreen(
+                todayCount = todayCards.size,
+                pinOn = settings.helperPin != null,
+                onToday = { navController.navigate(Routes.TODAY) },
+                onPhrases = { navController.navigate(Routes.PHRASES) },
+                onPin = {
+                    if (settings.helperPin == null) {
+                        navController.navigate(Routes.pin(setting = true))
+                    } else {
+                        scope.launch { app.settingsStore.setHelperPin(null) }
+                    }
+                },
+                onSaveSetup = {
+                    helperNotice = null
+                    runCatching {
+                        saveSetup.launch(activity.getString(R.string.setup_default_name))
+                    }
+                },
+                onLoadSetup = {
+                    helperNotice = null
+                    runCatching { loadSetup.launch(arrayOf("application/json", "text/plain", "*/*")) }
+                },
+                onPrintSheet = {
+                    helperNotice = null
+                    runCatching {
+                        printSheet.launch(activity.getString(R.string.sheet_default_name))
+                    }
+                },
+                notice = helperNotice,
                 favorites = settings.favorites,
                 emergencyContact = settings.emergencyContact,
                 onSetFavorites = { scope.launch { app.settingsStore.setFavorites(it) } },
@@ -410,6 +533,97 @@ fun LauncherNav(
 
         composable(Routes.ABOUT) {
             AboutScreen(onHome = goHome, onBack = goBack)
+        }
+
+        composable(Routes.TODAY) {
+            TodayScreen(
+                cards = todayCards,
+                today = todayKey,
+                formatTime = { hour, minute -> clockLabel(activity, hour, minute) },
+                onToggleDone = { card, done ->
+                    scope.launch { todayStore.setDone(card.id, done) }
+                },
+                onAdd = { navController.navigate(Routes.todayEdit(0)) },
+                onEdit = { navController.navigate(Routes.todayEdit(it.id)) },
+                onHome = goHome,
+                onBack = goBack,
+            )
+        }
+
+        composable(Routes.TODAY_EDIT) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: 0
+            val existing = todayCards.firstOrNull { it.id == id }
+            TodayEditScreen(
+                existing = existing,
+                onSave = { hour, minute, what ->
+                    activity.lifecycleScope.launch {
+                        val cardId = existing?.id ?: todayStore.nextId()
+                        todayStore.save(
+                            existing?.copy(hour = hour, minute = minute, what = what)
+                                ?: TodayCard(id = cardId, hour = hour, minute = minute, what = what)
+                        )
+                    }
+                    goBack()
+                },
+                onDelete = existing?.let {
+                    {
+                        activity.lifecycleScope.launch { todayStore.delete(it.id) }
+                        goBack()
+                    }
+                },
+                onHome = goHome,
+                onBack = goBack,
+            )
+        }
+
+        composable(Routes.PHRASES) {
+            val phrases = settings.replyPhrases.ifEmpty { defaultPhrases(LocalContext.current) }
+            PhrasesScreen(
+                phrases = phrases,
+                onEdit = { navController.navigate(Routes.phraseEdit(it)) },
+                onReset = { scope.launch { app.settingsStore.setReplyPhrases(emptyList()) } },
+                onHome = goHome,
+                onBack = goBack,
+            )
+        }
+
+        composable(Routes.PHRASE_EDIT) { backStackEntry ->
+            val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
+            val phrases = settings.replyPhrases.ifEmpty { defaultPhrases(LocalContext.current) }
+            PhraseEditScreen(
+                current = phrases.getOrElse(index) { "" },
+                onSave = { text ->
+                    val updated = phrases.toMutableList()
+                    if (index in updated.indices) updated[index] = text
+                    scope.launch { app.settingsStore.setReplyPhrases(updated) }
+                    goBack()
+                },
+                onHome = goHome,
+                onBack = goBack,
+            )
+        }
+
+        composable(Routes.PIN) { backStackEntry ->
+            val setting = backStackEntry.arguments?.getString("setting")?.toBoolean() ?: false
+            PinScreen(
+                setting = setting,
+                verify = { it == settings.helperPin },
+                onAccepted = { code ->
+                    if (setting) {
+                        scope.launch { app.settingsStore.setHelperPin(code) }
+                        goBack()
+                    } else {
+                        // Replaces itself rather than stacking, so Back from
+                        // helper settings returns to Settings and not to a code
+                        // screen that has already been satisfied.
+                        navController.navigate(Routes.HELPER) {
+                            popUpTo(Routes.PIN) { inclusive = true }
+                        }
+                    }
+                },
+                onHome = goHome,
+                onBack = goBack,
+            )
         }
 
         composable(Routes.PICK_FAVORITE) {
@@ -632,8 +846,12 @@ fun LauncherNav(
 
         composable(Routes.PHOTOS) {
             var photoGeneration by remember { mutableStateOf(0) }
+            // Multiple, because from Android 14 the picker offers "select
+            // photos" alongside "allow all" and that choice grants a different
+            // permission. Asking for only one of them hides the option that
+            // most people actually want.
             val ask = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestPermission()
+                ActivityResultContracts.RequestMultiplePermissions()
             ) { photoGeneration++ }
             val hasPhotos = remember(photoGeneration) { seeing.photoStore.hasPermission() }
             // Off the main thread. A media store query walks every picture on
@@ -646,15 +864,7 @@ fun LauncherNav(
                 photos = photos,
                 hasPermission = hasPhotos,
                 loadFrame = { seeing.loadPhoto(it) },
-                onGrantPhotos = {
-                    ask.launch(
-                        if (android.os.Build.VERSION.SDK_INT >= 33) {
-                            Manifest.permission.READ_MEDIA_IMAGES
-                        } else {
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                        }
-                    )
-                },
+                onGrantPhotos = { ask.launch(photoPermissions()) },
                 onOpenGallery = { openGallery(activity) },
                 onSpeakCaption = { seeing.say(it) },
                 canSpeak = seeing.canSpeak,
@@ -733,6 +943,16 @@ fun openSupportLink(context: android.content.Context) {
         android.net.Uri.parse("https://buymeacoffee.com/kamsiob"),
     ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     runCatching { context.startActivity(intent) }
+}
+
+/** What to ask for so every version offers the choice it actually has. */
+private fun photoPermissions(): Array<String> = when {
+    android.os.Build.VERSION.SDK_INT >= 34 -> arrayOf(
+        Manifest.permission.READ_MEDIA_IMAGES,
+        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED,
+    )
+    android.os.Build.VERSION.SDK_INT >= 33 -> arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
+    else -> arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
 }
 
 /** The phone's own gallery, for when there is nothing here to show. */
