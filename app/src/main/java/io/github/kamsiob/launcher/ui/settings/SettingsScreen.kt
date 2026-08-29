@@ -48,6 +48,7 @@ import io.github.kamsiob.launcher.ui.theme.Look
 import io.github.kamsiob.launcher.ui.theme.TextStep
 import io.github.kamsiob.launcher.ui.theme.Tokens
 import io.github.kamsiob.launcher.ui.theme.TypeScale
+import io.github.kamsiob.launcher.ui.theme.tileColumns
 import io.github.kamsiob.launcher.ui.theme.bodyStyle
 import io.github.kamsiob.launcher.ui.theme.monoStyle
 import androidx.compose.ui.platform.LocalView
@@ -101,38 +102,18 @@ fun SettingsScreen(
         }
 
         SectLabel(stringResource(R.string.settings_look))
-        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
-            ThemeCard(
-                label = stringResource(R.string.settings_look_light),
-                selected = look == Look.LIGHT,
-                preview = { MiniPreview(background = Tokens.paper, border = null) },
-                onClick = {
-                    Haptics.confirm(view)
-                    onSetLook(Look.LIGHT)
-                },
-                modifier = Modifier.weight(1f),
-            )
-            ThemeCard(
-                label = stringResource(R.string.settings_look_dark),
-                selected = look == Look.DARK,
-                preview = { MiniPreview(background = Tokens.darkBg, border = null) },
-                onClick = {
-                    Haptics.confirm(view)
-                    onSetLook(Look.DARK)
-                },
-                modifier = Modifier.weight(1f),
-            )
-            ThemeCard(
-                label = stringResource(R.string.settings_look_outlined),
-                selected = outlined,
-                preview = { MiniPreview(background = Tokens.paper, border = Tokens.ink) },
-                onClick = {
-                    Haptics.confirm(view)
-                    onSetOutlined(!outlined)
-                },
-                modifier = Modifier.weight(1f),
-            )
-        }
+        ThemeChoices(
+            look = look,
+            outlined = outlined,
+            onSetLook = {
+                Haptics.confirm(view)
+                onSetLook(it)
+            },
+            onToggleOutlined = {
+                Haptics.confirm(view)
+                onSetOutlined(!outlined)
+            },
+        )
 
         RowKey(
             label = stringResource(R.string.settings_choose_apps),
@@ -166,6 +147,55 @@ fun SettingsScreen(
             onClick = onHelper,
         )
         NoteText(stringResource(R.string.settings_undo_note))
+    }
+}
+
+@Composable
+private fun ThemeChoices(
+    look: Look,
+    outlined: Boolean,
+    onSetLook: (Look) -> Unit,
+    onToggleOutlined: () -> Unit,
+) {
+    val cards: List<@Composable (Modifier) -> Unit> = listOf(
+        { m ->
+            ThemeCard(
+                label = stringResource(R.string.settings_look_light),
+                selected = look == Look.LIGHT,
+                preview = { MiniPreview(background = Tokens.paper, border = null) },
+                onClick = { onSetLook(Look.LIGHT) },
+                modifier = m,
+            )
+        },
+        { m ->
+            ThemeCard(
+                label = stringResource(R.string.settings_look_dark),
+                selected = look == Look.DARK,
+                preview = { MiniPreview(background = Tokens.darkBg, border = null) },
+                onClick = { onSetLook(Look.DARK) },
+                modifier = m,
+            )
+        },
+        { m ->
+            ThemeCard(
+                label = stringResource(R.string.settings_look_outlined),
+                selected = outlined,
+                preview = { MiniPreview(background = Tokens.paper, border = Tokens.ink) },
+                onClick = onToggleOutlined,
+                modifier = m,
+            )
+        },
+    )
+    if (tileColumns() == 1) {
+        Column(verticalArrangement = Arrangement.spacedBy(Dimens.gap)) {
+            cards.forEach { it(Modifier.fillMaxWidth()) }
+        }
+    } else {
+        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
+            cards.forEach { card ->
+                Box(modifier = Modifier.weight(1f)) { card(Modifier.fillMaxWidth()) }
+            }
+        }
     }
 }
 
@@ -277,7 +307,6 @@ private fun ThemeCard(
                 style = bodyStyle(size = TypeScale.sect, weight = FontWeight.Bold, lineHeightFactor = 1.1f),
                 color = palette.text,
                 textAlign = TextAlign.Center,
-                softWrap = false,
             )
             if (selected) {
                 Text(

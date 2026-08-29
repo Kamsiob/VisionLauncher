@@ -112,6 +112,8 @@ So above a combined scale of 1.5, counting the system font scale and the user's 
 
 Tile labels also carry a step based auto size with the grid's 28sp as the maximum, which handles a long third party app name in the two column case without ever exceeding the specified size.
 
+The same rule applies to the three Look cards in Settings, found the same way: at 200 percent, "Outlined" was clipped to "Outlir". They stack vertically above the same threshold. The general principle is that when a word cannot fit its column, the layout gives way, never the word.
+
 ## D25. Settings is reached from More apps, not from a home tile
 
 The grid puts no Settings tile on the home screen, and the six tiles belong to what a person uses daily. Settings sits pinned at the top of the More apps list instead, above the alphabetical apps, where it is findable without spending a tile. It is hidden from the list while a search is running, because a search for an app name should return apps.
