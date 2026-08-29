@@ -9,8 +9,6 @@
     <string name="day_part_afternoon">%1$s afternoon</string>
     <string name="day_part_evening">%1$s evening</string>
     <string name="a11y_masthead">%1$s. %2$s. %3$s.</string>
-    <string name="a11y_sun_mark">Daytime</string>
-    <string name="a11y_moon_mark">Evening</string>
 
     <!-- Built in feature names -->
     <string name="feature_call">Call</string>
@@ -48,7 +46,6 @@
     <string name="key_home">Home</string>
     <string name="key_back">Back</string>
     <string name="key_done">Done</string>
-    <string name="key_continue">Continue</string>
     <string name="key_skip">Skip for now</string>
     <string name="key_never_mind">Never mind</string>
     <string name="a11y_home_key">Go to the home screen</string>
@@ -83,8 +80,6 @@
     <string name="emergency_alert_person_sub_text_only">Calls and sends a text</string>
     <string name="emergency_alert_person_sub_call_only">Calls only, because sending a text was not allowed</string>
     <string name="emergency_alert_person_sub_no_texting">Calls only, because this phone cannot send a text</string>
-    <string name="onboarding_emergency_title">The emergency text</string>
-    <string name="onboarding_emergency_body">To send a text with your location when you press the alert key, this app needs permission to send messages and to see where the phone is.</string>
     <string name="emergency_no_person">Choose a person to alert</string>
     <string name="emergency_no_person_sub">A helper can set this up in Settings</string>
     <string name="emergency_honesty">Both need a cell signal. This is not a monitored medical alert service.</string>
@@ -100,7 +95,6 @@
     <string name="contacts_none">There are no contacts on this phone yet.</string>
 
     <!-- Not built yet -->
-    <string name="not_built_title">Not built yet</string>
     <string name="not_built_body">This part of VisionLauncher is still being built. It arrives with a later update.</string>
     <string name="no_app_for_that">This phone has no app for that.</string>
     <string name="open_message_app">Open a message app</string>
@@ -148,7 +142,6 @@
     <!-- Helper settings -->
     <string name="helper_title">Helper settings</string>
     <string name="helper_favorites">Favorites</string>
-    <string name="helper_favorites_sub">The people on the Call screen</string>
     <string name="helper_add_favorite">Add a favorite</string>
     <string name="helper_remove_favorite">Take %1$s off the list</string>
     <string name="helper_favorite_removed">%1$s was taken off the favorites.</string>
@@ -252,11 +245,11 @@
     <string name="alarm_stop">Stop</string>
     <string name="alarm_ten_more">10 more minutes</string>
     <string name="alarm_none_yet">No alarms yet.</string>
+    <!-- Reserved for the alarm's foreground service, issue #20. The manifest
+         already declares the permissions it needs. -->
     <string name="alarm_channel_name">Alarms</string>
     <string name="alarm_channel_description">Alarm clock ringing</string>
     <string name="alarm_notification_title">Alarm</string>
-    <string name="alarm_hour">Hour</string>
-    <string name="alarm_minute">Minute</string>
     <string name="alarm_am">AM</string>
     <string name="alarm_pm">PM</string>
     <string name="alarm_plus_hour">One hour later</string>
@@ -265,7 +258,7 @@
     <string name="alarm_minus_minute">Five minutes earlier</string>
 
     <!-- Misc -->
-    <string name="a11y_status_pill">Status: %1$s</string>
-    <string name="a11y_app_icon">%1$s app icon</string>
+    <!-- Reserved for the reader and reply screens in Stages 2 and 3, where
+         DESIGN.md names this sentence as brand furniture. -->
     <string name="privacy_promise">Everything happens on this phone. Nothing is sent anywhere.</string>
 </resources>
