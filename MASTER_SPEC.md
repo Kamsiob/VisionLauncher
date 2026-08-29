@@ -175,7 +175,7 @@ Arranging happens on the real home grid, never on an abstract list.
 - Pressing Home mid arrange keeps completed changes and says so.
 - Finishing shows a miniature preview with Keep it or Put it back the way it was. Every Keep snapshots the layout *as it was before that session*, which is what the standing restore undoes.
 - Settings carries a standing "Put my screen back" that undoes the most recent Keep. It reports whether it actually changed anything and never confirms an undo it did not perform. See `DECISIONS.md` D30.
-- Add an app is one flat alphabetical list with real icons, opened from inside the arranging session so the new tile joins the working layout and is confirmed by the same Keep. New apps take the first empty spot, or land at the bottom when the grid is full, and the screen says so.
+- Add an app is one flat alphabetical list with real icons, opened from inside the arranging session so the new tile joins the working layout and is confirmed by the same Keep. A new app takes the first empty spot, or lands at the bottom when the grid is full, and the note says which of the two is about to happen rather than assuming. Filling a gap the user made themselves keeps the layout compact without reordering anything, which D11 permits.
 
 ### 5.13 Threshold (grid 21)
 

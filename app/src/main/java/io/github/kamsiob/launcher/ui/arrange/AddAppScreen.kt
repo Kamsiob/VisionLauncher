@@ -69,7 +69,15 @@ fun AddAppScreen(
                 )
             }
             item {
-                NoteText(stringResource(R.string.arrange_add_app_note))
+                // The note has to match what actually happens. A new tile fills
+                // the first empty spot, which is only the bottom when the empty
+                // spot happens to be last, so the screen says which one it is.
+                NoteText(
+                    stringResource(
+                        if (currentLayout.any { it.isEmpty }) R.string.arrange_add_app_note_gap
+                        else R.string.arrange_add_app_note
+                    )
+                )
             }
         }
     }
