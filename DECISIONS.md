@@ -70,9 +70,13 @@ Reserving red left the design with no way to signal errors and destructive actio
 
 Stigma research names obvious instructions as an accentuated social signifier that makes older adults perceive a product as being for the impaired. Notes must qualify as a brand promise, a Play policy requirement, or a statement of where something will happen. Everything else is deleted and the interface proves the point instead.
 
-## D16. Young Serif is confined to the clock
+## D16. Young Serif covers the clock and the short headings
 
-It is a display face, license clean under SIL OFL, and gives the product warmth. Display serifs are a poor choice for labels and body text at large sizes, so screen titles moved to Atkinson at weight 800. Being Latin only is acceptable because it only renders digits.
+It is a display face, license clean under SIL OFL, and gives the product warmth. Display serifs are a poor choice for labels and body text at large sizes, so screen titles moved to Atkinson at weight 800.
+
+**Corrected, August 29, 2026.** This entry claimed the face was confined to the clock and concluded that "being Latin only is acceptable because it only renders digits". Both halves were wrong from the first commit. `SerifHeading` uses Young Serif for six pieces of ordinary prose: "You can't break anything.", "You're all set.", each onboarding step title, the threshold heading, and "Here is your new home screen". And the clock is not digits-only either: `DayPart.clockText` formats with the default locale, and Arabic locales use Arabic-Indic numerals, which Young Serif has no glyphs for.
+
+The honest argument, which happens to reach the same conclusion: these are six short strings on low traffic screens plus the clock. Outside Latin they fall to the system serif through the Noto chain, so those screens keep their words and lose their face. That is an acceptable trade for a decorative choice, and it is a trade rather than a non-issue. Serif line heights must be checked against the fallback faces during Stage 4, since a taller fallback can clip a wrapped heading.
 
 ## D17. Atkinson Hyperlegible is chosen honestly
 

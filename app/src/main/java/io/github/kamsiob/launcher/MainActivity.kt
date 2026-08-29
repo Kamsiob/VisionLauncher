@@ -186,9 +186,14 @@ fun LauncherNav(
     // so the clock and battery were dark over a dark masthead.
     val route = navController.currentBackStackEntryAsState().value?.destination?.route
     val overDarkTop = route == Routes.HOME || settings.look == Look.DARK
-    LaunchedEffect(overDarkTop) {
-        WindowCompat.getInsetsController(activity.window, activity.window.decorView)
-            .isAppearanceLightStatusBars = !overDarkTop
+    // The navigation bar sits over the screen background, which is paper in the
+    // light theme and dark in the dark one, and follows the app's Look rather
+    // than the system night mode. uiMode is in configChanges, so it could never
+    // have corrected itself on a system theme change either.
+    LaunchedEffect(overDarkTop, settings.look) {
+        val controller = WindowCompat.getInsetsController(activity.window, activity.window.decorView)
+        controller.isAppearanceLightStatusBars = !overDarkTop
+        controller.isAppearanceLightNavigationBars = settings.look != Look.DARK
     }
 
     val start = if (settings.onboardingDone) Routes.HOME else Routes.ONBOARDING

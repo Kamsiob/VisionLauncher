@@ -14,7 +14,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.text.Collator
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Everything the launcher knows about other apps comes through LauncherApps,
@@ -37,7 +36,23 @@ class AppsRepository(private val context: Context) {
     private val userManager =
         context.getSystemService(Context.USER_SERVICE) as UserManager
 
-    private val iconCache = ConcurrentHashMap<String, ImageBitmap>()
+    /**
+     * Bounded, and cleared whenever the set of apps changes.
+     *
+     * A launcher runs for months. Unbounded, this held one bitmap per component
+     * per profile per drawn size forever: at 80dp on a 3x screen that is roughly
+     * 230KB each, so a phone with a few hundred entries would carry tens of
+     * megabytes it never released. It also never noticed an app changing its
+     * icon on update, so a stale icon was permanent.
+     */
+    private val iconCache = object : LinkedHashMap<String, ImageBitmap>(64, 0.75f, true) {
+        override fun removeEldestEntry(eldest: Map.Entry<String, ImageBitmap>) = size > MAX_CACHED_ICONS
+    }
+
+    private fun cached(key: String, produce: () -> ImageBitmap): ImageBitmap =
+        synchronized(iconCache) { iconCache[key] } ?: produce().also {
+            synchronized(iconCache) { iconCache[key] = it }
+        }
 
     /** All launchable apps across profiles, alphabetized for the current locale. */
     fun launchableApps(): List<AppEntry> {
@@ -106,7 +121,7 @@ class AppsRepository(private val context: Context) {
      */
     fun icon(entry: AppEntry, sizePx: Int): ImageBitmap {
         val cacheKey = entry.key + "#" + entry.user.hashCode() + "@" + sizePx
-        return iconCache.getOrPut(cacheKey) {
+        return cached(cacheKey) {
         val info: LauncherActivityInfo? = launcherApps
             .getActivityList(entry.packageName, entry.user)
             .firstOrNull { it.name == entry.activity }
@@ -121,12 +136,27 @@ class AppsRepository(private val context: Context) {
     fun changes(): Flow<Unit> = callbackFlow {
         val callback = object : LauncherApps.Callback() {
             override fun onPackageRemoved(packageName: String?, user: UserHandle?) { trySend(Unit) }
-            override fun onPackageAdded(packageName: String?, user: UserHandle?) { trySend(Unit) }
-            override fun onPackageChanged(packageName: String?, user: UserHandle?) { trySend(Unit) }
+            override fun onPackageAdded(packageName: String?, user: UserHandle?) {
+                forgetIcons()
+                trySend(Unit)
+            }
+            override fun onPackageChanged(packageName: String?, user: UserHandle?) {
+                forgetIcons()
+                trySend(Unit)
+            }
             override fun onPackagesAvailable(p: Array<out String>?, u: UserHandle?, r: Boolean) { trySend(Unit) }
             override fun onPackagesUnavailable(p: Array<out String>?, u: UserHandle?, r: Boolean) { trySend(Unit) }
         }
         launcherApps.registerCallback(callback)
         awaitClose { launcherApps.unregisterCallback(callback) }
+    }
+
+    /** Called when the app set changes, so an updated icon is not stale forever. */
+    fun forgetIcons() {
+        synchronized(iconCache) { iconCache.clear() }
+    }
+
+    private companion object {
+        const val MAX_CACHED_ICONS = 256
     }
 }

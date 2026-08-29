@@ -38,7 +38,7 @@ Rules:
 
 ## Type
 
-- **Young Serif**, SIL OFL. The clock only. It gives the product warmth and a face without touching legibility anywhere it matters. Latin only, which is fine because it renders digits.
+- **Young Serif**, SIL OFL. The clock and the six short headings on onboarding, the threshold, and the Keep it screen. It gives the product warmth and a face without touching legibility anywhere it matters. Latin only: outside Latin, including the Arabic-Indic numerals an Arabic locale gives the clock, it falls to the system serif and those screens keep their words while losing their face. See `DECISIONS.md` D16.
 - **Atkinson Hyperlegible Next**, SIL OFL. Everything else. Screen titles use weight 800 in navy. Purpose built for low vision, with disambiguated character shapes.
 - **Atkinson Hyperlegible Mono**, SIL OFL. Timestamps, the status pill, and metadata rows.
 

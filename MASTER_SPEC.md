@@ -196,7 +196,7 @@ These are not visible in the grid and are easy to skip. They are not optional.
 - **Touch.** Tiles 128dp, key floor 88dp, gaps 12 to 14dp minimum. No swipe, drag, long press, double tap, or pinch is required anywhere. Increase touch slop so a small drag still registers as a tap. Debounce repeat taps within a short window so tremor does not fire an action twice. Respect the system touch and hold delay setting.
 - **Haptics.** A distinct confirmation haptic on every committed action, because hearing loss travels with vision loss and audio alone is not enough.
 - **Motion.** Minimal and functional. Respect the system remove animations setting. The only deliberate animation is the slow tile trade during arranging.
-- **Localization.** English, Spanish, Chinese, Arabic. Arabic needs RTL mirroring from the start. Noto fallbacks for glyph coverage. Young Serif is Latin only and is used for clock digits only, so it is safe. Never build sentences by string concatenation; use proper plurals and formatted strings so the status and lamp sentences translate correctly.
+- **Localization.** English, Spanish, Chinese, Arabic. Arabic needs RTL mirroring from the start. Noto fallbacks for glyph coverage. Young Serif is Latin only and covers the clock and six short headings, so Chinese and Arabic fall to the system serif on those screens. Check the serif line heights against those fallbacks, since a taller face can clip a wrapped heading. Never build sentences by string concatenation; use proper plurals and formatted strings so the status and lamp sentences translate correctly.
 - **Color correction and inversion.** Test under Android color inversion and every color correction mode. Semantic colors must survive or be backed by an icon and words. Color never carries meaning alone.
 - **Undo.** Anything destructive is reversible and says so.
 
@@ -206,7 +206,7 @@ Only these. Anything else needs a license check against AGPLv3 and commercial us
 
 - Jetpack Compose, CameraX, Room, WorkManager: Apache 2.0. Fine.
 - Atkinson Hyperlegible Next and Atkinson Hyperlegible Mono: SIL OFL 1.1. Bundle as font files in `res/font`. Fine.
-- Young Serif: SIL OFL 1.1. Bundle as a font file. Clock digits only.
+- Young Serif: SIL OFL 1.1. Bundle as a font file. The clock and the short headings.
 - sherpa-onnx for offline text to speech: Apache 2.0. Fine. Verify the license of each specific voice model before shipping it, and rule out any voice whose model or training data license is unclear or non commercial.
 - Tesseract via a maintained Android wrapper for OCR: Apache 2.0. Preferred OCR engine.
 - ML Kit Text Recognition v2: free but a proprietary Google binary. Fallback only if Tesseract accuracy proves inadequate on real medication labels, and if used, disclose the dependency in the README.

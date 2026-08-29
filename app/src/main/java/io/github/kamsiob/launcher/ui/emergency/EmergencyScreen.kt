@@ -143,6 +143,9 @@ private fun alertPerson(context: Context, person: EmergencyContact) {
     placeCall(context, person.number)
 }
 
+/** Older than this and a cached fix is not where the person is now. */
+private const val STALE_LOCATION_MS = 15 * 60 * 1000L
+
 private fun granted(context: Context, permission: String): Boolean =
     ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
 
@@ -172,9 +175,14 @@ private fun lastKnownLocation(context: Context): Pair<Double, Double>? {
     val manager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     return runCatching {
         val providers = manager.getProviders(true)
-        providers.asSequence()
+        val newest = providers.asSequence()
             .mapNotNull { manager.getLastKnownLocation(it) }
             .maxByOrNull { it.time }
-            ?.let { it.latitude to it.longitude }
+            ?: return@runCatching null
+        // A cached fix can be hours or days old. Sending "my location" as a
+        // place somebody left this morning is worse than saying there is no
+        // location, because the person receiving it would go there.
+        val age = System.currentTimeMillis() - newest.time
+        if (age > STALE_LOCATION_MS) null else newest.latitude to newest.longitude
     }.getOrNull()
 }
