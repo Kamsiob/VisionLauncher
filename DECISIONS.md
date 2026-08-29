@@ -195,3 +195,15 @@ The grid is the measurement authority over prose. The user is the authority over
 **Icon scaling with text was considered and deferred.** Icons stay fixed dp for now. Scaling them turned out to carry real hazards: the app icon bitmap cache is keyed without size, so a scaled bitmap would be drawn larger than it was rasterized and blur at exactly the setting a low vision user chose; a scaled app icon overruns the row key's content budget at the cap; and scaling the Home glyph pulls the label's shrink point below the reflow threshold. Base sizes carry the visible fix. Scaling is a separate change with its own verification, tracked in its own issue.
 
 This was reached through a five lens audit and three adversarial reviewers. The reviewers refuted the first proposal on all three lenses and were right to: they caught the frozen empty spot, the bitmap cache, the row budget overrun, and an arithmetic error in the reflow threshold, and they argued the first numbers were too timid to be noticed at arm's length, which was the entire point.
+
+## D35. Arranging never loses work, whichever way the session ends
+
+Three independent reviewers found the same defect, which is a fair sign of how visible it was once anyone looked. The arranging session lived in a plain `remember`, and only two paths ever wrote it out: the Done chip and an `exitKeepingChanges` helper. The system Back button fell straight through to the navigation graph, and the system Home press popped the back stack from `MainActivity`. Either one tore the screen out of composition with the work unwritten, in silence, with no undo. Meanwhile `MASTER_SPEC` 5.12 promised "Pressing Home mid arrange keeps completed changes and says so" and a comment directly above the helper asserted the same thing.
+
+The sentence the spec promised was also unreachable: `arrange_kept_partial` was rendered inside the browsing branch, and both sub-screens return before reaching it, so no path could display it.
+
+Three changes. Back is now always handled while arranging and steps out one layer at a time rather than leaving; at the outermost layer it keeps the work like Home does. The keep runs in `lifecycleScope` rather than the composition's own scope, because a scope tied to the composition is already cancelled at the moment the work most needs writing. And a `DisposableEffect` is the safety net underneath both: any exit that did not go through Keep it or Put it back still writes the work out, so no future navigation path can reintroduce the silent loss.
+
+The Home key inside the session also went to Settings rather than home, while labeled "Home" and announcing "Go to the home screen". It goes home.
+
+This is the fifth and sixth instance of the pattern D30 named, and the first where the false sentence sat in a code comment as well as the interface.

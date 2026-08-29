@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,6 +75,7 @@ fun ArrangeScreen(
     startingLayout: List<SavedTile>,
     apps: AppsRepository,
     onKeep: (List<SavedTile>) -> Unit,
+    onHome: () -> Unit,
     onExit: () -> Unit,
 ) {
     val view = LocalView.current
@@ -83,27 +85,58 @@ fun ArrangeScreen(
     var showPreview by remember { mutableStateOf(false) }
     var addingApp by remember { mutableStateOf(false) }
     var keptOnExit by remember { mutableStateOf(false) }
+    // Set once Keep it or Put it back has decided, so the safety net below
+    // knows the outcome was chosen rather than stumbled into.
+    var decided by remember { mutableStateOf(false) }
 
-    // Pressing Home mid arrange keeps completed changes and says so.
+    /**
+     * Spec 5.12: "Pressing Home mid arrange keeps completed changes and says
+     * so." Shows the sentence on whichever screen is visible, then leaves.
+     */
     val exitKeepingChanges = {
-        if (working != startingLayout) {
-            onKeep(working)
-            keptOnExit = true
-        } else {
-            onExit()
+        if (!keptOnExit) {
+            // Drop back to the grid so the sentence has somewhere to appear.
+            addingApp = false
+            showPreview = false
+            mode = ArrangeMode.Browsing
+            if (working != startingLayout) {
+                onKeep(working)
+                decided = true
+                keptOnExit = true
+            } else {
+                decided = true
+                onHome()
+            }
         }
     }
     LaunchedEffect(keptOnExit) {
         if (keptOnExit) {
             delay(2200)
-            onExit()
+            onHome()
         }
     }
 
-    // Back inside the mode steps out of the current choice rather than the
-    // whole screen, so a stray press never loses work.
-    BackHandler(enabled = mode !is ArrangeMode.Browsing) {
-        mode = ArrangeMode.Browsing
+    /**
+     * The safety net. Any exit that did not go through Keep it or Put it back
+     * still writes the work out, because a session ended by a stray gesture
+     * used to vanish in silence. The write runs in a scope that outlives this
+     * composition, so disposal cannot cancel it.
+     */
+    DisposableEffect(Unit) {
+        onDispose {
+            if (!decided && working != startingLayout) onKeep(working)
+        }
+    }
+
+    // Back never falls through to the navigation graph while arranging, which
+    // is how a single press used to discard the whole session.
+    BackHandler {
+        when {
+            addingApp -> addingApp = false
+            showPreview -> showPreview = false
+            mode !is ArrangeMode.Browsing -> mode = ArrangeMode.Browsing
+            else -> exitKeepingChanges()
+        }
     }
 
     if (addingApp) {
@@ -119,6 +152,7 @@ fun ArrangeScreen(
             },
             onHome = exitKeepingChanges,
             onBack = { addingApp = false },
+            keptNote = keptOnExit,
         )
         return
     }
@@ -128,11 +162,16 @@ fun ArrangeScreen(
             layout = working,
             apps = apps,
             onKeep = {
+                decided = true
                 onKeep(working)
                 onExit()
             },
-            onRevert = onExit,
+            onRevert = {
+                decided = true
+                onExit()
+            },
             onHome = exitKeepingChanges,
+            keptNote = keptOnExit,
         )
         return
     }
@@ -154,7 +193,12 @@ fun ArrangeScreen(
         PromptBar(
             text = promptText,
             onDone = {
-                if (working == startingLayout) onExit() else showPreview = true
+                if (working == startingLayout) {
+                    decided = true
+                    onExit()
+                } else {
+                    showPreview = true
+                }
             },
             dimmed = chosenIndex != null,
         )
@@ -476,9 +520,11 @@ private fun KeepItScreen(
     onKeep: () -> Unit,
     onRevert: () -> Unit,
     onHome: () -> Unit,
+    keptNote: Boolean,
 ) {
     val palette = LocalPalette.current
     ScreenFrame(topBar = { TopBar(onHome = onHome) }) {
+        if (keptNote) NoteText(stringResource(R.string.arrange_kept_partial))
         SerifHeading(stringResource(R.string.arrange_keep_title))
         Column(
             modifier = Modifier

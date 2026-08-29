@@ -376,7 +376,12 @@ fun LauncherNav(
             ArrangeScreen(
                 startingLayout = layout,
                 apps = apps,
-                onKeep = { scope.launch { app.layoutStore.keep(it) } },
+                // lifecycleScope, not the composition's scope. Arranging writes
+                // its work out when the screen is disposed, and a scope tied to
+                // that composition is already cancelled by then, so the write
+                // would be dropped exactly when it matters most.
+                onKeep = { activity.lifecycleScope.launch { app.layoutStore.keep(it) } },
+                onHome = goHome,
                 onExit = goBack,
             )
         }

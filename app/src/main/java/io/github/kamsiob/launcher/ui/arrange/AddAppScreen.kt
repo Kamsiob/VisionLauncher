@@ -36,6 +36,7 @@ fun AddAppScreen(
     onAdd: (SavedTile) -> Unit,
     onHome: () -> Unit,
     onBack: () -> Unit,
+    keptNote: Boolean = false,
 ) {
     val density = LocalDensity.current
     val iconPx = with(density) { Dimens.appIcon.roundToPx() }
@@ -58,6 +59,7 @@ fun AddAppScreen(
 
     ScreenFrame(scrollable = false) {
         TopBar(onHome = onHome, onBack = onBack)
+        if (keptNote) NoteText(stringResource(R.string.arrange_kept_partial))
         ScreenTitle(stringResource(R.string.arrange_add_app))
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
