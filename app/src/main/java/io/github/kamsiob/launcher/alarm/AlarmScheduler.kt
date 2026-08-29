@@ -61,9 +61,24 @@ object AlarmScheduler {
         }
     }
 
+    /**
+     * Cancels an alarm and any snooze standing behind it.
+     *
+     * A snooze is scheduled under a derived id so it can fire once without
+     * joining the saved list. Nothing tracked that id, so turning an alarm off
+     * or taking it off left its snooze to ring anyway, from an alarm the person
+     * had already dismissed.
+     */
     fun cancel(context: Context, alarm: Alarm) {
-        context.getSystemService(AlarmManager::class.java).cancel(intentFor(context, alarm))
+        val manager = context.getSystemService(AlarmManager::class.java)
+        manager.cancel(intentFor(context, alarm))
+        manager.cancel(intentFor(context, alarm.copy(id = snoozeIdFor(alarm.id))))
     }
+
+    /** The id a snooze of this alarm is scheduled under. */
+    fun snoozeIdFor(id: Int): Int = SNOOZE_ID_BASE + id
+
+    private const val SNOOZE_ID_BASE = 100_000
 
     fun rescheduleAll(context: Context, alarms: List<Alarm>) {
         alarms.forEach { schedule(context, it) }

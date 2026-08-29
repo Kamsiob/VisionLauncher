@@ -130,7 +130,7 @@ class AlarmRingActivity : ComponentActivity() {
         AlarmScheduler.schedule(
             this,
             Alarm(
-                id = DELAY_ID_BASE + id,
+                id = AlarmScheduler.snoozeIdFor(id),
                 hour = later.get(Calendar.HOUR_OF_DAY),
                 minute = later.get(Calendar.MINUTE),
                 label = label,
@@ -166,9 +166,6 @@ class AlarmRingActivity : ComponentActivity() {
         stopRinging()
     }
 
-    companion object {
-        private const val DELAY_ID_BASE = 100_000
-    }
 }
 
 @Composable

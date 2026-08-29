@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.data.ContactsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import io.github.kamsiob.launcher.ui.components.NoteText
 import io.github.kamsiob.launcher.ui.components.RowKey
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
@@ -26,7 +30,12 @@ fun ContactsScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
-    val all = remember(contacts) { contacts.allContacts() }
+    // Off the main thread. Walking the whole address book and sorting it with a
+    // Collator during composition is the same stall the app list had, and an
+    // address book can be far larger than an app list.
+    val all by produceState(initialValue = emptyList<ContactsRepository.Contact>(), contacts) {
+        value = withContext(Dispatchers.IO) { contacts.allContacts() }
+    }
     ScreenFrame(scrollable = false) {
         TopBar(onHome = onHome, onBack = onBack)
         ScreenTitle(stringResource(R.string.call_all_contacts))

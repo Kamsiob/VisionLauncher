@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -28,6 +29,8 @@ import androidx.compose.ui.unit.dp
 import android.Manifest
 import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.data.ContactsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import io.github.kamsiob.launcher.data.EmergencyContact
 import io.github.kamsiob.launcher.data.Favorite
 import io.github.kamsiob.launcher.ui.call.avatarColorFor
@@ -161,7 +164,9 @@ fun PickContactScreen(
     // leaving the screen empty forever.
     var reads by remember { mutableIntStateOf(0) }
     val permitted = remember(reads) { contacts.hasPermission() }
-    val all = remember(reads) { contacts.allContacts() }
+    val all by produceState(initialValue = emptyList<ContactsRepository.Contact>(), reads) {
+        value = withContext(Dispatchers.IO) { contacts.allContacts() }
+    }
     val requestContacts = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { reads++ }
