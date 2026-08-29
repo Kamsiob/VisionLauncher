@@ -71,6 +71,40 @@ android {
 tasks.matching { it.name.startsWith("assemble") || it.name.startsWith("bundle") }
     .configureEach { dependsOn(rootProject.tasks.named("emDashGate")) }
 
+/**
+ * The zero network promise, enforced rather than trusted.
+ *
+ * The app holds no INTERNET permission, so Android refuses any connection it
+ * could attempt, and a person can verify that themselves in the app info
+ * screen. A library could introduce the permission through manifest merging
+ * without anyone noticing, so the merged manifest is checked on every build.
+ *
+ * If the opt-in weather glance ever ships, this check is what has to be
+ * changed deliberately, in the same commit that adds the feature and the
+ * README sentence describing it.
+ */
+androidComponents {
+    onVariants { variant ->
+        val manifest = variant.artifacts.get(com.android.build.api.artifact.SingleArtifact.MERGED_MANIFEST)
+        val check = tasks.register("check${variant.name.replaceFirstChar { it.uppercase() }}HasNoInternet") {
+            inputs.file(manifest)
+            doLast {
+                val text = manifest.get().asFile.readText()
+                if (text.contains("android.permission.INTERNET")) {
+                    throw GradleException(
+                        "INTERNET permission reached the merged manifest. The app promises " +
+                            "that everything happens on the device, so this has to be a " +
+                            "deliberate change, not a merge."
+                    )
+                }
+            }
+        }
+        tasks.matching {
+            it.name == "assemble${variant.name.replaceFirstChar { c -> c.uppercase() }}"
+        }.configureEach { dependsOn(check) }
+    }
+}
+
 dependencies {
     implementation(platform(libs.compose.bom))
     androidTestImplementation(platform(libs.compose.bom))

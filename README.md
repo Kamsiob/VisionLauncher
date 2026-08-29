@@ -30,9 +30,13 @@ vision that is impaired today may be more impaired next year.
 
 ## What it deliberately cannot do
 
-These are design decisions, not missing features. The reasoning lives in
-`DECISIONS.md`.
+These are design decisions, not missing features. Several are checkable facts
+rather than promises. The reasoning lives in `DECISIONS.md`.
 
+- **It has no internet permission.** Android refuses any connection this app
+  could attempt, and you can verify that yourself in the app info screen. The
+  merged manifest is checked on every build, so the permission cannot arrive
+  through a library without someone deciding to let it in.
 - **It does not collect anything.** There is nowhere for your data to go. Messages
   the app sees are stored only on the phone and are never transmitted.
 - **It does not take over SMS.** Becoming the default SMS app would silently drop

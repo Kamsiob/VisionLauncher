@@ -16,7 +16,7 @@ It is not a screen reader product and it does not compete with TalkBack. It is a
 ## 2. Non-negotiables
 
 - Zero data collection. No accounts, no logins, no analytics, no telemetry, no ads, no subscriptions, no hosted backend.
-- Everything runs on the device. Network access only for features the user explicitly opts into, and only for those features.
+- Everything runs on the device. The app holds no INTERNET permission and a build gate fails if one reaches the merged manifest. Network access only for features the user explicitly opts into, and only for those features, which means the gate changes in the same commit as any such feature. See `DECISIONS.md` D29.
 - AGPLv3. Bundled content and models carry their own license and correct attribution.
 - Monetization is an optional Buy Me a Coffee link only, labeled "Support this work", present in both Settings and About.
 - Honest limits are a feature. Where the app cannot do something, it says so plainly in the interface.

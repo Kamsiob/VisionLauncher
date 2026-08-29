@@ -131,3 +131,9 @@ Found by pressing Done after adding an app and getting no confirmation screen. A
 ## D28. The threshold only promises the Home return when it can keep it
 
 "When you're done, press Home and you'll come straight back" is true only while this app holds the home role. Tested on a device where it did not, pressing Home landed on the stock launcher, which is precisely the disorientation the threshold screen exists to prevent. The line is now conditional on `isRoleHeld(ROLE_HOME)`, and otherwise says to come back the usual way. Overpromising on this screen would undercut the one screen whose whole job is honesty about what happens next.
+
+## D29. The zero network promise is a build gate, not a sentence
+
+The app holds no INTERNET permission, so Android refuses any connection it could attempt and a person can check that themselves in the app info screen. A library could introduce the permission through manifest merging without anyone noticing, so the merged manifest is checked on every build and the build fails if it appears.
+
+This turns the README's claim from a promise into a checkable fact, which is the standard the rest of the portfolio holds. When the opt-in weather glance ships, this gate is what has to be changed deliberately, in the same commit that adds the feature and the README sentence describing it.
