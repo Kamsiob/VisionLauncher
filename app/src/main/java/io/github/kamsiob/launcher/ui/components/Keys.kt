@@ -236,14 +236,17 @@ fun Tile(
                     .clip(RoundedCornerShape(Dimens.appIconRadius)),
             )
         }
-        // The label holds the grid's 28sp until a single word genuinely cannot
-        // fit the tile, which happens around 200 percent font scale. Shrinking
-        // to fit beats breaking "Magnifier" across two lines mid word.
+        // The same rule the appliance key follows. A one word label like
+        // "Messages" gets a single line and steps down to keep it whole; a two
+        // word app name may wrap between its words. Allowing two lines and
+        // letting the type shrink does not work, because a mid word break
+        // "fits" and the shrinking stops there.
+        val labelStyle = bodyStyle(size = TypeScale.tileLabel, weight = FontWeight.Bold, lineHeightFactor = 1.15f)
+            .copy(color = palette.text, textAlign = TextAlign.Center)
         BasicText(
             text = label,
-            style = bodyStyle(size = TypeScale.tileLabel, weight = FontWeight.Bold, lineHeightFactor = 1.15f)
-                .copy(color = palette.text, textAlign = TextAlign.Center),
-            maxLines = 2,
+            style = labelStyle,
+            maxLines = if (label.contains(' ')) 2 else 1,
             autoSize = TextAutoSize.StepBased(
                 minFontSize = stepSp(TypeScale.rowMeta),
                 maxFontSize = stepSp(TypeScale.tileLabel),
