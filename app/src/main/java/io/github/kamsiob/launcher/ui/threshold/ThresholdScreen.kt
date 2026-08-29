@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.nav.SystemDestination
@@ -33,6 +35,11 @@ fun ThresholdScreen(
     onHome: () -> Unit,
 ) {
     val destinationName = stringResource(destination.labelRes)
+    // "Press Home and you'll come straight back" is only true while this app
+    // holds the home role. Promising it otherwise would be exactly the kind of
+    // overpromise this screen exists to avoid.
+    val context = LocalContext.current
+    val holdsHome = remember(context) { holdsHomeRole(context) }
     ScreenFrame(topBar = { TopBar(onHome = onHome) }) {
         Spacer(modifier = Modifier.weight(1f))
         Icon(
@@ -43,7 +50,12 @@ fun ThresholdScreen(
         )
         SerifHeading(stringResource(R.string.threshold_title))
         BodyText(stringResource(R.string.threshold_body, destinationName))
-        BodyText(stringResource(R.string.threshold_return))
+        BodyText(
+            stringResource(
+                if (holdsHome) R.string.threshold_return
+                else R.string.threshold_return_not_home
+            )
+        )
         Spacer(modifier = Modifier.weight(1f))
         ApplianceKey(
             label = stringResource(R.string.threshold_continue, destinationName),
@@ -62,4 +74,14 @@ fun ThresholdScreen(
             committing = true,
         )
     }
+}
+
+/** Whether this app is the phone's home screen right now. */
+private fun holdsHomeRole(context: android.content.Context): Boolean {
+    val manager = context.getSystemService(android.app.role.RoleManager::class.java)
+        ?: return false
+    return runCatching {
+        manager.isRoleAvailable(android.app.role.RoleManager.ROLE_HOME) &&
+            manager.isRoleHeld(android.app.role.RoleManager.ROLE_HOME)
+    }.getOrDefault(false)
 }

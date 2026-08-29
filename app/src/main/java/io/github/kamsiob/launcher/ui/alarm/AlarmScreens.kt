@@ -1,6 +1,8 @@
 package io.github.kamsiob.launcher.ui.alarm
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.alarm.Alarm
 import io.github.kamsiob.launcher.ui.components.ApplianceKey
@@ -32,6 +35,7 @@ import io.github.kamsiob.launcher.ui.theme.LocalPalette
 import io.github.kamsiob.launcher.ui.theme.TypeScale
 import io.github.kamsiob.launcher.ui.theme.bodyStyle
 import io.github.kamsiob.launcher.ui.theme.serifStyle
+import io.github.kamsiob.launcher.ui.theme.stepSp
 
 /** Formats an alarm time the way the ringing screen shows it. */
 @Composable
@@ -115,11 +119,19 @@ fun AlarmEditScreen(
 
     ScreenFrame(topBar = { TopBar(onHome = onHome, onBack = onBack) }) {
         ScreenTitle(stringResource(if (existing == null) R.string.alarm_new else R.string.alarms_title))
-        Text(
+        // "8:00 AM" is wider than the clock's 94sp allows, so the time holds
+        // the clock size and steps down only as far as it must to stay on one
+        // line.
+        BasicText(
             text = alarmTimeText(hour, minute),
-            style = serifStyle(size = TypeScale.clock, lineHeightFactor = 1f),
-            color = palette.accent,
-            textAlign = TextAlign.Center,
+            style = serifStyle(size = TypeScale.clock, lineHeightFactor = 1.05f)
+                .copy(color = palette.accent, textAlign = TextAlign.Center),
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = stepSp(TypeScale.title),
+                maxFontSize = stepSp(TypeScale.clock),
+                stepSize = 2.sp,
+            ),
             modifier = Modifier.fillMaxWidth(),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.data.AppsRepository
 import io.github.kamsiob.launcher.data.BuiltIn
+import io.github.kamsiob.launcher.data.HomeLayout
 import io.github.kamsiob.launcher.data.SavedTile
 import io.github.kamsiob.launcher.support.Haptics
 import io.github.kamsiob.launcher.ui.components.ApplianceKey
@@ -68,7 +69,6 @@ fun ArrangeScreen(
     startingLayout: List<SavedTile>,
     apps: AppsRepository,
     onKeep: (List<SavedTile>) -> Unit,
-    onAddApp: () -> Unit,
     onExit: () -> Unit,
 ) {
     val view = LocalView.current
@@ -76,6 +76,7 @@ fun ArrangeScreen(
     var mode by remember { mutableStateOf<ArrangeMode>(ArrangeMode.Browsing) }
     var undo by remember { mutableStateOf<UndoState?>(null) }
     var showPreview by remember { mutableStateOf(false) }
+    var addingApp by remember { mutableStateOf(false) }
     var keptOnExit by remember { mutableStateOf(false) }
 
     // Pressing Home mid arrange keeps completed changes and says so.
@@ -98,6 +99,21 @@ fun ArrangeScreen(
     // whole screen, so a stray press never loses work.
     BackHandler(enabled = mode !is ArrangeMode.Browsing) {
         mode = ArrangeMode.Browsing
+    }
+
+    if (addingApp) {
+        AddAppScreen(
+            currentLayout = working,
+            apps = apps,
+            onAdd = { tile ->
+                working = HomeLayout.add(working, tile)
+                addingApp = false
+                Haptics.confirm(view)
+            },
+            onHome = exitKeepingChanges,
+            onBack = { addingApp = false },
+        )
+        return
     }
 
     if (showPreview) {
@@ -149,11 +165,7 @@ fun ArrangeScreen(
                             Haptics.tap(view)
                         } else {
                             val before = working
-                            working = working.toMutableList().apply {
-                                val moving = this[movingIndex]
-                                this[movingIndex] = this[index]
-                                this[index] = moving
-                            }
+                            working = HomeLayout.swap(working, movingIndex, index)
                             undo = UndoState.Moved(before)
                             mode = ArrangeMode.Browsing
                             Haptics.confirm(view)
@@ -164,7 +176,7 @@ fun ArrangeScreen(
                         mode = ArrangeMode.Browsing
                         undo = UndoState.CallLocked
                     }
-                    working[index].isEmpty -> onAddApp()
+                    working[index].isEmpty -> addingApp = true
                     else -> {
                         mode = ArrangeMode.Chosen(index)
                         Haptics.tap(view)
@@ -198,7 +210,7 @@ fun ArrangeScreen(
 
         ApplianceKey(
             label = stringResource(R.string.arrange_add_app),
-            onClick = onAddApp,
+            onClick = { addingApp = true },
             minHeight = Dimens.keySmall,
             fontSize = TypeScale.keyLabelSmall,
         )
@@ -214,22 +226,14 @@ fun ArrangeScreen(
             onMove = { mode = ArrangeMode.Moving(chosenIndex) },
             onPutFirst = {
                 val before = working
-                working = working.toMutableList().apply {
-                    val app = removeAt(chosenIndex)
-                    // Call always stays first, so the first free spot is index
-                    // 1 when Call holds the top.
-                    val target = if (isLocked(first())) 1 else 0
-                    add(target, app)
-                }
+                working = HomeLayout.putFirst(working, chosenIndex)
                 undo = UndoState.Moved(before)
                 mode = ArrangeMode.Browsing
                 Haptics.confirm(view)
             },
             onTakeOff = {
                 val before = working
-                working = working.toMutableList().apply {
-                    this[chosenIndex] = SavedTile.EMPTY
-                }
+                working = HomeLayout.takeOff(working, chosenIndex)
                 undo = UndoState.TakenOff(before, chosenLabel)
                 mode = ArrangeMode.Browsing
                 Haptics.confirm(view)
@@ -247,7 +251,7 @@ private sealed interface UndoState {
 }
 
 /** Call cannot be moved or removed. */
-private fun isLocked(tile: SavedTile): Boolean = tile.builtIn == BuiltIn.CALL.id
+private fun isLocked(tile: SavedTile): Boolean = HomeLayout.isLocked(tile)
 
 @Composable
 private fun tileLabel(tile: SavedTile, apps: AppsRepository): String {

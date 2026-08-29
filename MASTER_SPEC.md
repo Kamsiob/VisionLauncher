@@ -175,15 +175,17 @@ Arranging happens on the real home grid, never on an abstract list.
 - Pressing Home mid arrange keeps completed changes and says so.
 - Finishing shows a miniature preview with Keep it or Put it back the way it was. Every Keep snapshots the layout.
 - Settings carries a standing "Put my screen back" that restores the last kept layout.
-- Add an app is one flat alphabetical list with real icons. New apps land at the bottom and the screen says so.
+- Add an app is one flat alphabetical list with real icons, opened from inside the arranging session so the new tile joins the working layout and is confirmed by the same Keep. New apps take the first empty spot, or land at the bottom when the grid is full, and the screen says so.
 
 ### 5.13 Threshold (grid 21)
 
-Shown before every handoff to a system screen. Says what the next screen is, that it will look different and smaller, and that pressing Home returns them. Per destination dismissible with "Don't warn me about Wi-Fi again". Helper settings can restore all warnings.
+Shown before every handoff to a system screen. Says what the next screen is and that it will look different and smaller. The return line is conditional: it promises the Home button only while the app holds `ROLE_HOME`, because otherwise Home lands on whichever launcher does. Per destination dismissible with "Don't warn me about Wi-Fi again". Helper settings can restore all warnings.
 
 ### 5.14 Alarms
 
-A big face alarm ships as a built in feature and appears in the Add an app list. Large digits, few options, no snooze maze.
+A big face alarm ships as a built in feature and appears in the Add an app list. Large digits, few options, no snooze maze. The time is set with keys, not a wheel, because a wheel is a drag and nothing in this app requires dragging. Alarms are scheduled with `setAlarmClock` so they survive a killed process, appear in the system's next alarm indicator, and are rescheduled after a reboot.
+
+Settings is reached from the top of the More apps list, not from a home tile, because the six tiles belong to daily use and the grid draws no Settings tile. See `DECISIONS.md` D25.
 
 ## 6. Cross cutting build requirements
 

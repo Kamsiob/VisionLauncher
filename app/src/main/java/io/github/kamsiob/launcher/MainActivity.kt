@@ -26,13 +26,11 @@ import io.github.kamsiob.launcher.data.BuiltIn
 import io.github.kamsiob.launcher.data.ContactsRepository
 import io.github.kamsiob.launcher.data.EmergencyContact
 import io.github.kamsiob.launcher.data.Favorite
-import io.github.kamsiob.launcher.data.SavedTile
 import io.github.kamsiob.launcher.data.Settings
 import io.github.kamsiob.launcher.nav.SystemDestination
 import io.github.kamsiob.launcher.ui.alarm.AlarmEditScreen
 import io.github.kamsiob.launcher.ui.alarm.AlarmListScreen
 import io.github.kamsiob.launcher.ui.apps.MoreAppsScreen
-import io.github.kamsiob.launcher.ui.arrange.AddAppScreen
 import io.github.kamsiob.launcher.ui.arrange.ArrangeScreen
 import io.github.kamsiob.launcher.ui.call.CallScreen
 import io.github.kamsiob.launcher.ui.call.ContactsScreen
@@ -119,7 +117,6 @@ object Routes {
     const val PICK_FAVORITE = "pickfavorite"
     const val PICK_EMERGENCY = "pickemergency"
     const val ARRANGE = "arrange"
-    const val ADD_APP = "addapp"
     const val NOT_BUILT = "notbuilt/{feature}"
     const val THRESHOLD = "threshold/{dest}"
 
@@ -364,21 +361,7 @@ fun LauncherNav(
                 startingLayout = layout,
                 apps = apps,
                 onKeep = { scope.launch { app.layoutStore.keep(it) } },
-                onAddApp = { navController.navigate(Routes.ADD_APP) },
                 onExit = goBack,
-            )
-        }
-
-        composable(Routes.ADD_APP) {
-            AddAppScreen(
-                currentLayout = layout,
-                apps = apps,
-                onAdd = { tile ->
-                    scope.launch { app.layoutStore.setLayout(addTile(layout, tile)) }
-                    goBack()
-                },
-                onHome = goHome,
-                onBack = goBack,
             )
         }
 
@@ -409,19 +392,6 @@ fun LauncherNav(
                 )
             }
         }
-    }
-}
-
-/**
- * A new app takes the first empty spot, and lands at the bottom when the grid
- * is full. The Add an app screen says exactly this, so the two must agree.
- */
-private fun addTile(layout: List<SavedTile>, tile: SavedTile): List<SavedTile> {
-    val emptyIndex = layout.indexOfFirst { it.isEmpty }
-    return if (emptyIndex >= 0) {
-        layout.toMutableList().apply { this[emptyIndex] = tile }
-    } else {
-        layout + tile
     }
 }
 

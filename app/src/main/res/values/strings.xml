@@ -177,6 +177,7 @@
     <string name="threshold_title">You\'re about to leave this app</string>
     <string name="threshold_body">The next screen is %1$s. It looks different from here, with smaller writing.</string>
     <string name="threshold_return">When you\'re done, press Home and you\'ll come straight back.</string>
+    <string name="threshold_return_not_home">When you\'re done, come back the way you usually do.</string>
     <string name="threshold_continue">Continue to %1$s</string>
     <string name="threshold_stay">Stay here</string>
     <string name="threshold_dont_warn">Don\'t warn me about %1$s again</string>
@@ -232,7 +233,7 @@
     <string name="a11y_alarm_toggle_off">Turn the %1$s alarm off</string>
     <string name="alarm_stop">Stop</string>
     <string name="alarm_ten_more">10 more minutes</string>
-    <string name="alarm_none_yet">No alarms yet. The key below makes one.</string>
+    <string name="alarm_none_yet">No alarms yet.</string>
     <string name="alarm_channel_name">Alarms</string>
     <string name="alarm_channel_description">Alarm clock ringing</string>
     <string name="alarm_notification_title">Alarm</string>

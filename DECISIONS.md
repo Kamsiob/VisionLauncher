@@ -123,3 +123,11 @@ Found on a real device, not in review. Relying on a key's visible text to merge 
 So every key sets its label explicitly through `clearAndSetSemantics`: the appliance key speaks its label and sublabel, the tile speaks its label, the row key speaks its label and metadata, and the masthead and status pill each collapse to a single focus stop rather than exposing their parts twice. A caller can still override with a fuller sentence, which is how the Emergency key says it opens a screen rather than placing a call.
 
 The lesson generalizes: the accessibility tree is the thing to check, and it has to be checked on the device.
+
+## D27. Adding an app happens inside the arranging session
+
+Found by pressing Done after adding an app and getting no confirmation screen. Add an app was a separate route writing straight to the layout store, which meant the new tile bypassed both the working layout and the Keep it preview that spec 5.12 requires of every finish. It is now a mode inside the arranging screen, like the action sheet, so one session holds every change and one Keep confirms them all.
+
+## D28. The threshold only promises the Home return when it can keep it
+
+"When you're done, press Home and you'll come straight back" is true only while this app holds the home role. Tested on a device where it did not, pressing Home landed on the stock launcher, which is precisely the disorientation the threshold screen exists to prevent. The line is now conditional on `isRoleHeld(ROLE_HOME)`, and otherwise says to come back the usual way. Overpromising on this screen would undercut the one screen whose whole job is honesty about what happens next.
