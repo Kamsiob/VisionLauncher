@@ -113,4 +113,6 @@ All are recorded in full in `DECISIONS.md`.
 
 ## Where the build is
 
-`~/Desktop/visionlauncher-0.1.0-stage1.apk`, exported at the end of this session and confirmed to install. Exactly one copy of the app exists on the Pixel 8. There is no debug application ID suffix, by D22, so a debug and a release build collide deliberately rather than coexisting.
+`~/Desktop/visionlauncher-0.1.0-stage1.apk`, rebuilt clean and re-exported after the icon work, and confirmed to install. Exactly one copy of the app exists on the Pixel 8, and the previous export was deleted rather than left beside it.
+
+Every device setting borrowed for testing was put back: font scale, color inversion, TalkBack, airplane mode, the battery optimization allowance, and the ringer, which was found on vibrate and is on vibrate again. The Pixel 8's home app is still the Pixel Launcher, deliberately. There is no debug application ID suffix, by D22, so a debug and a release build collide deliberately rather than coexisting.
