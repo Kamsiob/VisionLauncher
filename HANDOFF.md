@@ -208,6 +208,19 @@ bugs. Both are worth knowing before the next session:
   key's reported coordinates lands on the keyboard instead. This made Today
   look as though it silently refused to save.
 
+## Where the deliverable is
+
+`~/Desktop/VisionLauncher-0.4.2.apk`, arm64, signed, 17MB. It is the only
+VisionLauncher APK on the machine; 0.1.0, 0.4.0 and 0.4.1 were deleted as each
+was superseded. The app is not installed on the real Pixel 8 at all, which is
+deliberate: nothing was ever installed there, and the release APK was tested on
+the emulator.
+
+Build the split APKs with `./gradlew assembleRelease -PabiSplits`. Without the
+flag the same command produces one APK carrying all four architectures, and
+`bundleRelease` produces the AAB Play needs. The flag and the bundle are
+mutually exclusive; AGP refuses to build a bundle while ABI splits are on.
+
 ## Next actions
 
 1. Icons no longer scale with the user's text step; they are fixed dp. Doing it safely needs the app icon bitmap cache keyed by size, a cap so a scaled app icon does not overrun the row key, and the reflow threshold recomputed. Tracked in issue #17's follow up. This is small and worth doing before Stage 2 grows the surface.
