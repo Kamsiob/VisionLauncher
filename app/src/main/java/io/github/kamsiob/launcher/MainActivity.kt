@@ -292,7 +292,7 @@ fun LauncherNav(
                 onSetOutlined = { scope.launch { app.settingsStore.setOutlined(it) } },
                 onSetTextStep = { scope.launch { app.settingsStore.setTextStep(it) } },
                 onChooseApps = { navController.navigate(Routes.ARRANGE) },
-                onRestore = { scope.launch { app.layoutStore.restoreSnapshot() } },
+                onRestore = { app.layoutStore.restoreSnapshot() },
                 onSeeHear = { navController.navigate(Routes.SEE_HEAR) },
                 onHelper = { navController.navigate(Routes.HELPER) },
                 onHome = goHome,

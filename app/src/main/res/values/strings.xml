@@ -110,6 +110,7 @@
     <string name="settings_restore">Put my screen back</string>
     <string name="settings_restore_sub">Undoes changes to your home screen</string>
     <string name="settings_restore_done">Your home screen is back the way it was.</string>
+    <string name="settings_restore_nothing">Your home screen has not changed.</string>
     <string name="settings_see_hear">See and hear better</string>
     <string name="settings_see_hear_sub">Set up this phone\'s built-in helpers</string>
     <string name="settings_helper">Helper settings</string>

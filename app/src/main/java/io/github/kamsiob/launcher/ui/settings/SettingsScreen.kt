@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +54,7 @@ import io.github.kamsiob.launcher.ui.theme.bodyStyle
 import io.github.kamsiob.launcher.ui.theme.monoStyle
 import androidx.compose.ui.platform.LocalView
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Grid 14. The simple tier on one screen: text size, Look, Choose your apps,
@@ -68,17 +70,20 @@ fun SettingsScreen(
     onSetOutlined: (Boolean) -> Unit,
     onSetTextStep: (TextStep) -> Unit,
     onChooseApps: () -> Unit,
-    onRestore: () -> Unit,
+    onRestore: suspend () -> Boolean,
     onSeeHear: () -> Unit,
     onHelper: () -> Unit,
     onHome: () -> Unit,
 ) {
     val view = LocalView.current
-    var restored by remember { mutableStateOf(false) }
-    LaunchedEffect(restored) {
-        if (restored) {
+    val scope = rememberCoroutineScope()
+    // Null while nothing has been said, then true or false for what actually
+    // happened. The key must never confirm an undo it did not perform.
+    var restoreResult by remember { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(restoreResult) {
+        if (restoreResult != null) {
             delay(6000)
-            restored = false
+            restoreResult = null
         }
     }
 
@@ -127,12 +132,16 @@ fun SettingsScreen(
             icon = LineIcons.restore,
             committing = true,
             onClick = {
-                onRestore()
-                restored = true
+                scope.launch { restoreResult = onRestore() }
             },
         )
-        if (restored) {
-            StatusPill(text = stringResource(R.string.settings_restore_done))
+        restoreResult?.let { didChange ->
+            StatusPill(
+                text = stringResource(
+                    if (didChange) R.string.settings_restore_done
+                    else R.string.settings_restore_nothing
+                )
+            )
         }
         RowKey(
             label = stringResource(R.string.settings_see_hear),

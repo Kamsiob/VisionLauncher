@@ -173,8 +173,8 @@ Arranging happens on the real home grid, never on an abstract list.
 - Taking an app off shows a lamp colored undo strip: "WhatsApp was taken off. Put it back." Nothing is ever uninstalled. Language is always placement, never deletion.
 - Call cannot be moved or removed. Attempting it says "Call always stays first."
 - Pressing Home mid arrange keeps completed changes and says so.
-- Finishing shows a miniature preview with Keep it or Put it back the way it was. Every Keep snapshots the layout.
-- Settings carries a standing "Put my screen back" that restores the last kept layout.
+- Finishing shows a miniature preview with Keep it or Put it back the way it was. Every Keep snapshots the layout *as it was before that session*, which is what the standing restore undoes.
+- Settings carries a standing "Put my screen back" that undoes the most recent Keep. It reports whether it actually changed anything and never confirms an undo it did not perform. See `DECISIONS.md` D30.
 - Add an app is one flat alphabetical list with real icons, opened from inside the arranging session so the new tile joins the working layout and is confirmed by the same Keep. New apps take the first empty spot, or land at the bottom when the grid is full, and the screen says so.
 
 ### 5.13 Threshold (grid 21)

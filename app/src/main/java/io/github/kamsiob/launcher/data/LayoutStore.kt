@@ -85,19 +85,34 @@ class LayoutStore(private val context: Context) {
         context.layoutData.edit { it[Keys.current] = json.encodeToString(tiles) }
     }
 
-    /** Called on every Keep: the current layout becomes the restore point. */
+    /**
+     * Called on every Keep. The snapshot holds what the screen looked like
+     * BEFORE this change, which is what makes "Put my screen back" able to undo
+     * the most recent arranging session. Snapshotting the new layout instead
+     * would leave that key with nothing to restore while still claiming it had
+     * put the screen back.
+     */
     suspend fun keep(tiles: List<SavedTile>) {
         context.layoutData.edit { prefs ->
+            prefs[Keys.snapshot] = prefs[Keys.current] ?: json.encodeToString(defaultLayout)
             prefs[Keys.current] = json.encodeToString(tiles)
-            prefs[Keys.snapshot] = json.encodeToString(tiles)
         }
     }
 
-    /** The standing "Put my screen back". */
-    suspend fun restoreSnapshot() {
+    /**
+     * The standing "Put my screen back". Returns true only when it genuinely
+     * changed something, so the screen can say what actually happened rather
+     * than confirming an action it did not take.
+     */
+    suspend fun restoreSnapshot(): Boolean {
+        var changed = false
         context.layoutData.edit { prefs ->
             val snap = prefs[Keys.snapshot]
-            if (snap != null) prefs[Keys.current] = snap
+            if (snap != null && snap != prefs[Keys.current]) {
+                prefs[Keys.current] = snap
+                changed = true
+            }
         }
+        return changed
     }
 }

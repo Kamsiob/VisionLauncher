@@ -141,3 +141,11 @@ Found by pressing Done after adding an app and getting no confirmation screen. A
 The app holds no INTERNET permission, so Android refuses any connection it could attempt and a person can check that themselves in the app info screen. A library could introduce the permission through manifest merging without anyone noticing, so the merged manifest is checked on every build and the build fails if it appears.
 
 This turns the README's claim from a promise into a checkable fact, which is the standard the rest of the portfolio holds. When the opt-in weather glance ships, this gate is what has to be changed deliberately, in the same commit that adds the feature and the README sentence describing it.
+
+## D30. The restore point is the layout before the change, not after it
+
+"Put my screen back" was a lie. Every Keep wrote the snapshot and the current layout to the same value, which made restoring a provable no operation, and the screen still announced "Your home screen is back the way it was." Found by arranging a tile, keeping it, tapping the restore key, and watching the layout not move.
+
+A false confirmation is the worst defect this app can carry. Every other promise it makes, the attention queue's repair keys, the undo strip, the honesty line on Emergency, rests on the interface telling the truth about what it just did. One key that confirms an action it did not perform undermines all of them.
+
+The snapshot now holds the layout as it was *before* the most recent Keep, so the restore key undoes the last arranging session. The restore also reports whether it changed anything, and the screen says "Your home screen has not changed" when there was nothing to undo, rather than confirming an undo that did not happen. Five tests pin the semantics.
