@@ -207,3 +207,17 @@ Three changes. Back is now always handled while arranging and steps out one laye
 The Home key inside the session also went to Settings rather than home, while labeled "Home" and announcing "Go to the home screen". It goes home.
 
 This is the fifth and sixth instance of the pattern D30 named, and the first where the false sentence sat in a code comment as well as the interface.
+
+## D36. The first frame knows the real settings
+
+DataStore emits asynchronously, so the first composed frames always used the defaults: the light palette and `onboardingDone = false`. Someone who chose Dark got a full screen cream flash on every cold start, and the navigation graph was built with Onboarding as its start destination before the real value arrived. On a launcher, which is the first thing a person sees after unlocking, that is not a rare edge.
+
+A small `SharedPreferences` mirror now holds the four values the first frame needs, written from one place on every emission of the real settings so it cannot drift and so an install that predates it is corrected on its first launch. DataStore remains the source of truth; the mirror is a boot cache and nothing reads it after the first frame. SharedPreferences is the right tool here precisely because it is synchronous and tiny, which is the property DataStore deliberately does not have.
+
+The window background is set from the same read before `setContent`, so even the frame before composition is the right color.
+
+## D37. The status bar matches what is behind it, not the system's night mode
+
+`themes.xml` hardcoded `windowLightStatusBar` true, which asks for dark icons. The home screen puts the navy masthead under the status bar, so the clock and battery were dark on dark. The app is edge to edge, so what sits behind the status bar depends on the screen and on the chosen Look, neither of which the system's night mode knows about.
+
+The appearance is now set from the route and the Look together: light icons over the masthead on home and over the dark background everywhere in the dark theme, dark icons over paper.

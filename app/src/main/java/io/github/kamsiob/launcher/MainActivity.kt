@@ -15,9 +15,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.kamsiob.launcher.alarm.Alarm
@@ -48,6 +50,7 @@ import io.github.kamsiob.launcher.ui.settings.PickContactScreen
 import io.github.kamsiob.launcher.ui.settings.SeeHearScreen
 import io.github.kamsiob.launcher.ui.settings.SettingsScreen
 import io.github.kamsiob.launcher.ui.theme.LauncherTheme
+import io.github.kamsiob.launcher.ui.theme.Look
 import io.github.kamsiob.launcher.ui.threshold.ThresholdScreen
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -67,9 +70,19 @@ class MainActivity : ComponentActivity() {
         val contacts = ContactsRepository(this)
         val alarmStore = AlarmStore(this)
 
+        // Read synchronously so frame one already knows the chosen theme and
+        // whether first run is behind us, instead of painting the light palette
+        // and building the graph with Onboarding as its start destination.
+        val boot = app.bootSettings.read()
+        window.setBackgroundDrawable(
+            android.graphics.drawable.ColorDrawable(
+                if (boot.look == Look.DARK) 0xFF1B1D20.toInt() else 0xFFF4EEE1.toInt()
+            )
+        )
+
         setContent {
             val settings by app.settingsStore.settings
-                .collectAsStateWithLifecycle(initialValue = Settings())
+                .collectAsStateWithLifecycle(initialValue = boot)
             LauncherTheme(
                 look = settings.look,
                 outlined = settings.outlined,
@@ -165,6 +178,17 @@ fun LauncherNav(
         } else {
             navController.navigate(Routes.threshold(dest))
         }
+    }
+
+    // The status bar sits over whatever the screen puts under it. On home that
+    // is the navy masthead and the icons must be light; everywhere else it is
+    // the screen background. It was hardcoded light-background in themes.xml,
+    // so the clock and battery were dark over a dark masthead.
+    val route = navController.currentBackStackEntryAsState().value?.destination?.route
+    val overDarkTop = route == Routes.HOME || settings.look == Look.DARK
+    LaunchedEffect(overDarkTop) {
+        WindowCompat.getInsetsController(activity.window, activity.window.decorView)
+            .isAppearanceLightStatusBars = !overDarkTop
     }
 
     val start = if (settings.onboardingDone) Routes.HOME else Routes.ONBOARDING
