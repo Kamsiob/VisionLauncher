@@ -1,0 +1,97 @@
+# DECISIONS
+
+Settled decisions and, more importantly, rejected alternatives with the reason. If something here gets reopened, there should be a new fact, not a fresh opinion.
+
+Add to this file whenever a real decision is made. Never delete an entry; supersede it with a dated note.
+
+## D1. No AccessibilityService, anywhere
+
+Google Play allows AccessibilityService broadly but only apps that help people with disabilities may set `isAccessibilityTool` and skip prominent disclosure, and the policy explicitly lists launchers as ineligible. Declaring one means the permission declaration form, review, and ongoing takedown risk. Everything this app needs is achievable with narrower sanctioned APIs. If a future feature appears to need an AccessibilityService, treat that as a design smell and build a handoff instead.
+
+## D2. Do not take the default SMS role
+
+RCS is closed to third party apps. Google has kept the RCS API on a private allowlist since 2019 and no third party messaging app has access. Taking `ROLE_SMS` would drop the user to plain SMS and MMS, which means heavily compressed family photos, degraded group chats, no end to end encryption, and broken RCS with iPhone family members. All four of those hurt this audience specifically. Rejected.
+
+## D3. Messaging through NotificationListenerService with RemoteInput replies
+
+The consequence of D2. Reading notifications and firing the notification's own inline reply action keeps every message on its native transport, so RCS, WhatsApp, and Telegram all keep working normally and land in one large text inbox.
+
+Accepted cost: this pipeline is fragile. See D4.
+
+## D4. Messages are persisted locally
+
+The review found that an inbox which forgets anything leaving the notification shade is a usability trap that matches no user's mental model of messages. Every message the listener sees is written to a local database and the inbox reads from there. Never transmitted anywhere.
+
+## D5. Battery optimization onboarding is mandatory
+
+OEM battery optimizers routinely kill notification listeners, and Chinese ROMs are the worst offenders. Without an exemption the messaging feature works in the demo and dies in month six. The onboarding step is a first class requirement, the state is re-checked later, and losing the exemption raises an item in the attention queue.
+
+## D6. No default dialer
+
+`ROLE_DIALER` brings heavier obligations and Play scrutiny for little gain. `ACTION_CALL` and `ACTION_DIAL` behind a custom front end deliver the large button calling experience without becoming responsible for the whole call stack.
+
+## D7. Emergency hands off, never reimplements
+
+The Emergency screen offers a 911 key that opens the system emergency flow and an alert key that calls a chosen contact and texts a location. The app does not implement emergency calling, does not claim fall detection (no third party API exists), and states plainly that both need a signal and that this is not a monitored medical alert service. Competitors overpromise here and fail silently, which is worse than not offering it.
+
+## D8. No keyboard in v1
+
+A large key accessible IME would close the last gap, but building a robust keyboard is substantial hand tuned work beyond AI assisted development, and it carries its own Play and security surface. Rejected for v1. The reply screen answers the same problem with on device voice dictation, six preset phrases, and the system keyboard as a fallback. Revisit only with a hand coding collaborator.
+
+## D9. On device speech recognition only
+
+`createOnDeviceSpeechRecognizer()` on API 33 and above. Below that, hide the voice key. Network speech recognition is never used, in any fallback, under any circumstance, because it would break the zero data promise.
+
+## D10. No QR or cloud config transfer in v1
+
+Deferred by explicit instruction. Caregiver transfer in v1 is a printable setup sheet and a local settings file only, both fully offline. The QR path was designed and is local only, phone to phone, with no server; it is a v1.x candidate, not a canceled idea.
+
+## D11. Fixed layout, no adaptive reordering
+
+Procedural memory survives aging far better than episodic memory, so a layout the hands can learn is worth more than a clever one. This is why the app rejects the adaptive list model that elegant minimalist launchers use. Nothing on the home screen moves unless the user moves it.
+
+## D12. Arranging happens on the real grid, with taps only
+
+An earlier version used a numbered vertical list with up and down keys. Rejected because mapping list position 3 back to a two column grid is a translation the user should never have to do. Drag and drop was rejected outright: tremor turns drags into misfires, and older adults prefer click to designs over direct manipulation.
+
+Final model: tap the app, it lifts, tap the destination, they trade places. Plus Put it first as a one tap shortcut that also solves any off screen destination. Done is permanently visible so nobody gets stranded in the mode.
+
+## D13. Light default, dark by choice, Outlined by choice
+
+Roughly a third of adults have astigmatism and suffer halation on dark themes, while cataract and photophobia users genuinely need dark. There is no single right answer, so light is the default and dark is one obvious tap away.
+
+Outlined was added after the design review found that soft shadows carry far less edge contrast than borders and likely fail the 3:1 non text contrast threshold, which matters enormously for the low vision audience this app exists to serve. If real user testing shows the default shadows are insufficient, make Outlined the default rather than weakening it.
+
+## D14. Red is reserved for emergency, lamp yellow is the caution voice
+
+Reserving red left the design with no way to signal errors and destructive actions, which the review flagged. Resolved by making the lamp treatment the official caution voice: warm yellow, an icon, plain words, and an explicit undo. Nothing in this app is destructive enough to need red.
+
+## D15. Instructional footnotes are banned
+
+Stigma research names obvious instructions as an accentuated social signifier that makes older adults perceive a product as being for the impaired. Notes must qualify as a brand promise, a Play policy requirement, or a statement of where something will happen. Everything else is deleted and the interface proves the point instead.
+
+## D16. Young Serif is confined to the clock
+
+It is a display face, license clean under SIL OFL, and gives the product warmth. Display serifs are a poor choice for labels and body text at large sizes, so screen titles moved to Atkinson at weight 800. Being Latin only is acceptable because it only renders digits.
+
+## D17. Atkinson Hyperlegible is chosen honestly
+
+No peer reviewed study shows it beats a standard sans for low vision reading speed. The evidence says print size, contrast, and spacing dominate. It is chosen for genuine character disambiguation, an open license, and coherence, and it will never be marketed as clinically superior.
+
+## D18. Tesseract is the OCR engine, ML Kit is the fallback
+
+Tesseract is Apache 2.0, fully open source, fully offline, and compatible with AGPLv3. ML Kit is free and easy but a proprietary Google binary, which dents the fully local promise. Use Tesseract; switch only if accuracy on real medication labels proves inadequate, and disclose the dependency if switched.
+
+## D19. Weather is opt in and off by default
+
+The daily use research says weather is the single most wanted glanceable for this audience, so it earns a place on the masthead date line. It stays off by default and opt in because it is the only feature that might touch the network.
+
+## D20. The name is undecided
+
+Placeholder `Launcher by Kamsiob`, application ID `io.github.kamsiob.launcher`. The application ID is permanent once published, so this must be settled before the first Play upload. The `io.github` namespace is used across the portfolio because kamsiob.com returns 406 to automated well known path verification.
+
+**Superseded, August 29, 2026.** The name is VisionLauncher and the application ID is `io.github.kamsiob.launcher`, both chosen by the user in the first build session. The placeholder ID became the real ID deliberately, not by drift: the `io.github` namespace is verifiable through the GitHub account and is already the portfolio convention.
+
+## D21. Signed commits from the first commit, history never rewritten
+
+Every commit is SSH signed with the portfolio signing key, matching the Health Trail setup. Vigilant mode applies at the account level. History is never rewritten to add signatures to old commits; signing starts at the first commit and stays on.

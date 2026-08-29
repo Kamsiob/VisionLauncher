@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Senior and Low Vision Launcher, Design Grid v4 Final</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&family=Atkinson+Hyperlegible+Mono:wght@400;700&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4EEE1;
+    --card:#FDFAF2;
+    --ink:#2A2723;
+    --ink-soft:#5A544A;
+    --navy:#2E4A66;
+    --navy-deep:#243C54;
+    --cream:#F6EFDF;
+    --hairline:rgba(42,39,35,.28);
+    --red:#AF3B2B;
+    --green:#35704E;
+    --green-tint:#E9EFE3;
+    --lamp:#F4E4B9;
+    --shadow:0 2px 6px rgba(42,39,35,.16), 0 1px 2px rgba(42,39,35,.10);
+    --dark-bg:#1B1D20;
+    --dark-card:#282B31;
+    --dark-text:#F1EADC;
+    --dark-navy:#22303F;
+    --dark-accent:#9FBEDD;
+    --dark-shadow:0 2px 6px rgba(0,0,0,.5);
+    --page:#E6DFCE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--page);
+    font-family:'Atkinson Hyperlegible Next','Atkinson Hyperlegible',sans-serif;
+    color:var(--ink);
+    padding:48px 40px 80px;
+  }
+
+  .doc-header{max-width:1480px;margin:0 auto 14px;}
+  .doc-header h1{font-family:'Young Serif',serif;font-size:32px;font-weight:400;}
+  .doc-header .sub{font-family:'Atkinson Hyperlegible Mono',monospace;font-size:14px;color:var(--ink-soft);margin-top:8px;line-height:1.6;}
+  .tokens{
+    max-width:1480px;margin:20px auto 44px;
+    background:var(--paper);border-radius:16px;box-shadow:var(--shadow);
+    padding:20px 24px;display:flex;flex-wrap:wrap;gap:30px;align-items:flex-start;
+  }
+  .tok-group{min-width:220px;}
+  .tok-group h2{font-size:15px;font-weight:800;margin-bottom:8px;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{display:flex;align-items:center;gap:6px;font-family:'Atkinson Hyperlegible Mono',monospace;font-size:12px;}
+  .chip i{display:inline-block;width:22px;height:22px;border-radius:6px;border:1px solid rgba(0,0,0,.2);}
+  .tok-group ul{list-style:none;font-family:'Atkinson Hyperlegible Mono',monospace;font-size:12px;line-height:1.7;}
+
+  .grid{
+    max-width:1480px;margin:0 auto;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(412px,412px));
+    gap:60px 44px;justify-content:center;
+  }
+  .cell{width:412px;}
+  .caption{margin-top:14px;font-size:14px;line-height:1.5;max-width:412px;}
+  .caption b{font-family:'Atkinson Hyperlegible Mono',monospace;font-weight:700;font-size:13px;display:block;margin-bottom:2px;}
+
+  .screen{
+    width:412px;min-height:892px;
+    background:var(--paper);
+    border:1px solid var(--ink);border-radius:30px;
+    padding:28px 24px 30px;
+    display:flex;flex-direction:column;gap:16px;
+    overflow:hidden;position:relative;
+  }
+  .screen.dark{background:var(--dark-bg);color:var(--dark-text);}
+
+  .masthead{
+    background:var(--navy);color:var(--cream);
+    margin:-28px -24px 0;padding:34px 24px 26px;
+  }
+  .dark .masthead{background:var(--dark-navy);}
+  .masthead .clock{font-family:'Young Serif',serif;font-weight:400;font-size:94px;letter-spacing:-0.01em;line-height:1;}
+  .masthead .dayline{font-size:28px;font-weight:500;margin-top:10px;display:flex;align-items:center;gap:12px;}
+  .masthead .dayline svg{width:32px;height:32px;stroke-width:2.4;}
+  .masthead .dateline{font-family:'Atkinson Hyperlegible Mono',monospace;font-size:19px;color:#C7CFD8;margin-top:4px;}
+
+  .key{
+    background:var(--card);
+    border:none;border-radius:20px;
+    box-shadow:var(--shadow);
+    color:var(--ink);
+    display:flex;align-items:center;justify-content:center;gap:12px;
+    font-weight:700;font-size:26px;line-height:1.2;
+    min-height:88px;
+    padding:12px 18px;text-align:center;
+  }
+  .key.primary{background:var(--navy);color:var(--cream);}
+  .key.emergency{background:var(--red);color:#FFF6EC;}
+  .key.small{min-height:72px;font-size:24px;}
+  .key .sublabel{display:block;font-weight:500;font-size:18px;margin-top:3px;}
+  .dark .key{background:var(--dark-card);color:var(--dark-text);box-shadow:var(--dark-shadow);}
+  .dark .key.primary{background:var(--dark-accent);color:var(--dark-bg);}
+
+  /* strong outlines theme: borders replace shadows, one separation device */
+  .outlined .key{box-shadow:none;border:3px solid var(--ink);}
+  .outlined .key.primary{border-color:var(--navy-deep);}
+  .outlined .lamp{box-shadow:none;border:3px solid var(--ink);}
+  .outlined .status{border:2px solid var(--green);}
+
+  .lifted{outline:4px solid var(--navy);outline-offset:3px;}
+
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .tile{min-height:128px;flex-direction:column;gap:8px;font-size:28px;}
+  .tile svg{width:46px;height:46px;color:var(--navy);}
+  .dark .tile svg{color:var(--dark-accent);}
+  .appicon{
+    width:52px;height:52px;border-radius:14px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    color:#FFF;font-size:26px;font-weight:800;
+  }
+
+  svg{stroke:currentColor;fill:none;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+
+  .status{
+    font-family:'Atkinson Hyperlegible Mono',monospace;
+    font-size:19px;display:inline-flex;align-items:center;gap:10px;line-height:1.35;
+    background:var(--green-tint);border-radius:999px;padding:10px 18px;align-self:flex-start;
+  }
+  .dark .status{background:#242B24;color:var(--dark-text);}
+  .dot{width:15px;height:15px;border-radius:50%;flex-shrink:0;}
+  .dot.ok{background:var(--green);}
+
+  .lamp{
+    background:var(--lamp);border-radius:20px;box-shadow:var(--shadow);
+    padding:18px;display:flex;flex-direction:column;gap:14px;
+  }
+  .lamp .count{font-family:'Atkinson Hyperlegible Mono',monospace;font-size:18px;font-weight:700;}
+  .lamp .say{font-size:23px;font-weight:700;line-height:1.3;display:flex;gap:12px;align-items:flex-start;}
+  .lamp svg{width:32px;height:32px;margin-top:1px;}
+  .lamp .item{display:flex;flex-direction:column;gap:10px;}
+  .lamp hr{border:none;border-top:2px solid rgba(42,39,35,.18);}
+
+  .undo{
+    background:var(--lamp);border-radius:16px;box-shadow:var(--shadow);
+    display:flex;align-items:center;gap:12px;justify-content:space-between;
+    padding:14px 18px;font-size:21px;font-weight:700;
+  }
+  .undo .act{color:var(--navy);text-decoration:underline;text-underline-offset:4px;}
+
+  .topbar{display:flex;gap:12px;}
+  .homekey{flex:1;min-height:76px;font-size:24px;}
+  .screen-title{font-weight:800;font-size:34px;color:var(--navy);letter-spacing:-0.01em;}
+  .dark .screen-title{color:var(--dark-accent);}
+
+  .rowkey{justify-content:flex-start;text-align:left;font-size:26px;gap:16px;min-height:94px;}
+  .rowkey .meta{font-family:'Atkinson Hyperlegible Mono',monospace;font-weight:400;font-size:16px;color:var(--ink-soft);display:block;margin-top:3px;}
+  .avatar{
+    width:60px;height:60px;border-radius:50%;flex-shrink:0;
+    background:var(--navy);color:var(--cream);
+    display:flex;align-items:center;justify-content:center;
+    font-size:26px;font-weight:800;
+  }
+  .note{
+    font-family:'Atkinson Hyperlegible Mono',monospace;font-size:17px;
+    color:var(--ink-soft);line-height:1.5;text-align:left;
+  }
+  .dark .note{color:#B5AE9F;}
+
+  .pad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .pad .key{min-height:96px;font-size:38px;font-weight:800;}
+  .dialed{font-family:'Atkinson Hyperlegible Mono',monospace;font-size:34px;text-align:center;min-height:44px;letter-spacing:0.06em;}
+
+  .bigmsg{font-size:34px;font-weight:500;line-height:1.4;}
+  .from{font-size:22px;font-weight:700;display:flex;align-items:center;gap:12px;}
+
+  .phrases{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .phrases .key{min-height:84px;font-size:25px;}
+
+  .camview{
+    background:#101214;border-radius:20px;flex:1;min-height:300px;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  .label-mock{
+    background:#E9E4D6;color:#3A3E44;border-radius:8px;padding:22px 18px;
+    font-size:30px;font-weight:700;line-height:1.3;transform:rotate(-2deg);
+    filter:blur(1.1px);
+  }
+  .label-mock.frozen{filter:none;transform:none;}
+  .zoomrow{display:flex;gap:12px;}
+  .zoomrow .key{flex:1;font-size:40px;font-weight:800;}
+
+  .reading{
+    display:flex;align-items:center;gap:12px;
+    font-family:'Atkinson Hyperlegible Mono',monospace;font-size:19px;color:var(--green);font-weight:700;
+  }
+  .reading .dot{background:var(--green);}
+
+  .photo{
+    background:#8FA08A;border-radius:20px;flex:1;min-height:420px;
+    display:flex;align-items:flex-end;padding:16px;
+  }
+  .photo .tag{
+    background:var(--card);border-radius:10px;box-shadow:var(--shadow);
+    font-family:'Atkinson Hyperlegible Mono',monospace;font-size:17px;padding:8px 12px;
+  }
+  .nav2{display:flex;gap:12px;}
+  .nav2 .key{flex:1;}
+
+  .card2{
+    background:var(--card);border-radius:20px;box-shadow:var(--shadow);
+    padding:18px;display:flex;flex-direction:column;gap:12px;text-align:left;
+  }
+  .card2 .when{font-family:'Atkinson Hyperlegible Mono',monospace;font-size:19px;color:var(--ink-soft);}
+  .card2 .what{font-size:30px;font-weight:800;line-height:1.2;}
+  .card2.done .what{color:var(--green);}
+  .doneline{display:flex;gap:10px;align-items:center;color:var(--green);font-weight:700;font-size:22px;}
+  .doneline svg{width:28px;height:28px;}
+
+  .sizerow{display:flex;gap:12px;align-items:stretch;}
+  .sizerow .key{flex:1;flex-direction:column;gap:4px;}
+  .sizerow .key:nth-child(1){font-size:24px;}
+  .sizerow .key:nth-child(2){font-size:32px;}
+  .sizerow .key:nth-child(3){font-size:42px;}
+  .selected{outline:4px solid var(--navy);outline-offset:2px;}
+  .nowtag{font-family:'Atkinson Hyperlegible Mono',monospace;font-size:15px;font-weight:700;color:var(--navy);}
+  .themerow{display:flex;gap:12px;}
+  .themecard{flex:1;flex-direction:column;gap:8px;min-height:112px;font-size:24px;}
+  .themecard .mini{width:100%;height:40px;border-radius:8px;border:1px solid var(--hairline);}
+  .mini.light{background:var(--paper);}
+  .mini.darkmini{background:var(--dark-bg);}
+  .mini.outmini{background:var(--paper);border:3px solid var(--ink);}
+  .sect{font-size:21px;font-weight:700;margin-top:2px;text-align:left;}
+
+  .promptbar{
+    background:var(--navy);color:var(--cream);border-radius:16px;
+    font-size:22px;font-weight:700;line-height:1.3;
+    padding:14px 18px;text-align:left;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  .promptbar .donechip{
+    background:var(--cream);color:var(--navy);border-radius:12px;
+    font-size:21px;font-weight:800;padding:12px 18px;flex-shrink:0;
+  }
+  .sheet{
+    background:var(--card);border-radius:22px;box-shadow:0 6px 18px rgba(42,39,35,.28);
+    padding:20px;display:flex;flex-direction:column;gap:12px;
+  }
+  .sheet .wholine{display:flex;align-items:center;gap:14px;font-size:28px;font-weight:800;justify-content:flex-start;}
+  .dimmed{opacity:.38;}
+
+  .miniphone{
+    align-self:center;width:220px;background:var(--paper);
+    border:1px solid var(--ink);border-radius:18px;padding:0 12px 14px;overflow:hidden;
+  }
+  .miniphone .mhead{background:var(--navy);color:var(--cream);margin:0 -12px 10px;padding:12px 14px 10px;}
+  .miniphone .mclock{font-family:'Young Serif',serif;font-size:32px;line-height:1;}
+  .minitiles{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .minitiles span{
+    background:var(--card);border-radius:8px;box-shadow:0 1px 3px rgba(42,39,35,.18);
+    font-size:13px;font-weight:700;text-align:center;padding:10px 2px;
+  }
+
+  .h2{font-family:'Young Serif',serif;font-weight:400;font-size:36px;line-height:1.15;text-align:left;color:var(--navy);}
+  .dark .h2{color:var(--dark-accent);}
+  .body{font-size:24px;line-height:1.45;font-weight:500;text-align:left;}
+  .spacer{flex:1;}
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <h1>Senior and low vision launcher, design grid v4, final</h1>
+  <div class="sub">Working name: TBD &nbsp;|&nbsp; 1px = 1dp, frames 412dp wide &nbsp;|&nbsp; This file is the measurement authority<br>
+  v4 build requirements not visible in frames: full TalkBack labeling and focus order on every screen; messages persisted in a local on-device store; all text in sp, tested at 200 percent font scale; RTL mirroring and Arabic, Spanish, Chinese locales with Noto fallbacks (Young Serif is Latin-only, clock digits only); system Remove-animations respected; tremor debounce and enlarged touch slop everywhere; weather is opt-in and off by default.</div>
+</div>
+
+<div class="tokens">
+  <div class="tok-group">
+    <h2>Color</h2>
+    <div class="chips">
+      <span class="chip"><i style="background:#F4EEE1"></i>paper F4EEE1</span>
+      <span class="chip"><i style="background:#FDFAF2"></i>card FDFAF2</span>
+      <span class="chip"><i style="background:#2A2723"></i>ink 2A2723</span>
+      <span class="chip"><i style="background:#2E4A66"></i>navy 2E4A66</span>
+      <span class="chip"><i style="background:#F6EFDF"></i>cream F6EFDF</span>
+      <span class="chip"><i style="background:#F4E4B9"></i>lamp F4E4B9</span>
+      <span class="chip"><i style="background:#35704E"></i>green 35704E</span>
+      <span class="chip"><i style="background:#AF3B2B"></i>red AF3B2B</span>
+    </div>
+    <ul style="margin-top:8px">
+      <li>red: emergency only. green: well and done only</li>
+      <li>lamp: attention, caution, and undo. The one</li>
+      <li>non-red warning voice, always with icon + words</li>
+    </ul>
+  </div>
+  <div class="tok-group">
+    <h2>Type</h2>
+    <ul>
+      <li>Young Serif (OFL, confirmed): clock only</li>
+      <li>Atkinson Hyperlegible Next: everything else,</li>
+      <li>titles at 800 weight in navy</li>
+      <li>Atkinson Hyperlegible Mono: time + status</li>
+      <li>clock 94 / titles 34 / labels 25-28 / body 24</li>
+    </ul>
+  </div>
+  <div class="tok-group">
+    <h2>Depth + themes</h2>
+    <ul>
+      <li>default: soft-shadow keys, no borders</li>
+      <li>Strong outlines theme: 3dp ink borders,</li>
+      <li>shadows off (WCAG 1.4.11 edge contrast)</li>
+      <li>Light default, Dark by choice</li>
+      <li>one separation device per element, always</li>
+    </ul>
+  </div>
+  <div class="tok-group">
+    <h2>Touch + state</h2>
+    <ul>
+      <li>tiles 128dp, keys 88dp floor, gaps 12-14dp</li>
+      <li>no swipe, drag, long press, double tap, pinch</li>
+      <li>watched states: ringer, battery, network,</li>
+      <li>airplane, DND, storage, notification access</li>
+      <li>attention queue: many items, one lamp</li>
+    </ul>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- 01 HOME -->
+  <div class="cell">
+    <div class="screen">
+      <div class="masthead">
+        <div class="clock">10:24</div>
+        <div class="dayline"><svg viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><path d="M12 6v2M5 14H3M21 14h-2M6.6 8.6L5.2 7.2M17.4 8.6l1.4-1.4"/><path d="M3 19h18"/></svg>Wednesday morning</div>
+        <div class="dateline">August 27 &middot; 72&deg; and sunny</div>
+      </div>
+      <div class="status"><span class="dot ok"></span>All is well.</div>
+      <div class="tiles">
+        <div class="key tile"><svg viewBox="0 0 24 24"><path d="M5 4c0 8 7 15 15 15v-4l-4-1-2 2c-3-1.5-4.5-3-6-6l2-2-1-4z"/></svg>Call</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Messages</div>
+        <div class="key tile"><span class="appicon" style="background:#2E7D4F">W</span>WhatsApp</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg>Magnifier</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="4"/><path d="M8 7l2-3h4l2 3"/></svg>Camera</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-5 4 4 3-3 6 6"/></svg>Photos</div>
+      </div>
+      <div class="key small">More apps</div>
+    </div>
+    <div class="caption"><b>01 Home</b>The masthead carries the serif clock, the day-part mark, and an opt-in weather glance on the date line, the single most wanted glanceable for this audience. Six fixed tiles, positions permanent.</div>
+  </div>
+
+  <!-- 02 ATTENTION QUEUE -->
+  <div class="cell">
+    <div class="screen">
+      <div class="masthead">
+        <div class="clock">10:24</div>
+        <div class="dayline"><svg viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><path d="M12 6v2M5 14H3M21 14h-2M6.6 8.6L5.2 7.2M17.4 8.6l1.4-1.4"/><path d="M3 19h18"/></svg>Wednesday morning</div>
+        <div class="dateline">August 27</div>
+      </div>
+      <div class="lamp">
+        <div class="count">2 things need attention</div>
+        <div class="item">
+          <div class="say"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 18a2 2 0 0 0 4 0"/><path d="M3 3l18 18"/></svg>Your ringer is off. You will not hear calls.</div>
+          <div class="key small primary">Turn ringer on</div>
+        </div>
+        <hr>
+        <div class="item">
+          <div class="say"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="16" height="9" rx="2"/><path d="M19 11h2v3h-2"/><path d="M6 11v3"/></svg>Battery is at 12 percent. Plug the phone in soon.</div>
+        </div>
+      </div>
+      <div class="tiles">
+        <div class="key tile"><svg viewBox="0 0 24 24"><path d="M5 4c0 8 7 15 15 15v-4l-4-1-2 2c-3-1.5-4.5-3-6-6l2-2-1-4z"/></svg>Call</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Messages</div>
+      </div>
+    </div>
+    <div class="caption"><b>02 The attention queue</b>One lamp, many items, each a plain sentence with a repair key where a one-tap fix exists. The full watched family: ringer, battery, no signal, no Wi-Fi, airplane mode, Do Not Disturb, storage full, and "message watching was turned off," which is how the app defends its own notification access being revoked.</div>
+  </div>
+
+  <!-- 03 STRONG OUTLINES -->
+  <div class="cell">
+    <div class="screen outlined">
+      <div class="masthead">
+        <div class="clock">10:24</div>
+        <div class="dayline"><svg viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><path d="M12 6v2M5 14H3M21 14h-2M6.6 8.6L5.2 7.2M17.4 8.6l1.4-1.4"/><path d="M3 19h18"/></svg>Wednesday morning</div>
+        <div class="dateline">August 27</div>
+      </div>
+      <div class="status"><span class="dot ok"></span>All is well.</div>
+      <div class="tiles">
+        <div class="key tile"><svg viewBox="0 0 24 24"><path d="M5 4c0 8 7 15 15 15v-4l-4-1-2 2c-3-1.5-4.5-3-6-6l2-2-1-4z"/></svg>Call</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Messages</div>
+        <div class="key tile"><span class="appicon" style="background:#2E7D4F">W</span>WhatsApp</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg>Magnifier</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="4"/><path d="M8 7l2-3h4l2 3"/></svg>Camera</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-5 4 4 3-3 6 6"/></svg>Photos</div>
+      </div>
+      <div class="key small">More apps</div>
+    </div>
+    <div class="caption"><b>03 Home, Strong outlines theme</b>3dp ink borders replace shadows entirely, one separation device swapped for another, meeting the 3:1 edge contrast of WCAG 1.4.11. This exists because contrast sensitivity loss in glaucoma and AMD makes soft shadows disappear. Available in light and dark.</div>
+  </div>
+
+  <!-- 04 CALL -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div></div>
+      <div class="screen-title">Call</div>
+      <div class="key rowkey"><span class="avatar">S</span><span>Sarah<span class="meta">Daughter</span></span></div>
+      <div class="key rowkey"><span class="avatar" style="background:#35704E">M</span><span>Michael<span class="meta">Son</span></span></div>
+      <div class="key rowkey"><span class="avatar" style="background:#5B4A3A">R</span><span>Dr. Reyes<span class="meta">Doctor's office</span></span></div>
+      <div class="key rowkey"><svg viewBox="0 0 24 24" style="width:40px;height:40px;color:var(--navy)"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.5-6 6-6s6 2.5 6 6"/><path d="M17 8h5M19.5 5.5v5"/></svg>All contacts</div>
+      <div class="key rowkey"><svg viewBox="0 0 24 24" style="width:40px;height:40px;color:var(--navy)"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h.01M12 7h.01M15 7h.01M9 11h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01"/></svg>Dial a number</div>
+      <div class="spacer"></div>
+      <div class="key emergency">Emergency</div>
+    </div>
+    <div class="caption"><b>04 Call</b>People first, relationship under the name. Emergency opens screen 05 rather than dialing directly, so a stray tap on the red key never places a call.</div>
+  </div>
+
+  <!-- 05 EMERGENCY -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div><div class="key homekey">Back</div></div>
+      <div class="screen-title">Emergency</div>
+      <div class="key emergency" style="min-height:130px">Call 911<span class="sublabel">Opens the phone's own emergency call screen</span></div>
+      <div class="key primary" style="min-height:130px">Alert Sarah<span class="sublabel">Calls her and texts her where you are</span></div>
+      <div class="spacer"></div>
+      <div class="note">Both need a cell signal. This is not a monitored medical alert service.</div>
+    </div>
+    <div class="caption"><b>05 Emergency</b>The real SOS the category expects: the 911 key hands off to the system emergency flow, and Alert Sarah places the call and sends a location text to the chosen person. The honesty line survives the instruction purge because overpromising here is the one unforgivable sin; competitors' SOS features fail silently.</div>
+  </div>
+
+  <!-- 06 KEYPAD -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div><div class="key homekey">Back</div></div>
+      <div class="screen-title">Dial a number</div>
+      <div class="dialed">301 555 01</div>
+      <div class="pad">
+        <div class="key">1</div><div class="key">2</div><div class="key">3</div>
+        <div class="key">4</div><div class="key">5</div><div class="key">6</div>
+        <div class="key">7</div><div class="key">8</div><div class="key">9</div>
+        <div class="key" style="font-size:24px">Erase</div><div class="key">0</div><div class="key" style="font-size:24px">Clear</div>
+      </div>
+      <div class="key primary" style="min-height:96px">Call this number</div>
+    </div>
+    <div class="caption"><b>06 Keypad</b>96dp keys, words not glyphs. Tremor debounce and touch slop are build requirements listed in the header.</div>
+  </div>
+
+  <!-- 07 MESSAGES -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div></div>
+      <div class="screen-title">Messages</div>
+      <div class="status"><span class="dot ok"></span>3 new today.</div>
+      <div class="key rowkey"><span class="avatar">S</span><span>Sarah<span class="meta">9:41 AM, text message, "Lunch on Sunday?"</span></span></div>
+      <div class="key rowkey"><span class="avatar" style="background:#2E7D4F">L</span><span>Leila<span class="meta">9:12 AM, WhatsApp, sent a photo</span></span></div>
+      <div class="key rowkey"><span class="avatar" style="background:#4E7A9B">M</span><span>Michael<span class="meta">8:15 AM, Telegram, "Call me when you're up"</span></span></div>
+      <div class="key rowkey" style="opacity:.75"><span class="avatar">S</span><span>Sarah<span class="meta">Yesterday, "The photos came out great"</span></span></div>
+      <div class="spacer"></div>
+      <div class="note">Messages are kept on this phone so you can look back anytime.</div>
+      <div class="key small">Open a message app</div>
+    </div>
+    <div class="caption"><b>07 Messages</b>The review's biggest fix: every message the app sees is saved to a local on-device store, so the inbox has real scrollback (yesterday's message shown) instead of forgetting whatever left the notification shade. Sources named in words. The deep-link key is the reliable fallback when the pipeline misses.</div>
+  </div>
+
+  <!-- 08 READING -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div><div class="key homekey">Back</div></div>
+      <div class="from"><span class="avatar" style="background:#2E7D4F">L</span>Leila, on WhatsApp, 9:12 AM</div>
+      <div class="bigmsg">"Look at the garden this morning!" and a photo.</div>
+      <div class="key small"><svg viewBox="0 0 24 24" style="width:32px;height:32px;color:var(--navy)"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-5 4 4 3-3 6 6"/></svg>See the photo big</div>
+      <div class="key small primary"><svg viewBox="0 0 24 24" style="width:32px;height:32px"><path d="M4 6h13a4 4 0 0 1 0 8H8"/><path d="M11 10l-4 4 4 4"/></svg>Reply</div>
+      <div class="key small"><svg viewBox="0 0 24 24" style="width:32px;height:32px;color:var(--navy)"><path d="M4 10v4h4l5 4V6l-5 4H4z"/><path d="M17 9a5 5 0 0 1 0 6"/></svg>Read it aloud</div>
+      <div class="spacer"></div>
+      <div class="note">Replies travel through WhatsApp itself.</div>
+    </div>
+    <div class="caption"><b>08 Reading a message</b>Same screen whatever the source. Reply is now the primary key and opens screen 09.</div>
+  </div>
+
+  <!-- 09 REPLY -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div><div class="key homekey">Back</div></div>
+      <div class="screen-title">Reply to Leila</div>
+      <div class="key primary" style="min-height:130px"><svg viewBox="0 0 24 24" style="width:40px;height:40px"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>Speak your reply</div>
+      <div class="sect">Or send one of these</div>
+      <div class="phrases">
+        <div class="key">Yes</div>
+        <div class="key">No</div>
+        <div class="key">Call me</div>
+        <div class="key">Thank you!</div>
+        <div class="key">I love you</div>
+        <div class="key">On my way</div>
+      </div>
+      <div class="key small">Type instead</div>
+      <div class="spacer"></div>
+      <div class="note">Your voice is understood on this phone. Nothing is sent anywhere.</div>
+    </div>
+    <div class="caption"><b>09 Reply</b>The keyboard problem, answered without building a keyboard: on-device speech to text as the primary path, six one-tap phrases (helper-editable) as the zero-effort path, and the system keyboard as the typed fallback. Spoken text is shown big for confirmation before sending. iOS Assistive Access validates the no-typing reply pattern.</div>
+  </div>
+
+  <!-- 10 MAGNIFIER -->
+  <div class="cell">
+    <div class="screen dark">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div></div>
+      <div class="camview"><div class="label-mock">AMOXICILLIN 500 mg<br>Take one capsule<br>three times daily</div></div>
+      <div class="zoomrow">
+        <div class="key">&minus;</div>
+        <div class="key">+</div>
+      </div>
+      <div class="zoomrow">
+        <div class="key small" style="font-size:24px"><svg viewBox="0 0 24 24" style="width:30px;height:30px"><path d="M9 3h6l1 5-4 3-4-3 1-5z"/><path d="M12 11v10"/></svg>Light</div>
+        <div class="key small" style="font-size:24px"><svg viewBox="0 0 24 24" style="width:30px;height:30px"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>Hold still</div>
+      </div>
+    </div>
+    <div class="caption"><b>10 Magnifier</b>Camera at the physical world, torch, freeze frame. Unchanged from v3; it survived the review.</div>
+  </div>
+
+  <!-- 11 READER -->
+  <div class="cell">
+    <div class="screen dark">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div><div class="key homekey">Back</div></div>
+      <div class="camview" style="flex:0;min-height:220px"><div class="label-mock frozen">AMOXICILLIN 500 mg<br>Take one capsule<br>three times daily</div></div>
+      <div class="reading"><span class="dot"></span>Reading aloud now</div>
+      <div class="bigmsg" style="font-size:30px">"Amoxicillin, five hundred milligrams. Take one capsule three times daily."</div>
+      <div class="key small">Stop reading</div>
+      <div class="key small">Read it again</div>
+      <div class="spacer"></div>
+      <div class="note">Everything happens on this phone. Nothing is sent anywhere.</div>
+    </div>
+    <div class="caption"><b>11 Reader</b>Offline recognition, offline voice, privacy sentence as brand furniture.</div>
+  </div>
+
+  <!-- 12 PHOTOS -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div></div>
+      <div class="photo"><span class="tag">Photo 3 of 26, from Michael, Sunday</span></div>
+      <div class="nav2">
+        <div class="key">Back</div>
+        <div class="key">Next</div>
+      </div>
+      <div class="key small">Read who sent it aloud</div>
+    </div>
+    <div class="caption"><b>12 Photos</b>One photo, two keys, no pinch.</div>
+  </div>
+
+  <!-- 13 TODAY -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div></div>
+      <div class="screen-title">Today</div>
+      <div class="card2 done">
+        <div class="when">9:00 AM</div>
+        <div class="what">Blood pressure pill</div>
+        <div class="doneline"><svg viewBox="0 0 24 24"><path d="M4 12l5 5 11-11"/></svg>Taken at 9:05</div>
+      </div>
+      <div class="card2">
+        <div class="when">2:00 PM</div>
+        <div class="what">Dr. Reyes calls you</div>
+        <div class="key small primary">Done</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="note">Written by you or your helper. Not medical advice.</div>
+    </div>
+    <div class="caption"><b>13 Today</b>User-entered cards, one tap to done, green only on completion.</div>
+  </div>
+
+  <!-- 14 SETTINGS -->
+  <div class="cell">
+    <div class="screen" style="min-height:980px">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div></div>
+      <div class="screen-title">Settings</div>
+      <div class="sect">Text size</div>
+      <div class="sizerow">
+        <div class="key">A</div>
+        <div class="key selected">A<span class="nowtag">Now</span></div>
+        <div class="key">A</div>
+      </div>
+      <div class="sect">Look</div>
+      <div class="themerow">
+        <div class="key themecard selected"><span class="mini light"></span>Light <span class="nowtag">Now</span></div>
+        <div class="key themecard"><span class="mini darkmini"></span>Dark</div>
+        <div class="key themecard"><span class="mini outmini"></span>Outlined</div>
+      </div>
+      <div class="key rowkey" style="margin-top:4px"><svg viewBox="0 0 24 24" style="width:36px;height:36px;color:var(--navy)"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg><span>Choose your apps<span class="meta">Pick and arrange your home screen</span></span></div>
+      <div class="key rowkey"><svg viewBox="0 0 24 24" style="width:36px;height:36px;color:var(--navy)"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v5h5"/></svg><span>Put my screen back<span class="meta">Undoes changes to your home screen</span></span></div>
+      <div class="key rowkey"><svg viewBox="0 0 24 24" style="width:36px;height:36px;color:var(--navy)"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg><span>See and hear better<span class="meta">Set up this phone's built-in helpers</span></span></div>
+      <div class="key rowkey"><svg viewBox="0 0 24 24" style="width:36px;height:36px;color:var(--navy)"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>Helper settings<span class="meta">For the person who helps you</span></span></div>
+      <div class="note">Every change here can be undone.</div>
+    </div>
+    <div class="caption"><b>14 Settings</b>Still one screen. Look gains the Outlined theme. "See and hear better" is new, and Helper settings now holds the quick-reply phrase editor, the PIN, the printable setup sheet, and "Save my setup as a file", all local, no QR, no cloud.</div>
+  </div>
+
+  <!-- 15 SEE AND HEAR BETTER -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div><div class="key homekey">Back</div></div>
+      <div class="screen-title">See and hear better</div>
+      <div class="key rowkey"><svg viewBox="0 0 24 24" style="width:36px;height:36px;color:var(--navy)"><path d="M4 18V6M4 18l5-12 5 12M6 14h6"/><path d="M17 8h4M19 6v4"/></svg><span>Make everything bigger<span class="meta">Opens Android's display size setting</span></span></div>
+      <div class="key rowkey"><svg viewBox="0 0 24 24" style="width:36px;height:36px;color:var(--navy)"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/><path d="M8 10h4M10 8v4"/></svg><span>Magnify the screen<span class="meta">Zoom into anything, in any app</span></span></div>
+      <div class="key rowkey"><svg viewBox="0 0 24 24" style="width:36px;height:36px;color:var(--navy)"><path d="M7 9a5 5 0 0 1 10 0c0 3-2 4-2 7a3 3 0 0 1-6 0c0-3-2-4-2-7z"/></svg><span>Hearing aids<span class="meta">Pair them with this phone</span></span></div>
+      <div class="key rowkey"><svg viewBox="0 0 24 24" style="width:36px;height:36px;color:var(--navy)"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M6 14h6M14 14h4M6 11h3"/></svg><span>Written captions<span class="meta">Words on screen for videos and calls</span></span></div>
+      <div class="key rowkey"><svg viewBox="0 0 24 24" style="width:36px;height:36px;color:var(--navy)"><path d="M4 10v4h4l5 4V6l-5 4H4z"/><path d="M17 9a5 5 0 0 1 0 6M19.5 6.5a9 9 0 0 1 0 11"/></svg><span>Louder, clearer sound<span class="meta">Boosts voices around you</span></span></div>
+      <div class="key rowkey"><svg viewBox="0 0 24 24" style="width:36px;height:36px;color:var(--navy)"><path d="M12 3l8 4v6c0 5-3.5 7.5-8 8-4.5-.5-8-3-8-8V7z"/><path d="M12 8v5M12 16v.2"/></svg><span>Your medical info<span class="meta">Seen by rescuers even when locked</span></span></div>
+    </div>
+    <div class="caption"><b>15 See and hear better</b>The guided tour of Android's own accessibility stack that almost nobody finds: display size, magnification, hearing aid pairing (LE Audio on Android 15+), Live Caption, Sound Amplifier, and Medical ID. Each row uses the threshold pattern. Hearing belongs here because it travels with vision loss; no competitor addresses it.</div>
+  </div>
+
+  <!-- 16 CHOOSE YOUR APPS -->
+  <div class="cell">
+    <div class="screen">
+      <div class="promptbar"><span>Tap an app to move it or take it off.</span><span class="donechip">Done</span></div>
+      <div class="tiles">
+        <div class="key tile"><svg viewBox="0 0 24 24"><path d="M5 4c0 8 7 15 15 15v-4l-4-1-2 2c-3-1.5-4.5-3-6-6l2-2-1-4z"/></svg>Call</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Messages</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg>Magnifier</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="4"/><path d="M8 7l2-3h4l2 3"/></svg>Camera</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-5 4 4 3-3 6 6"/></svg>Photos</div>
+        <div class="key tile" style="opacity:.5"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Empty spot</div>
+      </div>
+      <div class="undo"><span>WhatsApp was taken off.</span><span class="act">Put it back</span></div>
+      <div class="key small">Add an app</div>
+    </div>
+    <div class="caption"><b>16 Choose your apps</b>Done lives permanently in the prompt bar, so the exit from arranging mode is always one visible tap; pressing Home mid-arrange keeps completed changes and says so. The lamp undo strip is the app's official caution treatment: never red, always words, always reversible.</div>
+  </div>
+
+  <!-- 17 ACTION SHEET -->
+  <div class="cell">
+    <div class="screen">
+      <div class="promptbar dimmed"><span>Tap an app to move it or take it off.</span><span class="donechip">Done</span></div>
+      <div class="tiles">
+        <div class="key tile dimmed"><svg viewBox="0 0 24 24"><path d="M5 4c0 8 7 15 15 15v-4l-4-1-2 2c-3-1.5-4.5-3-6-6l2-2-1-4z"/></svg>Call</div>
+        <div class="key tile dimmed"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Messages</div>
+        <div class="key tile lifted"><span class="appicon" style="background:#2E7D4F">W</span>WhatsApp</div>
+        <div class="key tile dimmed"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg>Magnifier</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="sheet">
+        <div class="wholine"><span class="appicon" style="background:#2E7D4F">W</span>WhatsApp</div>
+        <div class="key small primary">Move it</div>
+        <div class="key small">Put it first</div>
+        <div class="key small">Take it off the home screen</div>
+        <div class="key small">Never mind</div>
+      </div>
+    </div>
+    <div class="caption"><b>17 Tapped an app</b>Target first, then action. "Put it first" is new: it jumps an app to the top spot in one tap, which also solves any future off-screen destination without a second gesture. Call declines all of it with "Call always stays first."</div>
+  </div>
+
+  <!-- 18 SWAP -->
+  <div class="cell">
+    <div class="screen">
+      <div class="promptbar"><span>Tap the spot where WhatsApp should go.</span><span class="donechip">Done</span></div>
+      <div class="tiles">
+        <div class="key tile"><svg viewBox="0 0 24 24"><path d="M5 4c0 8 7 15 15 15v-4l-4-1-2 2c-3-1.5-4.5-3-6-6l2-2-1-4z"/></svg>Call</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Messages</div>
+        <div class="key tile lifted"><span class="appicon" style="background:#2E7D4F">W</span>WhatsApp</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg>Magnifier</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="4"/><path d="M8 7l2-3h4l2 3"/></svg>Camera</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-5 4 4 3-3 6 6"/></svg>Photos</div>
+      </div>
+      <div class="key small">Undo my last move</div>
+    </div>
+    <div class="caption"><b>18 Trading places</b>Two taps, the trade animates slowly, Undo sits below, Done never leaves the top. Tapping the lifted app again cancels the move with no penalty.</div>
+  </div>
+
+  <!-- 19 KEEP IT -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div></div>
+      <div class="h2">Here is your new home screen</div>
+      <div class="miniphone">
+        <div class="mhead"><div class="mclock">10:24</div></div>
+        <div class="minitiles">
+          <span>Call</span><span>Messages</span>
+          <span>Magnifier</span><span>WhatsApp</span>
+          <span>Camera</span><span>Photos</span>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="key primary" style="min-height:104px">Keep it</div>
+      <div class="key" style="min-height:104px">Put it back the way it was</div>
+    </div>
+    <div class="caption"><b>19 Keep it</b>Every Keep snapshots the layout; Settings carries the standing restore.</div>
+  </div>
+
+  <!-- 20 ADD AN APP -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div><div class="key homekey">Back</div></div>
+      <div class="screen-title">Add an app</div>
+      <div class="key rowkey"><span class="appicon" style="background:#5B4A3A">A</span><span>Alarms</span></div>
+      <div class="key rowkey"><span class="appicon" style="background:#3B5BA5">F</span><span>Facebook</span></div>
+      <div class="key rowkey"><span class="appicon" style="background:#8A5A3A">R</span><span>Radio</span></div>
+      <div class="key rowkey"><span class="appicon" style="background:#4E7A9B">T</span><span>Telegram</span></div>
+      <div class="key rowkey"><span class="appicon" style="background:#B08D3A">W</span><span>Weather</span></div>
+      <div class="key rowkey"><span class="appicon" style="background:#A6473A">Y</span><span>YouTube</span></div>
+      <div class="spacer"></div>
+      <div class="note">The new app lands at the bottom of your home screen.</div>
+    </div>
+    <div class="caption"><b>20 Add an app</b>Flat alphabetical shelf, real icons, tap to add. Alarms appears here because a big-face alarm ships as a built-in feature, per the daily-use research.</div>
+  </div>
+
+  <!-- 21 THRESHOLD -->
+  <div class="cell">
+    <div class="screen">
+      <div class="topbar"><div class="key homekey"><svg viewBox="0 0 24 24" style="width:28px;height:28px"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</div></div>
+      <div class="spacer"></div>
+      <svg viewBox="0 0 24 24" style="width:64px;height:64px;align-self:flex-start;color:var(--navy)"><path d="M4 4h8v16H4z"/><path d="M15 12h6"/><path d="M18 9l3 3-3 3"/></svg>
+      <div class="h2">You're about to leave this app</div>
+      <div class="body">The next screen is Android's Wi-Fi settings. It looks different from here, with smaller writing.</div>
+      <div class="body">When you're done, press <b>Home</b> and you'll come straight back.</div>
+      <div class="spacer"></div>
+      <div class="key primary">Continue to Wi-Fi settings</div>
+      <div class="key">Stay here</div>
+      <div class="key small" style="font-size:20px;min-height:60px">Don't warn me about Wi-Fi again</div>
+    </div>
+    <div class="caption"><b>21 The threshold</b>Now per-destination dismissible, so the reassurance exists for the first crossing and stops taxing the twentieth. Helper settings can restore all warnings.</div>
+  </div>
+
+  <!-- 22 KEEP MESSAGES FLOWING -->
+  <div class="cell">
+    <div class="screen">
+      <div class="spacer"></div>
+      <svg viewBox="0 0 24 24" style="width:64px;height:64px;align-self:flex-start;color:var(--navy)"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+      <div class="h2">Keep messages arriving</div>
+      <div class="body">To save battery, Android sometimes puts apps to sleep. If it puts this app to sleep, new messages may stop appearing here.</div>
+      <div class="body">On the next screen, choose <b>Don't optimize</b> for this app.</div>
+      <div class="spacer"></div>
+      <div class="key primary">Continue to battery settings</div>
+      <div class="key">Skip for now</div>
+    </div>
+    <div class="caption"><b>22 First run, the battery step</b>The unglamorous screen that decides whether messaging works in month six on a Samsung. The app also re-checks this state and raises a lamp item if the exemption is lost or notification access is revoked. Skipping is allowed; the consequence is explained, not hidden.</div>
+  </div>
+
+  <!-- 23 FIRST RUN -->
+  <div class="cell">
+    <div class="screen">
+      <div class="spacer"></div>
+      <div class="h2" style="font-size:46px">You can't break anything.</div>
+      <div class="body">Every change can be undone. Nothing you press can harm the phone. Take your time.</div>
+      <div class="spacer"></div>
+      <div class="key" style="min-height:110px">I'm setting up my own phone</div>
+      <div class="key" style="min-height:110px">I'm helping someone set up theirs</div>
+    </div>
+    <div class="caption"><b>23 First run</b>The first sentence retires the fear that drives abandonment. The helper path adds phrase editing, PIN, and the printable sheet; both paths include screen 22.</div>
+  </div>
+
+  <!-- 24 HOME DARK -->
+  <div class="cell">
+    <div class="screen dark">
+      <div class="masthead">
+        <div class="clock">9:48</div>
+        <div class="dayline"><svg viewBox="0 0 24 24"><path d="M19 14a7 7 0 0 1-9-9 7 7 0 1 0 9 9z"/><path d="M3 19h18"/></svg>Wednesday evening</div>
+        <div class="dateline">August 27</div>
+      </div>
+      <div class="status"><span class="dot ok"></span>All is well.</div>
+      <div class="tiles">
+        <div class="key tile"><svg viewBox="0 0 24 24"><path d="M5 4c0 8 7 15 15 15v-4l-4-1-2 2c-3-1.5-4.5-3-6-6l2-2-1-4z"/></svg>Call</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Messages</div>
+        <div class="key tile"><span class="appicon" style="background:#2E7D4F">W</span>WhatsApp</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg>Magnifier</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="4"/><path d="M8 7l2-3h4l2 3"/></svg>Camera</div>
+        <div class="key tile"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-5 4 4 3-3 6 6"/></svg>Photos</div>
+      </div>
+      <div class="key small">More apps</div>
+    </div>
+    <div class="caption"><b>24 Home, dark, evening</b>The moon over the same horizon line, the mark this design is remembered by. Chosen theme, identical layout, and the Outlined theme combines with dark for the users who need both.</div>
+  </div>
+
+</div>
+</body>
+</html>
