@@ -171,7 +171,7 @@ Arranging happens on the real home grid, never on an abstract list.
 - Move it: tap a destination tile and the two trade places with one slow animation. Tapping the lifted app again cancels.
 - Put it first jumps an app to the top spot in one tap and also solves any off screen destination.
 - Taking an app off shows a lamp colored undo strip: "WhatsApp was taken off. Put it back." Nothing is ever uninstalled. Language is always placement, never deletion.
-- Call cannot be moved or removed. Attempting it says "Call always stays first."
+- Call cannot be moved or removed, and cannot be chosen as the destination of another app's move either. Any of those says "Call always stays first." The rule is enforced in `HomeLayout` rather than in the screen, so no screen can bypass it by forgetting a branch. See `DECISIONS.md` D32.
 - Pressing Home mid arrange keeps completed changes and says so.
 - Finishing shows a miniature preview with Keep it or Put it back the way it was. Every Keep snapshots the layout *as it was before that session*, which is what the standing restore undoes.
 - Settings carries a standing "Put my screen back" that undoes the most recent Keep. It reports whether it actually changed anything and never confirms an undo it did not perform. See `DECISIONS.md` D30.

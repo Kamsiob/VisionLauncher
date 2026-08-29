@@ -159,16 +159,25 @@ fun ArrangeScreen(
             onTapTile = { index ->
                 when {
                     movingIndex != null -> {
-                        if (index == movingIndex) {
-                            // Tapping the lifted app again cancels, no penalty.
-                            mode = ArrangeMode.Browsing
-                            Haptics.tap(view)
-                        } else {
-                            val before = working
-                            working = HomeLayout.swap(working, movingIndex, index)
-                            undo = UndoState.Moved(before)
-                            mode = ArrangeMode.Browsing
-                            Haptics.confirm(view)
+                        when {
+                            index == movingIndex -> {
+                                // Tapping the lifted app again cancels, no penalty.
+                                mode = ArrangeMode.Browsing
+                                Haptics.tap(view)
+                            }
+                            isLocked(working[index]) -> {
+                                // Call is not a destination either. Stay in the
+                                // move so a different spot can be chosen.
+                                Haptics.reject(view)
+                                undo = UndoState.CallLocked
+                            }
+                            else -> {
+                                val before = working
+                                working = HomeLayout.swap(working, movingIndex, index)
+                                undo = UndoState.Moved(before)
+                                mode = ArrangeMode.Browsing
+                                Haptics.confirm(view)
+                            }
                         }
                     }
                     isLocked(working[index]) -> {

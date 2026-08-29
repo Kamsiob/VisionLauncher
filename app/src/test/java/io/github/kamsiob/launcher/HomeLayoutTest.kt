@@ -91,6 +91,30 @@ class HomeLayoutTest {
     }
 
     @Test
+    fun `Call cannot be traded away by choosing it as a destination`() {
+        // The screen says "Call always stays first". Guarding only the tile
+        // being picked up left the destination open, so moving Photos onto
+        // Call's spot pushed Call to position five.
+        assertEquals(defaultLayout, HomeLayout.swap(defaultLayout, 4, 0))
+        assertEquals(defaultLayout, HomeLayout.swap(defaultLayout, 0, 4))
+    }
+
+    @Test
+    fun `Call stays first through any sequence of permitted edits`() {
+        var layout = defaultLayout
+        layout = HomeLayout.swap(layout, 1, 4)
+        layout = HomeLayout.putFirst(layout, 3)
+        layout = HomeLayout.takeOff(layout, 2)
+        layout = HomeLayout.add(layout, SavedTile.ofApp("com.example", "Main"))
+        layout = HomeLayout.swap(layout, 2, 5)
+        assertEquals(
+            "no permitted edit may move Call out of first place",
+            BuiltIn.CALL.id,
+            layout[0].builtIn,
+        )
+    }
+
+    @Test
     fun `every edit is reversible by keeping the layout that came before it`() {
         val afterMove = HomeLayout.swap(defaultLayout, 1, 4)
         val afterTakeOff = HomeLayout.takeOff(afterMove, 2)

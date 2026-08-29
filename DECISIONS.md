@@ -159,3 +159,11 @@ That is precisely the failure D7 was written to avoid, on the one screen where o
 Two changes. The permissions are requested at the moment the promise is made, when the helper chooses the person to alert, which is also the moment nobody is in an emergency. And the key's subtitle is computed from what is actually granted: "Calls and texts where you are" when both are available, "Calls and sends a text" with messaging but no location, and "Calls only, because sending a text was not allowed" when the text cannot be sent. Refusing at setup, or revoking later, changes the words on the key.
 
 The general lesson, and the third instance of it this session after D30 and the Add an app note: search the interface for sentences that assert something the code does not guarantee, then either guarantee it or change the sentence.
+
+## D32. The Call lock is enforced on both sides of a trade
+
+"Call always stays first" was breakable. The arranging screen guarded the tile being picked up but not the tile chosen as the destination, so tapping Photos, then Move it, then Call's spot traded them and left Call in position five while the screen still promised it could not happen.
+
+The guard now lives in `HomeLayout.swap`, which refuses a trade when either side is locked, so the invariant holds at the data layer and no screen can violate it by forgetting a branch. The arranging screen keeps the app lifted and shows "Call always stays first." so the refusal is explained and a different destination can be chosen without starting over.
+
+This is the fourth sentence this session that asserted something the code did not guarantee, after D30, the Add an app note, and D31. The pattern is consistent enough to name as a review technique: read every sentence the interface states as fact, then hunt for the code path that could make it false.

@@ -22,13 +22,22 @@ object HomeLayout {
         }
     }
 
-    /** Two tiles trade places. Nothing else moves. */
-    fun swap(layout: List<SavedTile>, a: Int, b: Int): List<SavedTile> =
-        layout.toMutableList().apply {
+    /**
+     * Two tiles trade places. Nothing else moves.
+     *
+     * A locked tile is refused as either side of the trade. Guarding only the
+     * tile being picked up is not enough: choosing Call as the *destination*
+     * would trade it away from first place, which is the one thing the
+     * arranging screen promises cannot happen.
+     */
+    fun swap(layout: List<SavedTile>, a: Int, b: Int): List<SavedTile> {
+        if (isLocked(layout[a]) || isLocked(layout[b])) return layout
+        return layout.toMutableList().apply {
             val held = this[a]
             this[a] = this[b]
             this[b] = held
         }
+    }
 
     /** Jumps a tile to the top spot, or to second when Call holds the top. */
     fun putFirst(layout: List<SavedTile>, index: Int): List<SavedTile> {
