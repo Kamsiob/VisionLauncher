@@ -55,10 +55,21 @@ These are design decisions, not missing features. The reasoning lives in
 
 ## Where things stand
 
-Pre Stage 1: the specification and design are complete, the Android project is being
-set up. Nothing is installable yet. `HANDOFF.md` carries the current state,
-`MASTER_SPEC.md` the screen by screen specification, `DESIGN.md` the visual system,
-and `design/design-grid-v4.html` is the measurement authority for every screen.
+Stage 1, the spine, is building and running on a real device. Working today: first
+run, the home screen with its masthead and fixed tiles, the attention queue, calling
+with contacts and the keypad, Emergency, alarms, Settings with all three themes,
+arranging your apps, and the threshold pattern before every handoff to a system
+screen.
+
+Not built yet, and the app says so plainly where you would look for them: messages
+(Stage 2), the magnifier, the reader, and photos (Stage 3), and the Today screen with
+the full helper tools (Stage 4).
+
+`HANDOFF.md` carries the current state, `MASTER_SPEC.md` the screen by screen
+specification, `DESIGN.md` the visual system, and `design/design-grid-v4.html` is the
+measurement authority for every screen.
+
+![The home screen](docs/screenshots/01-home-tiles.png)
 
 ## License
 

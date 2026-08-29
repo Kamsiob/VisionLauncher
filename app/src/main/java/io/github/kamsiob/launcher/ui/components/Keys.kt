@@ -186,6 +186,7 @@ fun Tile(
     val palette = LocalPalette.current
     Column(
         modifier = modifier
+            .fillMaxWidth()
             .keySurface()
             .debouncedClickable(enabled = enabled) {
                 Haptics.tap(view)

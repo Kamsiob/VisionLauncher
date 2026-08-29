@@ -80,8 +80,8 @@
     <string name="emergency_no_person">Choose a person to alert</string>
     <string name="emergency_no_person_sub">A helper can set this up in Settings</string>
     <string name="emergency_honesty">Both need a cell signal. This is not a monitored medical alert service.</string>
-    <string name="emergency_sms_body">This is an emergency alert from %1$s. My location: %2$s</string>
-    <string name="emergency_sms_body_no_location">This is an emergency alert from %1$s. My location is not available.</string>
+    <string name="emergency_sms_body">Emergency alert. I need help. My location: %1$s</string>
+    <string name="emergency_sms_body_no_location">Emergency alert. I need help. My location is not available.</string>
 
     <!-- More apps -->
     <string name="more_apps_title">All your apps</string>

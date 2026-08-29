@@ -29,6 +29,7 @@ import io.github.kamsiob.launcher.ui.components.ScreenFrame
 import io.github.kamsiob.launcher.ui.components.ScreenTitle
 import io.github.kamsiob.launcher.ui.components.TopBar
 import io.github.kamsiob.launcher.ui.theme.Dimens
+import io.github.kamsiob.launcher.ui.theme.LineIcons
 import io.github.kamsiob.launcher.ui.theme.LocalPalette
 import io.github.kamsiob.launcher.ui.theme.TypeScale
 import io.github.kamsiob.launcher.ui.theme.bodyStyle
@@ -40,6 +41,7 @@ import io.github.kamsiob.launcher.ui.theme.bodyStyle
 @Composable
 fun MoreAppsScreen(
     apps: AppsRepository,
+    onSettings: () -> Unit,
     onHome: () -> Unit,
     onLaunched: () -> Unit,
 ) {
@@ -88,6 +90,18 @@ fun MoreAppsScreen(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Dimens.gap),
         ) {
+            // Settings lives here rather than on a home tile, because the home
+            // grid holds what the person uses daily and this is the one door
+            // that has to exist somewhere findable.
+            if (query.isBlank()) {
+                item(key = "settings") {
+                    RowKey(
+                        label = stringResource(R.string.settings_title),
+                        icon = LineIcons.accessibilitySun,
+                        onClick = onSettings,
+                    )
+                }
+            }
             items(shown, key = { it.key + it.isWorkProfile }) { entry ->
                 val label = if (entry.isWorkProfile) {
                     stringResource(R.string.more_apps_work_profile, entry.label)
