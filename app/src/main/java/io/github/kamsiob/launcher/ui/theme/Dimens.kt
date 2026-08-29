@@ -49,38 +49,38 @@ object Dimens {
     // Both kinds of tile glyph sit in one slot of this height, so a built in
     // line icon and a third party bitmap produce tiles of identical height.
     // Without the shared slot the two differ and the rows rag.
-    val tileIconSlot = 64.dp
-    val tileIcon = 64.dp
+    val tileIconSlot = 80.dp
+    val tileIcon = 80.dp
 
     // Deliberately smaller than the line icon and unchanged from the grid. The
     // size difference is the quiet cue that tells built in features from
     // installed apps, which DESIGN.md relies on.
-    val appIcon = 52.dp
-    val appIconRadius = 14.dp
+    val appIcon = 60.dp
+    val appIconRadius = 16.dp
     val avatar = 60.dp
 
     // The grid draws two row icon sizes, 40 on the Call screen and 36 on rows
     // carrying a mono metadata line, and the first port collapsed them to 36.
     // Both are restored, both enlarged.
-    val rowIcon = 52.dp
-    val rowIconWithMeta = 48.dp
+    val rowIcon = 64.dp
+    val rowIconWithMeta = 58.dp
 
-    val homeKeyIcon = 40.dp
+    val homeKeyIcon = 44.dp
 
     // Keys carry an icon sized to the key. One value served the 72dp, 88dp and
     // 130dp keys before, which is how the grid's own 30 and 40 both became 32.
-    val keyIconSmall = 34.dp
-    val keyIcon = 40.dp
-    val keyIconBig = 56.dp
+    val keyIconSmall = 40.dp
+    val keyIcon = 48.dp
+    val keyIconBig = 64.dp
 
     // The lamp glyph outranks the day part mark on purpose. It backs a colored
     // signal that must never carry meaning alone, while the sun and moon are
     // decoration that happens to aid orientation. They were equal by accident.
-    val lampIcon = 40.dp
-    val daylineIcon = 36.dp
+    val lampIcon = 48.dp
+    val daylineIcon = 42.dp
 
-    val statusDot = 18.dp
-    val thresholdIcon = 72.dp
+    val statusDot = 20.dp
+    val thresholdIcon = 88.dp
 
     // Borders.
     val outlinedBorder = 3.dp

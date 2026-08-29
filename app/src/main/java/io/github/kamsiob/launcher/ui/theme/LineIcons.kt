@@ -10,11 +10,20 @@ import androidx.compose.ui.unit.dp
 
 /**
  * The navy line icons for built in features, ported path for path from the
- * SVGs in design/design-grid-v4.html: 24 unit viewport, stroke 2.7, round caps
- * and joins, no fills. Icons are drawn in black and tinted at the point of use,
- * so one set serves all three themes.
+ * SVGs in design/design-grid-v4.html: a 24 unit viewport, round caps and
+ * joins, no fills. Icons are drawn in black and tinted at the point of use, so
+ * one set serves all three themes.
+ *
+ * The stroke is 2.2 rather than the grid's 2.7 because the icons grew. A
+ * stroke in viewport units scales with the icon, so drawing the old weight at
+ * the new sizes would have thickened every line by a quarter and closed the
+ * gaps inside the camera and the photo frame until they read as blots. At 2.2
+ * the absolute stroke lands within a tenth of a dp of what it was before at
+ * every size in Dimens: the icons look exactly as bold and simply have more
+ * room inside them. Change the sizes and this number without checking that
+ * arithmetic and the shapes will fuse.
  */
-private fun lineIcon(name: String, vararg paths: String, stroke: Float = 2.7f): ImageVector =
+private fun lineIcon(name: String, vararg paths: String, stroke: Float = 2.2f): ImageVector =
     ImageVector.Builder(
         name = name,
         defaultWidth = 24.dp,
@@ -60,13 +69,17 @@ object LineIcons {
     val camera = lineIcon(
         "camera",
         rect(3f, 7f, 18f, 13f, 2f),
-        circle(12f, 13f, 4f),
+        // The lens was r=4 with only two units clearing the body's top edge,
+        // which the stroke closed entirely once the icon was drawn large.
+        // Smaller and centered leaves the ring visibly free on both sides.
+        circle(12f, 13.5f, 3.5f),
         "M8 7l2-3h4l2 3",
     )
     val photos = lineIcon(
         "photos",
         rect(3f, 4f, 18f, 16f, 2f),
-        circle(9f, 10f, 2f),
+        // At r=2 the sun was four units across and the stroke filled it in.
+        circle(9f, 9.5f, 2.8f),
         "M3 17l5-5 4 4 3-3 6 6",
     )
     val alarms = lineIcon(
@@ -86,13 +99,13 @@ object LineIcons {
         circle(12f, 14f, 4f),
         "M12 6v2M5 14H3M21 14h-2M6.6 8.6L5.2 7.2M17.4 8.6l1.4-1.4",
         "M3 19h18",
-        stroke = 2.4f,
+        stroke = 2.1f,
     )
     val moon = lineIcon(
         "moon",
         "M19 14a7 7 0 0 1-9-9 7 7 0 1 0 9 9z",
         "M3 19h18",
-        stroke = 2.4f,
+        stroke = 2.1f,
     )
     val bellOff = lineIcon(
         "bellOff",

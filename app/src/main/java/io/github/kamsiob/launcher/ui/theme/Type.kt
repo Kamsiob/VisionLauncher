@@ -84,7 +84,7 @@ object TypeScale {
     const val sect = 21
     const val sublabel = 18
     const val dialed = 34
-    const val padKey = 38
+    const val padKey = 50
     const val h2 = 36
     const val avatarInitial = 26
     const val appIconInitial = 26

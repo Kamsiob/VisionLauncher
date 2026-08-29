@@ -23,15 +23,16 @@ fun tileColumns(): Int = if (sideBySideFits()) 2 else 1
  * Home and Back bar, and the three Look cards in Settings.
  *
  * It is one number so the reflow is one thing the hands learn rather than
- * three. It sits at 1.3 rather than 1.5 because 1.3 is the user's own largest
- * text step, and at that step a two across layout starts shrinking labels to
- * fit: "Home" beside a 40dp icon runs out of room at 1.35, and a tile label
- * begins auto sizing around the same place. Reflowing before anything shrinks
- * means the size the person chose is the size they get.
+ * three. It sits at 1.25, just under the user's own largest text step, because
+ * above that a two across layout starts shrinking labels to fit: "Home" beside
+ * a 44dp glyph runs out of room at 1.32, and a tile label begins auto sizing
+ * around the same place. Reflowing before anything shrinks means the size the
+ * person chose is the size they get. Raising an icon lowers that number, so
+ * recompute it whenever one grows.
  */
 @Composable
 @ReadOnlyComposable
 fun sideBySideFits(): Boolean {
     val scale = LocalDensity.current.fontScale * LocalTextStep.current.multiplier
-    return scale < 1.3f
+    return scale < 1.25f
 }
