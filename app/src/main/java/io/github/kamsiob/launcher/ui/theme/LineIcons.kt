@@ -224,6 +224,19 @@ object LineIcons {
         "heart",
         "M12 20s-7-4.5-7-9.5A4 4 0 0 1 12 7a4 4 0 0 1 7 3.5c0 5-7 9.5-7 9.5z",
     )
+    /** The arrow curving back on itself, as the grid draws it on screen 08. */
+    val reply = lineIcon(
+        "reply",
+        "M4 6h13a4 4 0 0 1 0 8H8",
+        "M11 10l-4 4 4 4",
+    )
+    /** The microphone on the speak key, screen 09. */
+    val microphone = lineIcon(
+        "microphone",
+        rect(9f, 3f, 6f, 11f, 3f),
+        "M5 11a7 7 0 0 0 14 0",
+        "M12 18v3",
+    )
     val shield = lineIcon(
         "shield",
         "M12 3l8 4v6c0 5-3.5 7.5-8 8-4.5-.5-8-3-8-8V7z",

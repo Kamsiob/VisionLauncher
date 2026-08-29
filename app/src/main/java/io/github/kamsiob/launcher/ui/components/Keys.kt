@@ -429,7 +429,12 @@ fun Avatar(initial: String, color: Color? = null, size: Dp = Dimens.avatar) {
     Box(
         modifier = Modifier
             .size(size)
-            .background(color ?: palette.accent, CircleShape),
+            .background(color ?: palette.accent, CircleShape)
+            // Decorative. The name is spoken right beside it, and a screen
+            // reader announcing "S. Sarah" reads the initial as a word of its
+            // own. Rows that wrap the avatar already suppress it; this makes it
+            // silent everywhere, including where it stands on its own.
+            .clearAndSetSemantics {},
         contentAlignment = Alignment.Center,
     ) {
         Text(

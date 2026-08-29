@@ -14,6 +14,9 @@
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- Replies are spoken rather than typed. Recognition runs on the device;
+         the app holds no INTERNET permission, so no audio can leave it. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
@@ -29,6 +32,14 @@
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <!-- The on-device speech recognizer, which lives in another package. -->
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+        <!-- The text to speech engine, likewise. -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
         </intent>
     </queries>
 
@@ -69,6 +80,21 @@
             android:turnScreenOn="true"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance" />
+
+        <!--
+          Reads messages so they can be shown large and replied to. The app has
+          no INTERNET permission and a build gate enforces that, so nothing it
+          reads can leave the phone.
+        -->
+        <service
+            android:name=".messages.MessageListener"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name=".alarm.AlarmReceiver"

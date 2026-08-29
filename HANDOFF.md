@@ -8,7 +8,9 @@ Update and commit this file at every commit, before any pause, when context runs
 
 ## Current state
 
-**Status:** Stage 1 is built, running, and verified on a real Pixel 8 running API 37. Every Stage 1 screen from `MASTER_SPEC.md` section 8 exists and was exercised on the device, not only compiled.
+**Status:** Stage 1 is built, running, and verified on a real Pixel 8 running API 37. Stage 2, messaging, is built and verified end to end on an emulator, including a reply that a second app actually received. Every Stage 1 and Stage 2 screen from `MASTER_SPEC.md` section 8 exists and was exercised on a device, not only compiled.
+
+The user has since asked for all four stages before the APK is delivered, which supersedes the original instruction to stop after Stage 1. Stages 3 and 4 are in progress.
 
 Three review passes followed, each with every finding adversarially verified before anything was changed.
 
@@ -58,9 +60,30 @@ Specifically verified on the device, with evidence:
 
 ---
 
+## Stage 2, messaging, and how it was verified
+
+Grid 07, 08 and 09 are built: the inbox, reading a message, and replying. A
+second app was written for the emulator purely to post notifications, because
+the pipeline cannot be tested against anything else. Verified there, with
+evidence:
+
+- A message posted by another app appears in the inbox with sender, time, source app in words, and the text.
+- `MessagingStyle` notifications, which is what real messaging apps send, are read through the style rather than the flat compatibility fields. In a group chat the row says "Priya, in Book club" instead of naming the conversation as the person.
+- A group summary notification is filtered, while both of its children store. Confirmed against `flags=GROUP_SUMMARY` in `dumpsys`.
+- An ongoing notification and a non-message notification are both rejected.
+- A redacted message stores with the sender and the time, and the reading screen says the phone is hiding the content and offers the source app.
+- A phrase reply was received by the other app, confirmed by its own log: `GOT_REPLY[On my way]`.
+- With the notification gone, the same key says "The reply did not go out. Open Chatter and send it there." rather than appearing to succeed.
+- Messages outlive their notifications. Clearing the source app entirely left the inbox intact and correctly dropped only the reply action.
+
+Two defects were found by driving the real UI, neither visible in the code:
+
+- Opening a message dismissed its notification, which destroyed the reply action, so reading a message removed the ability to answer it. See `DECISIONS.md` D43.
+- Sending a reply left the launcher showing a blank screen, because clearing the open message made two screens fire a back navigation as they were disposed and the two extra pops emptied the navigation graph.
+
 ## What is not built
 
-Stage 2 messaging, Stage 3 magnifier, reader, and photos, and Stage 4 Today, the printable sheet, the settings file, the PIN, the reply phrase editor, and localization. The Messages, Magnifier, and Photos tiles are present on the home screen and open a screen that says plainly that the part is not built yet, offering the phone's own app where one exists. See `DECISIONS.md` D23. Those interstitials delete themselves stage by stage.
+Stage 3 magnifier, reader, and photos, and Stage 4 Today, the printable sheet, the settings file, the PIN, the reply phrase editor, and localization. The Magnifier and Photos tiles open a screen that says plainly that the part is not built yet, offering the phone's own app where one exists. See `DECISIONS.md` D23. Those interstitials delete themselves stage by stage.
 
 ---
 

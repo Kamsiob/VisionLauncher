@@ -102,6 +102,54 @@
     <string name="not_built_body">This part of VisionLauncher is still being built. It arrives with a later update.</string>
     <string name="no_app_for_that">This phone has no app for that.</string>
     <string name="open_message_app">Open a message app</string>
+
+    <!-- Messages, spec 5.6, grid 07 08 09 -->
+    <string name="messages_title">Messages</string>
+    <string name="time_yesterday">Yesterday</string>
+    <plurals name="messages_new_today">
+        <item quantity="one">%d new today.</item>
+        <item quantity="other">%d new today.</item>
+    </plurals>
+    <string name="messages_none_yet">No messages yet.</string>
+    <string name="messages_kept_here">Messages are kept on this phone so you can look back anytime.</string>
+    <string name="messages_no_access">This app is not watching for messages yet.</string>
+    <string name="messages_grant_access">Let it watch for messages</string>
+    <string name="messages_row_meta">%1$s, %2$s, %3$s</string>
+    <string name="messages_row_meta_no_body">%1$s, %2$s</string>
+    <string name="messages_hidden_body">the message is hidden</string>
+    <string name="messages_sent_something">sent something</string>
+    <string name="a11y_message_row">%1$s. %2$s</string>
+    <string name="message_from">%1$s, on %2$s, %3$s</string>
+    <string name="message_hidden_explained">This phone is hiding what the message says. Open %1$s to read it.</string>
+    <string name="message_open_app">Open %1$s</string>
+    <string name="message_read_aloud">Read it aloud</string>
+    <string name="message_stop_reading">Stop reading</string>
+    <string name="message_reply">Reply</string>
+    <string name="message_cannot_reply">This message cannot be answered from here.</string>
+    <string name="replies_travel">Replies travel through %1$s itself.</string>
+
+    <string name="reply_title">Reply to %1$s</string>
+    <string name="reply_speak">Speak your reply</string>
+    <string name="reply_listening">Listening. Say your reply.</string>
+    <string name="reply_or_send_one">Or send one of these</string>
+    <string name="reply_type_instead">Type instead</string>
+    <string name="reply_send">Send this</string>
+    <string name="reply_say_again">Say it again</string>
+    <string name="reply_voice_note">Your voice is understood on this phone. Nothing is sent anywhere.</string>
+    <string name="reply_sent">Your reply was sent.</string>
+    <string name="reply_failed">The reply did not go out. Open %1$s and send it there.</string>
+    <string name="reply_heard_nothing">Nothing was heard. Try again, or use one of the replies below.</string>
+    <string name="reply_phrase_yes">Yes</string>
+    <string name="reply_phrase_no">No</string>
+    <string name="reply_phrase_call_me">Call me</string>
+    <string name="reply_phrase_thank_you">Thank you!</string>
+    <string name="reply_phrase_love_you">I love you</string>
+    <string name="reply_phrase_on_my_way">On my way</string>
+    <string name="a11y_reply_confirm">You said: %1$s</string>
+
+    <string name="attention_no_message_access">Message watching was turned off. New messages will not appear here.</string>
+    <string name="attention_repair_message_access">Turn message watching on</string>
+    <string name="dest_notification_access">the notification access settings</string>
     <string name="open_photos_app">Open the phone\'s photos</string>
 
     <!-- Settings -->

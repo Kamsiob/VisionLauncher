@@ -336,6 +336,18 @@ private fun lampItems(
             },
         )
     }
+    if (state.messageAccessLost) {
+        items += LampItem(
+            id = "message_access",
+            sentence = stringResource(R.string.attention_no_message_access),
+            icon = LineIcons.messages,
+            repairLabel = stringResource(R.string.attention_repair_message_access),
+            onRepair = {
+                Haptics.tap(view)
+                onHandoff(SystemDestination.NOTIFICATION_ACCESS)
+            },
+        )
+    }
     if (state.batteryOptimizationOn) {
         items += LampItem(
             id = "battery_optimization",

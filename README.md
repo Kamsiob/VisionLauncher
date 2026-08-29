@@ -39,6 +39,10 @@ rather than promises. The reasoning lives in `DECISIONS.md`.
   through a library without someone deciding to let it in.
 - **It does not collect anything.** There is nowhere for your data to go. Messages
   the app sees are stored only on the phone and are never transmitted.
+- **It does not send your voice anywhere.** Spoken replies are understood by the
+  phone's own on-device recognizer. Where a phone has no on-device recognizer, the
+  app does not offer to listen at all rather than quietly falling back to a
+  service that would hear you over the network.
 - **It does not take over SMS.** Becoming the default SMS app would silently drop
   you off RCS onto plain SMS, degrading family photos, group chats, and encryption.
   Instead, messages are read from their notifications and replies travel through
@@ -65,9 +69,15 @@ with contacts and the keypad, Emergency, alarms, Settings with all three themes,
 arranging your apps, and the threshold pattern before every handoff to a system
 screen.
 
-Not built yet, and the app says so plainly where you would look for them: messages
-(Stage 2), the magnifier, the reader, and photos (Stage 3), and the Today screen with
-the full helper tools (Stage 4).
+Stage 2, messages, is built: one inbox for every messaging app, kept on the phone so
+you can look back after the notification is gone, a reading screen that shows one
+message large, and replies by voice or by one of six phrases. Replies travel through
+whichever app the message arrived in. Where a message cannot be answered from here,
+the screen says so instead of offering a key that would fail.
+
+Not built yet, and the app says so plainly where you would look for them: the
+magnifier, the reader, and photos (Stage 3), and the Today screen with the full
+helper tools (Stage 4).
 
 `HANDOFF.md` carries the current state, `MASTER_SPEC.md` the screen by screen
 specification, `DESIGN.md` the visual system, and `design/design-grid-v4.html` is the

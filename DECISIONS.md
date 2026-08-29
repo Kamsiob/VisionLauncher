@@ -267,3 +267,21 @@ The ringing screen stopped its alarm in `onStop`, which was the right answer to 
 `onStop` returns early on `isChangingConfigurations` now, and the ringing screen also declares the configuration changes it can absorb so most of them never restart it at all. `onDestroy` still releases the player on the recreate path, so nothing is orphaned either way.
 
 This was a regression introduced in the same session that fixed the original defect, which is the ordinary cost of fixing something under a deadline and the reason the second review pass was worth running.
+
+## D43. Reading a message does not dismiss its notification
+
+Opening a message marks it read in the launcher's own store and leaves the
+system notification exactly where it was.
+
+The first build dismissed the notification on open, on the reasoning that the
+message had been dealt with and the shade should not keep nagging. Testing on
+the emulator showed what that actually costs: the reply action does not belong
+to the launcher, it belongs to the notification, and it dies with it. So
+reading a message removed the ability to answer it, and the reading screen
+went from offering Reply to saying "This message cannot be answered from here."
+Reading is the step immediately before replying. Taking the reply away as a
+side effect of reading is close to the worst thing this screen could do.
+
+The shade is the system's surface and the source app's, not the launcher's.
+The inbox keeps its own record and does not need to edit somebody else's.
+Messaging apps clear their own notifications when a reply goes through.

@@ -25,6 +25,7 @@ enum class SystemDestination(val id: String, @param:StringRes val labelRes: Int)
     CAPTIONS("captions", R.string.dest_caption_settings),
     SOUND_AMPLIFIER("sound_amplifier", R.string.dest_sound_amplifier),
     MEDICAL_INFO("medical_info", R.string.dest_medical_info),
+    NOTIFICATION_ACCESS("notification_access", R.string.dest_notification_access),
     HOME_SETTINGS("home_settings", R.string.dest_home_settings);
 
     fun intent(context: Context): Intent = when (this) {
@@ -42,6 +43,13 @@ enum class SystemDestination(val id: String, @param:StringRes val labelRes: Int)
         CAPTIONS -> Intent(Settings.ACTION_CAPTIONING_SETTINGS)
         SOUND_AMPLIFIER -> Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
         MEDICAL_INFO -> Intent("android.settings.EMERGENCY_INFORMATION")
+        NOTIFICATION_ACCESS ->
+            if (Build.VERSION.SDK_INT >= 30) Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+            // The constant only became public in API 30. On 29 the action
+            // string is the same and works; hardcoding it is the difference
+            // between the key working and the key doing nothing on the oldest
+            // phone the app supports.
+            else Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
         HOME_SETTINGS -> Intent(Settings.ACTION_HOME_SETTINGS)
     }
 

@@ -3,6 +3,8 @@ package io.github.kamsiob.launcher
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import android.speech.RecognizerIntent
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -15,9 +17,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.composable
@@ -32,6 +37,7 @@ import io.github.kamsiob.launcher.data.ContactsRepository
 import io.github.kamsiob.launcher.data.EmergencyContact
 import io.github.kamsiob.launcher.data.Favorite
 import io.github.kamsiob.launcher.data.Settings
+import io.github.kamsiob.launcher.messages.MessagesState
 import io.github.kamsiob.launcher.nav.SystemDestination
 import io.github.kamsiob.launcher.ui.alarm.AlarmEditScreen
 import io.github.kamsiob.launcher.ui.alarm.AlarmListScreen
@@ -43,6 +49,9 @@ import io.github.kamsiob.launcher.ui.call.KeypadScreen
 import io.github.kamsiob.launcher.ui.emergency.EmergencyScreen
 import io.github.kamsiob.launcher.ui.home.HomeScreen
 import io.github.kamsiob.launcher.ui.home.NotBuiltScreen
+import io.github.kamsiob.launcher.ui.messages.MessagesScreen
+import io.github.kamsiob.launcher.ui.messages.ReadMessageScreen
+import io.github.kamsiob.launcher.ui.messages.ReplyScreen
 import io.github.kamsiob.launcher.ui.onboarding.OnboardingScreen
 import io.github.kamsiob.launcher.ui.settings.AboutScreen
 import io.github.kamsiob.launcher.ui.settings.HelperScreen
@@ -60,6 +69,7 @@ class MainActivity : ComponentActivity() {
     private val homePressed = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     lateinit var attentionWatcher: AttentionWatcher
         private set
+    private lateinit var messagesState: MessagesState
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +79,10 @@ class MainActivity : ComponentActivity() {
         val apps = AppsRepository(this)
         val contacts = ContactsRepository(this)
         val alarmStore = AlarmStore(this)
+        // Tied to the activity, not to a composition, so a reply in flight
+        // survives the recomposition that follows it and the speech engines are
+        // built once rather than on every navigation.
+        messagesState = MessagesState(this, lifecycleScope)
 
         // Read synchronously so frame one already knows the chosen theme and
         // whether first run is behind us, instead of painting the light palette
@@ -96,9 +110,18 @@ class MainActivity : ComponentActivity() {
                     alarmStore = alarmStore,
                     settings = settings,
                     homePressed = homePressed,
+                    messages = messagesState,
                 )
             }
         }
+    }
+
+    override fun onDestroy() {
+        // The speech engines hold a service connection each. Leaving them bound
+        // after the launcher is gone keeps a recognizer alive with a microphone
+        // it is no longer entitled to.
+        if (::messagesState.isInitialized) messagesState.release()
+        super.onDestroy()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -133,6 +156,9 @@ object Routes {
     const val PICK_FAVORITE = "pickfavorite"
     const val PICK_EMERGENCY = "pickemergency"
     const val ARRANGE = "arrange"
+    const val MESSAGES = "messages"
+    const val READ_MESSAGE = "readmessage"
+    const val REPLY = "reply"
     const val NOT_BUILT = "notbuilt/{feature}"
     const val THRESHOLD = "threshold/{dest}"
 
@@ -150,6 +176,7 @@ fun LauncherNav(
     alarmStore: AlarmStore,
     settings: Settings,
     homePressed: MutableSharedFlow<Unit>,
+    messages: MessagesState,
 ) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
@@ -163,6 +190,9 @@ fun LauncherNav(
     // cannot see contacts the moment it can.
     var contactsPermissionGeneration by remember { mutableStateOf(0) }
     val hasContacts = remember(contactsPermissionGeneration) { contacts.hasPermission() }
+
+    val inbox by messages.messages.collectAsStateWithLifecycle(initialValue = emptyList())
+    val unreadToday by messages.unreadToday.collectAsStateWithLifecycle(initialValue = 0)
 
     LaunchedEffect(homePressed) {
         homePressed.collect {
@@ -220,6 +250,7 @@ fun LauncherNav(
                 onOpenFeature = { feature ->
                     when (feature) {
                         BuiltIn.CALL -> navController.navigate(Routes.CALL)
+                        BuiltIn.MESSAGES -> navController.navigate(Routes.MESSAGES)
                         BuiltIn.ALARMS -> navController.navigate(Routes.ALARMS)
                         BuiltIn.CAMERA -> launchCamera(activity)
                         else -> navController.navigate(Routes.notBuilt(feature))
@@ -427,6 +458,118 @@ fun LauncherNav(
             )
         }
 
+        composable(Routes.MESSAGES) {
+            // Read on every visit rather than remembered. Access can be revoked
+            // in system settings while the app is in the background, and a
+            // cached "yes" would leave the screen showing an empty inbox with
+            // no explanation for why nothing new arrives.
+            val hasAccess = remember(navController.currentBackStackEntry) { messages.hasAccess() }
+            MessagesScreen(
+                messages = inbox,
+                unreadToday = unreadToday,
+                hasAccess = hasAccess,
+                onOpen = { message ->
+                    messages.openMessage(message)
+                    navController.navigate(Routes.READ_MESSAGE)
+                },
+                onGrantAccess = { handoff(SystemDestination.NOTIFICATION_ACCESS) },
+                onHome = goHome,
+            )
+        }
+
+        composable(Routes.READ_MESSAGE) { entry ->
+            val open = messages.open
+            if (open == null) {
+                // Reached with nothing to show, which happens if the process
+                // was killed while the screen was up and Android restored the
+                // back stack without the state behind it.
+                //
+                // Guarded on this entry being the one on screen. Without the
+                // guard, clearing the open message while navigating away made
+                // both this screen and the reply screen fire a pop as they were
+                // disposed, and the two extra pops emptied the graph and left
+                // the launcher showing nothing at all.
+                PopWhenCurrent(entry, goBack)
+            } else {
+                ReadMessageScreen(
+                    message = open,
+                    speaking = messages.speaking,
+                    canSpeak = messages.canSpeakAloud,
+                    onReply = { navController.navigate(Routes.REPLY) },
+                    onReadAloud = { messages.readAloud() },
+                    onStopReading = { messages.stopSpeaking() },
+                    onHome = {
+                        messages.closeMessage()
+                        goHome()
+                    },
+                    onBack = {
+                        messages.closeMessage()
+                        goBack()
+                    },
+                )
+            }
+        }
+
+        composable(Routes.REPLY) { entry ->
+            val open = messages.open
+            if (open == null) {
+                PopWhenCurrent(entry, goBack)
+            } else {
+                val context = LocalContext.current
+                val defaults = defaultPhrases(context)
+                val typed = rememberLauncherForActivityResult(
+                    ActivityResultContracts.StartActivityForResult()
+                ) { result ->
+                    val text = result.data
+                        ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                        ?.firstOrNull()
+                    if (!text.isNullOrBlank() && messages.sendReply(text)) goBack()
+                }
+                val microphone = rememberLauncherForActivityResult(
+                    ActivityResultContracts.RequestPermission()
+                ) { granted -> if (granted) messages.startDictation() }
+                ReplyScreen(
+                    senderName = open.sender,
+                    phrases = settings.replyPhrases.ifEmpty { defaults },
+                    canDictate = messages.canDictate,
+                    listening = messages.listening,
+                    heard = messages.heard,
+                    lastError = messages.lastError,
+                    onSpeak = {
+                        if (activity.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
+                            android.content.pm.PackageManager.PERMISSION_GRANTED
+                        ) {
+                            messages.startDictation()
+                        } else {
+                            microphone.launch(Manifest.permission.RECORD_AUDIO)
+                        }
+                    },
+                    onSend = { text ->
+                        if (messages.sendReply(text)) {
+                            Toast.makeText(
+                                activity,
+                                activity.getString(R.string.reply_sent),
+                                Toast.LENGTH_LONG,
+                            ).show()
+                            // Navigate first, clear second. Clearing first
+                            // leaves two screens composed with nothing to show.
+                            goHome()
+                            messages.closeMessage()
+                        }
+                    },
+                    onType = { runCatching { typed.launch(typeReplyIntent()) } },
+                    onHome = {
+                        messages.closeMessage()
+                        goHome()
+                    },
+                    onBack = {
+                        messages.cancelDictation()
+                        goBack()
+                    },
+                )
+            }
+        }
+
         composable(Routes.NOT_BUILT) { backStackEntry ->
             val feature = BuiltIn.fromId(backStackEntry.arguments?.getString("feature"))
                 ?: BuiltIn.MESSAGES
@@ -456,6 +599,46 @@ fun LauncherNav(
         }
     }
 }
+
+/**
+ * Leaves a screen that has nothing left to show, but only while it is the
+ * screen actually on top. A destination further down the back stack is being
+ * disposed, not visited, and popping on its behalf takes an entry that belongs
+ * to somebody else.
+ */
+@Composable
+private fun PopWhenCurrent(entry: NavBackStackEntry, pop: () -> Unit) {
+    LaunchedEffect(entry) {
+        if (entry.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) pop()
+    }
+}
+
+/**
+ * The six phrases from grid 09, read from resources so they translate. Stored
+ * phrases replace them once a helper edits the list.
+ */
+fun defaultPhrases(context: android.content.Context): List<String> = listOf(
+    context.getString(R.string.reply_phrase_yes),
+    context.getString(R.string.reply_phrase_no),
+    context.getString(R.string.reply_phrase_call_me),
+    context.getString(R.string.reply_phrase_thank_you),
+    context.getString(R.string.reply_phrase_love_you),
+    context.getString(R.string.reply_phrase_on_my_way),
+)
+
+/**
+ * The typed fallback. The speech activity is used rather than a text field
+ * because it brings the system keyboard up on its own screen, at the system's
+ * own size, without the launcher having to host and resize a text field behind
+ * it. People who want to type get the keyboard they already know.
+ */
+fun typeReplyIntent(): Intent =
+    Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
+        )
+    }
 
 /** The one money related link in the app, shared by Settings and About. */
 fun openSupportLink(context: android.content.Context) {

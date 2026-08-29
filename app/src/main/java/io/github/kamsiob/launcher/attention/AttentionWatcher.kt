@@ -15,6 +15,7 @@ import android.os.Environment
 import android.os.PowerManager
 import android.os.StatFs
 import android.provider.Settings
+import io.github.kamsiob.launcher.messages.hasNotificationAccess
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,10 +34,11 @@ data class AttentionState(
     val noNetwork: Boolean = false,
     val storageNearlyFull: Boolean = false,
     val batteryOptimizationOn: Boolean = false,
+    val messageAccessLost: Boolean = false,
 ) {
     val anythingRaised: Boolean
         get() = ringerSilent || ringerVibrate || dndOn || batteryLow || airplaneOn ||
-            noNetwork || storageNearlyFull || batteryOptimizationOn
+            noNetwork || storageNearlyFull || batteryOptimizationOn || messageAccessLost
 }
 
 /**
@@ -52,6 +54,11 @@ class AttentionWatcher(private val context: Context) {
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+
+    // Declared above polled on purpose. Property initializers run in
+    // declaration order, and polled calls pollNow() during construction, so a
+    // field this one reads has to already exist or the launcher dies on start.
+    private val marks = context.getSharedPreferences("attention", Context.MODE_PRIVATE)
 
     private val polled = MutableStateFlow(pollNow())
 
@@ -77,8 +84,29 @@ class AttentionWatcher(private val context: Context) {
             noNetwork = !hasNetwork(),
             storageNearlyFull = storageNearlyFull(),
             batteryOptimizationOn = !powerManager.isIgnoringBatteryOptimizations(context.packageName),
+            messageAccessLost = messageAccessLost(),
         )
     }
+
+    /**
+     * Raised only where message watching was working and has since been turned
+     * off, never merely because it was never set up. A system update or a
+     * battery cleanup app can revoke notification access without telling
+     * anybody, and the symptom is messages that quietly stop arriving: exactly
+     * the kind of silent failure the lamp exists for. Raising it on a phone
+     * that never had it would be nagging about a feature nobody asked for.
+     */
+    private fun messageAccessLost(): Boolean {
+        val granted = hasNotificationAccess(context)
+        if (granted) {
+            if (!marks.getBoolean(KEY_MESSAGE_ACCESS_SEEN, false)) {
+                marks.edit().putBoolean(KEY_MESSAGE_ACCESS_SEEN, true).apply()
+            }
+            return false
+        }
+        return marks.getBoolean(KEY_MESSAGE_ACCESS_SEEN, false)
+    }
+
 
     private fun batteryPercent(): Int {
         val batteryManager = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
@@ -156,6 +184,19 @@ class AttentionWatcher(private val context: Context) {
      * the lamp key has to offer a handoff instead of a fix.
      */
     fun canToggleDnd(): Boolean = notificationManager.isNotificationPolicyAccessGranted
+
+    /**
+     * Forgets that message watching was ever on, so turning the feature off
+     * deliberately does not leave the lamp complaining about it forever.
+     */
+    fun forgetMessageAccess() {
+        marks.edit().putBoolean(KEY_MESSAGE_ACCESS_SEEN, false).apply()
+        refresh()
+    }
+
+    private companion object {
+        const val KEY_MESSAGE_ACCESS_SEEN = "message_access_seen"
+    }
 
     fun repairDnd(): Boolean {
         if (!notificationManager.isNotificationPolicyAccessGranted) return false

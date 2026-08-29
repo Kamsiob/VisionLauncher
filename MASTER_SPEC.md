@@ -106,6 +106,9 @@ The most fragile part of the app. Build it defensively.
 - Reply screen: "Speak your reply" as the primary path, six one tap preset phrases as the zero effort path, "Type instead" opening the system keyboard as the fallback.
 - Spoken text is shown large for confirmation before sending. Never send without confirmation.
 - Send by firing the notification's `RemoteInput` action. If no reply action exists on that notification, hide the reply options and offer to open the source app instead.
+- Read `MessagingStyle` through the style's own message list rather than the flat `EXTRA_TITLE` and `EXTRA_TEXT` compatibility fields. In a group conversation those fields name the conversation where the reader needs the person, and can carry the whole thread as one run of text. Name both: "Priya, in Book club".
+- Reading a message does not dismiss its notification. The reply action lives on the notification and dies with it, so dismissing on open would take away the ability to answer. See `DECISIONS.md` D43.
+- Speech to text for replies is on-device only. Where a device has no on-device recognizer, do not offer the speak key and do not show the privacy sentence that sits under it, rather than falling back to network recognition.
 - Expect and handle: dismissed notifications, grouped and bundled notifications, reboots, listener kills, and Android 15 and later sensitive content redaction. When content is redacted, show the sender and time and say the content is hidden, then offer to open the source app. Never show an empty row with no explanation.
 - "Open a message app" is always present as the reliable escape hatch.
 

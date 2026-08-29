@@ -91,6 +91,7 @@ object TypeScale {
     const val appIconInitial = 26
     const val nowTag = 15
     const val bigmsg = 34
+    const val from = 22
 }
 
 /** Multiplies a base sp size by the user's chosen text step. */

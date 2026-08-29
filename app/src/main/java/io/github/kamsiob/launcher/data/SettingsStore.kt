@@ -53,6 +53,13 @@ data class Settings(
     val dismissedThresholds: Set<String> = emptySet(),
     val favorites: List<Favorite> = emptyList(),
     val emergencyContact: EmergencyContact? = null,
+    /**
+     * The six one-tap replies. Empty means the defaults from the grid have not
+     * been changed, and the screen substitutes them; storing the defaults
+     * eagerly would freeze the English wording into a phone that later gets
+     * switched to Spanish.
+     */
+    val replyPhrases: List<String> = emptyList(),
 )
 
 /**
@@ -71,6 +78,7 @@ class SettingsStore(private val context: Context) {
         val dismissedThresholds = stringSetPreferencesKey("dismissed_thresholds")
         val favorites = stringPreferencesKey("favorites")
         val emergencyContact = stringPreferencesKey("emergency_contact")
+        val replyPhrases = stringPreferencesKey("reply_phrases")
     }
 
     private val json = Json { ignoreUnknownKeys = true }
@@ -94,6 +102,9 @@ class SettingsStore(private val context: Context) {
             emergencyContact = prefs[Keys.emergencyContact]?.let { stored ->
                 runCatching { json.decodeFromString<EmergencyContact>(stored) }.getOrNull()
             },
+            replyPhrases = prefs[Keys.replyPhrases]?.let { stored ->
+                runCatching { json.decodeFromString<List<String>>(stored) }.getOrDefault(emptyList())
+            } ?: emptyList(),
         )
     }
 
@@ -129,6 +140,10 @@ class SettingsStore(private val context: Context) {
 
     suspend fun setFavorites(favorites: List<Favorite>) {
         context.settingsData.edit { it[Keys.favorites] = json.encodeToString(favorites) }
+    }
+
+    suspend fun setReplyPhrases(phrases: List<String>) {
+        context.settingsData.edit { it[Keys.replyPhrases] = json.encodeToString(phrases) }
     }
 
     suspend fun setEmergencyContact(contact: EmergencyContact?) {

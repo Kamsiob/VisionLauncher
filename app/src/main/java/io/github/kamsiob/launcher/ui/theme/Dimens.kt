@@ -35,6 +35,7 @@ object Dimens {
     val tile = 128.dp
     val bigKey = 130.dp
     val keepKey = 104.dp
+    /** The phrase keys on the reply screen, grid 09. */
     val phraseKey = 84.dp
     val dismissKey = 60.dp
     // The grid draws .themecard at min-height 112px.
