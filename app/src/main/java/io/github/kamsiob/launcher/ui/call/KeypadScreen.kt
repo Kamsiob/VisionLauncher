@@ -1,6 +1,7 @@
 package io.github.kamsiob.launcher.ui.call
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -69,44 +70,49 @@ fun KeypadScreen(
             listOf("4", "5", "6"),
             listOf("7", "8", "9"),
         )
-        rows.forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
-                row.forEach { digit ->
-                    ApplianceKey(
-                        label = digit,
-                        onClick = { dialed += digit },
-                        modifier = Modifier.weight(1f),
-                        minHeight = Dimens.keypadKey,
-                        fontSize = TypeScale.padKey,
-                        repeatable = true,
-                    )
+        // One grid with one gap in both directions, as the grid draws it. The
+        // rows were direct children of the screen column, so they inherited its
+        // 16dp and the pad had unequal gutters.
+        Column(verticalArrangement = Arrangement.spacedBy(Dimens.gap)) {
+            rows.forEach { row ->
+                Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
+                    row.forEach { digit ->
+                        ApplianceKey(
+                            label = digit,
+                            onClick = { dialed += digit },
+                            modifier = Modifier.weight(1f),
+                            minHeight = Dimens.keypadKey,
+                            fontSize = TypeScale.padKey,
+                            repeatable = true,
+                        )
+                    }
                 }
             }
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
-            ApplianceKey(
-                label = stringResource(R.string.keypad_erase),
-                onClick = { dialed = dialed.dropLast(1) },
-                modifier = Modifier.weight(1f),
-                minHeight = Dimens.keypadKey,
-                fontSize = TypeScale.keyLabelSmall,
-                repeatable = true,
-            )
-            ApplianceKey(
-                label = "0",
-                onClick = { dialed += "0" },
-                modifier = Modifier.weight(1f),
-                minHeight = Dimens.keypadKey,
-                fontSize = TypeScale.padKey,
-                repeatable = true,
-            )
-            ApplianceKey(
-                label = stringResource(R.string.keypad_clear),
-                onClick = { dialed = "" },
-                modifier = Modifier.weight(1f),
-                minHeight = Dimens.keypadKey,
-                fontSize = TypeScale.keyLabelSmall,
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
+                ApplianceKey(
+                    label = stringResource(R.string.keypad_erase),
+                    onClick = { dialed = dialed.dropLast(1) },
+                    modifier = Modifier.weight(1f),
+                    minHeight = Dimens.keypadKey,
+                    fontSize = TypeScale.keyLabelSmall,
+                    repeatable = true,
+                )
+                ApplianceKey(
+                    label = "0",
+                    onClick = { dialed += "0" },
+                    modifier = Modifier.weight(1f),
+                    minHeight = Dimens.keypadKey,
+                    fontSize = TypeScale.padKey,
+                    repeatable = true,
+                )
+                ApplianceKey(
+                    label = stringResource(R.string.keypad_clear),
+                    onClick = { dialed = "" },
+                    modifier = Modifier.weight(1f),
+                    minHeight = Dimens.keypadKey,
+                    fontSize = TypeScale.keyLabelSmall,
+                )
+            }
         }
         ApplianceKey(
             label = stringResource(R.string.keypad_call_this_number),

@@ -137,7 +137,10 @@ fun OnboardingScreen(
             icon = LineIcons.messages,
             title = stringResource(R.string.onboarding_battery_title),
             body = stringResource(R.string.onboarding_battery_body),
-            secondBody = stringResource(R.string.onboarding_battery_instruction),
+            // No second line. It said "On the next screen, choose Don't
+            // optimize", which is the wording of a different entry point. This
+            // key raises the system's allow dialog, where that control does not
+            // exist, so the sentence sent people hunting for nothing.
             actionLabel = stringResource(R.string.onboarding_battery_key),
             onAction = {
                 batteryLauncher.launch(

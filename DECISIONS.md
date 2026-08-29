@@ -184,9 +184,9 @@ The reason is worth writing down, because it explains how a careful design got t
 
 The grid is the measurement authority over prose. The user is the authority over the grid. The grid now carries the corrected values and a dated note saying why, so the two never disagree afterward.
 
-**What changed.** Tile glyph 46 to 64, which is 39 percent linear and 94 percent in area. Row icons 40 and 36 to 52 and 48. Home and Back key glyph 28 to 40. In-key glyphs from one flat 32 to 34, 40, or 56 depending on the key's height. Lamp glyph 32 to 40. Day part mark 32 to 36. Status dot 15 to 18. Threshold mark 64 to 72.
+**What changed.** Corrected once and then again after the user looked at the first result and asked for more. The final values, which the grid carries: tile glyph 46 to 80, which is 74 percent linear and 202 percent in area. Row icons 40 and 36 to 64 and 58. Home and Back key glyph 28 to 44. In-key glyphs from one flat 32 to 40, 48, or 64 depending on the key's height. Lamp glyph 32 to 48. Day part mark 32 to 42. Status dot 15 to 20. Threshold mark 64 to 88. Dial pad digits 38 to 50sp. Stroke 2.7 to 2.2, which holds the absolute stroke steady while the glyphs grow.
 
-**What deliberately did not change.** The third party app icon stays at 52dp, smaller than the 64dp line icon. That size difference is the quiet cue telling a built in feature from an installed app, which `DESIGN.md` relies on, and growing both to match would have erased it.
+**What deliberately did not change.** The third party app icon stays smaller than the line icon, at 60dp against 80dp. That size difference is the quiet cue telling a built in feature from an installed app, which `DESIGN.md` relies on, and growing both to match would have erased it.
 
 **Three structural repairs the change required.** A tile's glyph and an app's bitmap now sit in one shared 64dp slot, so the two tile kinds are identical in height; previously they differed by 6dp and the rows ragged. The empty spot was a frozen 128dp box that no icon size could reach, so any tile growth would have ragged the default home screen by up to 39dp at the app's own text steps; the grid row now sizes to its tallest child and the empty spot follows. And the Home and Back bar now stacks on the same threshold as everything else.
 
@@ -221,3 +221,9 @@ The window background is set from the same read before `setContent`, so even the
 `themes.xml` hardcoded `windowLightStatusBar` true, which asks for dark icons. The home screen puts the navy masthead under the status bar, so the clock and battery were dark on dark. The app is edge to edge, so what sits behind the status bar depends on the screen and on the chosen Look, neither of which the system's night mode knows about.
 
 The appearance is now set from the route and the Look together: light icons over the masthead on home and over the dark background everywhere in the dark theme, dark icons over paper.
+
+## D38. Prose about numbers goes stale one change later
+
+`DESIGN.md` and D34 were written to record the first icon correction and then contradicted the second one, because the grid and `Dimens.kt` were updated and the prose was not. A review caught it. Both now carry the final set.
+
+The general lesson, which is cheaper than the habit of restating numbers: prose should say what a value is FOR and where it lives, and let the grid and the tokens carry the value. Where a document does restate a number, it is a copy that has to be maintained, and the next change is the one that forgets.

@@ -70,13 +70,15 @@ Where the layout cannot give way, the type does: a keypad stays three columns, s
 
 ## Icons
 
-Glyph sizes were raised above the grid's original values on August 29, 2026, after the app was seen on a device. The grid argued its touch targets from the aging literature but let the glyphs inside them inherit conventional sizes. The corrected values: tile glyph 64dp, row icon 52dp or 48dp where a metadata line sits under the label, key glyph 34, 40, or 56dp by key height, Home and Back 40dp, lamp 40dp, day part mark 36dp, status dot 18dp, threshold mark 72dp. See `DECISIONS.md` D34.
+Glyph sizes were raised above the grid's original values on August 29, 2026, after the app was seen on a device, then raised again. The grid argued its touch targets from the aging literature but let the glyphs inside them inherit conventional sizes. The values, which the grid also carries: tile glyph 80dp, row icon 64dp, or 58dp where a metadata line sits under the label, key glyph 40, 48, or 64dp by key height, Home and Back 44dp, lamp 48dp, day part mark 42dp, status dot 20dp, threshold mark 88dp, dial pad digits 50sp.
 
-Two rankings are deliberate. A third party app icon stays at 52dp, smaller than the 64dp built in line icon, because that difference is what tells the two apart. And the lamp glyph at 40dp outranks the day part mark at 36dp, because the lamp backs a colored signal that must never carry meaning alone while the sun and moon are decoration.
+The stroke came down from 2.7 to 2.2 in the same change, and that number is not decoration. A stroke in viewport units scales with the icon, so the old weight at the new sizes would have thickened every line by a quarter and closed the gaps inside the camera and the photo frame. At 2.2 the absolute stroke lands within a tenth of a dp of what it was at every size in `Dimens`. Change a size without rechecking that arithmetic and the shapes fuse.
+
+Two rankings are deliberate. A third party app icon stays at 60dp, smaller than the 80dp built in line icon, because that difference is what tells the two apart, and both sit in one 80dp slot so the two tile kinds cannot differ in height. And the lamp glyph at 48dp outranks the day part mark at 42dp, because the lamp backs a colored signal that must never carry meaning alone while the sun and moon are decoration.
 
 ## Touch
 
-- Home tiles 128dp tall, about 20mm. With the corrected glyph they settle around 136dp.
+- Home tiles 128dp tall, about 20mm. With the corrected glyph they settle around 148dp.
 - Key floor 88dp, about 14mm. Keypad keys 96dp. Small keys 72dp.
 - These are far above Android's 48dp minimum, deliberately. Older and tremor affected users need substantially larger targets, and the aging literature shows meaningfully higher error rates at standard sizes.
 - No swipe, drag, long press, double tap, or pinch is required anywhere in the app. Older adults prefer tapping to direct manipulation, and dragging is exactly where tremor turns into misfires.

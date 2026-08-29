@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -53,6 +54,7 @@ import io.github.kamsiob.launcher.ui.home.icon
 import io.github.kamsiob.launcher.ui.home.label
 import io.github.kamsiob.launcher.ui.theme.Dimens
 import io.github.kamsiob.launcher.ui.theme.LineIcons
+import io.github.kamsiob.launcher.ui.theme.LocalOutlined
 import io.github.kamsiob.launcher.ui.theme.LocalPalette
 import io.github.kamsiob.launcher.ui.theme.TypeScale
 import io.github.kamsiob.launcher.ui.theme.tileColumns
@@ -462,6 +464,8 @@ private fun ActionSheet(
     onNeverMind: () -> Unit,
 ) {
     val palette = LocalPalette.current
+    val outlined = LocalOutlined.current
+    val shape = RoundedCornerShape(Dimens.radiusSheet)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -471,8 +475,21 @@ private fun ActionSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(8.dp, RoundedCornerShape(Dimens.radiusSheet))
-                .background(palette.card, RoundedCornerShape(Dimens.radiusSheet))
+                // One separation device per element. Every other raised surface
+                // swaps its shadow for a border in the Outlined theme; this was
+                // the one that did not.
+                .then(
+                    if (outlined) {
+                        Modifier
+                            .clip(shape)
+                            .background(palette.card)
+                            .border(Dimens.outlinedBorder, palette.outline, shape)
+                    } else {
+                        Modifier
+                            .shadow(8.dp, shape, ambientColor = palette.shadow, spotColor = palette.shadow)
+                            .background(palette.card, shape)
+                    }
+                )
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(Dimens.gap),
         ) {

@@ -225,8 +225,7 @@
     <string name="onboarding_phone_key">Let it place calls</string>
     <string name="onboarding_battery_title">Keep messages arriving</string>
     <string name="onboarding_battery_body">To save battery, Android sometimes puts apps to sleep. If it puts this app to sleep, new messages may stop appearing here.</string>
-    <string name="onboarding_battery_instruction">On the next screen, choose Don\'t optimize for this app.</string>
-    <string name="onboarding_battery_key">Continue to battery settings</string>
+    <string name="onboarding_battery_key">Let it keep running</string>
     <string name="onboarding_battery_skipped">If Android puts this app to sleep, the attention lamp will tell you.</string>
     <string name="onboarding_skipped_consequence">You can allow this later in Settings. Until then, this part stays off.</string>
     <string name="onboarding_all_set">You\'re all set.</string>
