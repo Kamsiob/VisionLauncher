@@ -13,14 +13,17 @@ plugins {
 // 0.1.0 was the foundation and Stage 1, the spine.
 // 0.4.0 was all four stages built: messaging, seeing, and the helper tools, one
 // minor per stage delivered.
-// 0.4.1 is the acceptance pass over them: the magnifier fitting its screen at
+// 0.4.1 was the acceptance pass over them: the magnifier fitting its screen at
 // every text size, orientation settled, and the whole app re-driven on the
-// signed release build. Still below 1.0.0, which stays reserved for the Play
+// signed release build.
+// 0.4.2 adds the accessibility audit's findings: every text field raised to the
+// app's own 72dp touch floor, and an inbox that does not lose its messages to
+// its own footnote at the largest text size. Still below 1.0.0, which stays reserved for the Play
 // release once all four are acceptance tested on real phones rather than on an
 // emulator.
 val versionMajor = 0
 val versionMinor = 4
-val versionPatch = 1
+val versionPatch = 2
 
 // One application ID, no debug suffix. The user keeps exactly one copy of this
 // app on any device, so debug and release deliberately collide rather than
