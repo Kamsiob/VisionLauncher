@@ -1,7 +1,9 @@
 package io.github.kamsiob.launcher.alarm
 
 import android.content.Context
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +13,18 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-private val Context.alarmData by preferencesDataStore(name = "alarms")
+/**
+ * A corruption handler, because without one a truncated file throws out of the
+ * flow before any decode runs, and the careful fallbacks below guard the wrong
+ * layer entirely. A power loss mid write or a full disk would then crash the
+ * launcher on every start, with no way back in to fix it. Losing this file
+ * resets it to defaults, which is recoverable; a launcher that will not open is
+ * not.
+ */
+private val Context.alarmData by preferencesDataStore(
+    name = "alarms",
+    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
+)
 
 @Serializable
 data class Alarm(

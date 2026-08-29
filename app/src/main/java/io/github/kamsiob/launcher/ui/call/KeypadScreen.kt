@@ -20,6 +20,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import io.github.kamsiob.launcher.R
@@ -53,8 +54,12 @@ fun KeypadScreen(
         ScreenTitle(stringResource(R.string.keypad_title))
         Text(
             text = formatDialed(dialed),
+            // Pinned left to right. Digits carry no strong direction, so in an
+            // Arabic layout the paragraph resolves right to left and reorders
+            // the groups: 555 867 5309 would read 5309 867 555. A phone number
+            // is the one thing on this screen that must never be reordered.
             style = monoStyle(size = TypeScale.dialed, lineHeightFactor = 1.2f)
-                .copy(letterSpacing = 0.06.em),
+                .copy(letterSpacing = 0.06.em, textDirection = TextDirection.Ltr),
             color = palette.text,
             textAlign = TextAlign.Center,
             modifier = Modifier

@@ -2,7 +2,9 @@ package io.github.kamsiob.launcher.data
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
@@ -15,7 +17,18 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-private val Context.settingsData by preferencesDataStore(name = "settings")
+/**
+ * A corruption handler, because without one a truncated file throws out of the
+ * flow before any decode runs, and the careful fallbacks below guard the wrong
+ * layer entirely. A power loss mid write or a full disk would then crash the
+ * launcher on every start, with no way back in to fix it. Losing this file
+ * resets it to defaults, which is recoverable; a launcher that will not open is
+ * not.
+ */
+private val Context.settingsData by preferencesDataStore(
+    name = "settings",
+    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
+)
 
 @Serializable
 data class Favorite(

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Nothing leaves this phone.
+
+  The app's data directory holds the favorites with their phone numbers, the
+  emergency contact, and the home layout. With no rules file Android's default
+  is to include all of it in cloud backup and in device to device transfer,
+  which would have put a person's contacts in a Google Drive backup while the
+  README says everything stays on the phone.
+
+  allowBackup="false" in the manifest covers API 29 and 30, where this file is
+  ignored. This file covers API 31 and above, where allowBackup="false" stops
+  cloud backup but leaves device to device transfer on.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" path="." />
+    </device-transfer>
+</data-extraction-rules>

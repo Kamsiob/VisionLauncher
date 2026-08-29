@@ -39,6 +39,7 @@ fun EmergencyScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
+    val emergencyNumber = stringResource(R.string.emergency_number)
     // The alert key describes what this phone can actually do right now. The
     // permissions behind the text are requested when the helper chooses the
     // person, but they can be refused there or revoked later, and a key that
@@ -67,9 +68,9 @@ fun EmergencyScreen(
     ScreenFrame(topBar = { TopBar(onHome = onHome, onBack = onBack) }) {
         ScreenTitle(stringResource(R.string.emergency_title))
         ApplianceKey(
-            label = stringResource(R.string.emergency_call_911),
-            sublabel = stringResource(R.string.emergency_call_911_sub),
-            onClick = { dialEmergency(context) },
+            label = stringResource(R.string.emergency_call_number, emergencyNumber),
+            sublabel = stringResource(R.string.emergency_call_number_sub, emergencyNumber),
+            onClick = { dialEmergency(context, emergencyNumber) },
             style = KeyStyle.EMERGENCY,
             minHeight = Dimens.bigKey,
             committing = true,
@@ -97,16 +98,21 @@ fun EmergencyScreen(
 }
 
 /**
- * The dialer opens with 911 entered and waits for the person to press call.
+ * The dialer opens with the emergency number entered and waits for the person to
+ * press call.
  *
  * ACTION_DIAL rather than ACTION_CALL is deliberate and must stay that way. A
  * stray tap is exactly the failure this audience is prone to, and it is the
  * reason the Call screen's red key opens this screen instead of dialing. An
  * accidental emergency call is a worse outcome than one extra press, and the
- * key says "with 911 ready" rather than claiming to place the call.
+ * key says the number is ready rather than claiming to place the call.
+ *
+ * The number arrives from a non translatable resource so the label and the dial
+ * can never disagree, which they could when one was a string and the other a
+ * Kotlin literal.
  */
-private fun dialEmergency(context: Context) {
-    val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:911"))
+private fun dialEmergency(context: Context, number: String) {
+    val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number, null))
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     runCatching { context.startActivity(intent) }
 }

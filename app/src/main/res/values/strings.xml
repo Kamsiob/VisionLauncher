@@ -73,8 +73,12 @@
 
     <!-- Emergency -->
     <string name="emergency_title">Emergency</string>
-    <string name="emergency_call_911">Call 911</string>
-    <string name="emergency_call_911_sub">Opens the phone\'s own call screen with 911 ready</string>
+    <!-- The emergency number follows the phone's country, not its reading
+         language: a Spanish speaker in the United States still dials 911.
+         Translate the wording around it, never the number itself. -->
+    <string name="emergency_number" translatable="false">911</string>
+    <string name="emergency_call_number">Call %1$s</string>
+    <string name="emergency_call_number_sub">Opens the phone\'s own call screen with %1$s ready</string>
     <string name="emergency_alert_person">Alert %1$s</string>
     <string name="emergency_alert_person_sub">Calls and texts where you are</string>
     <string name="emergency_alert_person_sub_text_only">Calls and sends a text</string>

@@ -99,9 +99,14 @@ androidComponents {
                 }
             }
         }
-        tasks.matching {
-            it.name == "assemble${variant.name.replaceFirstChar { c -> c.uppercase() }}"
-        }.configureEach { dependsOn(check) }
+        // Both lifecycle tasks. Play receives an AAB from bundleRelease, so
+        // wiring only assemble left the one artifact that actually ships as the
+        // one build the gate never checked. The em dash gate above already
+        // covers both, which is what made this an oversight rather than a
+        // decision.
+        val cap = variant.name.replaceFirstChar { c -> c.uppercase() }
+        tasks.matching { it.name == "assemble$cap" || it.name == "bundle$cap" }
+            .configureEach { dependsOn(check) }
     }
 }
 

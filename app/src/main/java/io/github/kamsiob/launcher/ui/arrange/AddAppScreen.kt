@@ -55,7 +55,15 @@ fun AddAppScreen(
             value = withContext(Dispatchers.IO) { apps.launchableApps() }
         }
     }
-    val availableApps = allApps.filter { it.packageName !in placedApps }
+    // One row per component. The same app installed in a work or clone profile
+    // arrives twice with an identical package and activity, which duplicates the
+    // LazyColumn key below and throws out of the launcher. A tile cannot carry a
+    // profile anyway, so the personal copy is the one offered; an app that lives
+    // in only one profile keeps its single entry.
+    val availableApps = allApps
+        .filter { it.packageName !in placedApps }
+        .groupBy { it.key }
+        .map { (_, entries) -> entries.firstOrNull { !it.isWorkProfile } ?: entries.first() }
 
     ScreenFrame(scrollable = false) {
         TopBar(onHome = onHome, onBack = onBack)
