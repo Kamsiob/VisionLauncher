@@ -155,12 +155,25 @@ fun ApplianceKey(
                     modifier = Modifier.size(iconSize),
                 )
             }
-            Text(
-                text = label,
-                style = bodyStyle(size = fontSize, weight = FontWeight.Bold, lineHeightFactor = 1.2f),
-                color = content,
-                textAlign = TextAlign.Center,
-            )
+            // A phrase may wrap across lines, but a single word never splits.
+            // "Erase" on a 96dp keypad key at 200 percent has nowhere to wrap
+            // to, so the type steps down instead of breaking into "Eras e".
+            val style = bodyStyle(size = fontSize, weight = FontWeight.Bold, lineHeightFactor = 1.2f)
+                .copy(color = content, textAlign = TextAlign.Center)
+            if (label.contains(' ')) {
+                Text(text = label, style = style)
+            } else {
+                BasicText(
+                    text = label,
+                    style = style,
+                    maxLines = 1,
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = stepSp(TypeScale.rowMeta),
+                        maxFontSize = stepSp(fontSize),
+                        stepSize = 1.sp,
+                    ),
+                )
+            }
         }
         if (sublabel != null) {
             Text(

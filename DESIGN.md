@@ -64,7 +64,9 @@ Outlined exists because soft shadows carry far less edge contrast than borders, 
 
 Corner radius 20dp on keys and cards, 30dp on the phone frame, 16dp on the lamp and prompt bar, 999dp on the status pill. Screen padding 28dp top, 24dp sides, 30dp bottom. Gaps between keys 12 to 14dp.
 
-The home grid is two columns. Above a combined text scale of 1.5, counting the system font scale and the user's text step together, it becomes one column, because a 128dp tile cannot hold a word like "Magnifier" at a readable size and neither breaking the word nor shrinking it below the metadata size is acceptable. Tile order never changes. See `DECISIONS.md` D24.
+The home grid is two columns, and the three Look cards in Settings sit side by side. Above a combined text scale of 1.5, counting the system font scale and the user's text step together, both become one column, because a 128dp tile cannot hold "Magnifier" and a third of the screen cannot hold "Outlined" at a readable size. Tile order never changes.
+
+Where the layout cannot give way, the type does: a keypad stays three columns, so "Erase" and "Clear" step down in size instead. The rule across the app is that a phrase may wrap across lines, a single word never splits, and the layout gives way before the type does. See `DECISIONS.md` D24.
 
 ## Touch
 

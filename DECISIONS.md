@@ -112,7 +112,9 @@ So above a combined scale of 1.5, counting the system font scale and the user's 
 
 Tile labels also carry a step based auto size with the grid's 28sp as the maximum, which handles a long third party app name in the two column case without ever exceeding the specified size.
 
-The same rule applies to the three Look cards in Settings, found the same way: at 200 percent, "Outlined" was clipped to "Outlir". They stack vertically above the same threshold. The general principle is that when a word cannot fit its column, the layout gives way, never the word.
+The same rule applies to the three Look cards in Settings, found the same way: at 200 percent, "Outlined" was clipped to "Outlir". They stack vertically above the same threshold.
+
+Where the layout genuinely cannot give way, the type does. A keypad has to stay three columns wide, so "Erase" and "Clear" step down in size rather than breaking into "Eras e". The rule across the app: a phrase may wrap across lines, a single word never splits, and the layout gives way before the type does.
 
 ## D25. Settings is reached from More apps, not from a home tile
 
