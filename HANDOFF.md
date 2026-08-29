@@ -8,7 +8,9 @@ Update and commit this file at every commit, before any pause, when context runs
 
 ## Current state
 
-**Status:** Stage 1 is built, running, and verified on a real Pixel 8 running API 37. Every Stage 1 screen from `MASTER_SPEC.md` section 8 exists and was exercised on the device, not only compiled. A second pass then found and fixed five defects where the interface asserted something the code did not guarantee, and enlarged every icon in the app at the user's request.
+**Status:** Stage 1 is built, running, and verified on a real Pixel 8 running API 37. Every Stage 1 screen from `MASTER_SPEC.md` section 8 exists and was exercised on the device, not only compiled.
+
+Two review passes followed. The first found five defects where the interface asserted something the code did not guarantee, and enlarged every icon at the user's request. The second was an eight lens sweep with every finding adversarially verified: 46 confirmed, of which the serious ones are fixed. The most consequential were an emergency text that was silently dead on Android 10 and 11, an arranging session that discarded your work on Back or Home while the spec promised it would not, a keypad that could not dial a repeated digit, and Settings controls at half the app's own touch floor.
 
 **Stage:** Stage 1 complete. Stage 2, messaging, has not been started.
 
@@ -58,6 +60,28 @@ Stage 2 messaging, Stage 3 magnifier, reader, and photos, and Stage 4 Today, the
 
 ---
 
+## What the second review pass changed
+
+Roughly fifteen commits, each verified on the device. The themes, in the order they matter:
+
+**Sentences that were not true.** The emergency alert promised a text on Android versions where the call to obtain the SMS manager returns null, so it threw and was swallowed. "Turn Do Not Disturb off" could never turn it off, because the toggle needs an access the app never requests. The battery onboarding step told people to find a control the next screen does not have. Arranging promised to keep your work and threw it away. Each is now either true or differently worded.
+
+**Things that silently did nothing.** Four screens ended in blank space when their data was absent. The Messages and Photos escape hatches swallowed a failure to resolve. A tile whose app was uninstalled vanished from the layout with nothing said. Two unguarded intent launches could have crashed the launcher itself.
+
+**Touch and feedback.** One debounce window served the whole app, so dialing 555 lost a press and the swallowed press gave no haptic at all. Four haptics confirmed before knowing the outcome. The Settings text size keys were half the app's own key floor.
+
+**TalkBack past labels.** `liveRegion` appeared once in the entire app, so nothing that changed ever spoke. The move destination announcement had been written and never wired up. Outlined announced as a radio button while being a combinable toggle.
+
+**Performance, measured rather than guessed.** Opening the app list dropped roughly eighteen frames because the enumeration ran during composition; the 95th percentile went from 150ms to 97ms. Cold start painted the light palette and could flash Onboarding at a returning user, since DataStore had not answered yet.
+
+## Not done, and worth doing next
+
+- The tile trade animation MASTER_SPEC 5.12 describes does not exist. Issue #19.
+- The alarm stops ringing when it leaves the foreground, which is the lesser of two failures rather than the right answer. Issue #20.
+- `AttentionWatcher` does disk and binder work on the main thread on every resume.
+- Nineteen strings are unreachable, several of them fossils of features that were wired differently in the end.
+- Icons do not scale with the user's text step, deferred with reasons in issue #18.
+
 ## Next actions
 
 1. Icons no longer scale with the user's text step; they are fixed dp. Doing it safely needs the app icon bitmap cache keyed by size, a cap so a scaled app icon does not overrun the row key, and the reflow threshold recomputed. Tracked in issue #17's follow up. This is small and worth doing before Stage 2 grows the surface.
@@ -80,7 +104,7 @@ Stage 2 messaging, Stage 3 magnifier, reader, and photos, and Stage 4 Today, the
 
 ## Decisions made this session
 
-D20 superseded with the settled name and application ID. D21 signed commits from the first commit with no history rewriting. D22 one application ID with no debug suffix, so exactly one copy exists per device. D23 unbuilt tiles are honest rather than hidden. D24 the tile grid drops to one column at large font scales. D25 Settings is reached from More apps. D26 every key carries its own TalkBack label. D27 adding an app happens inside the arranging session. D28 the threshold only promises the Home return when it holds the home role. D29 the zero network promise is a build gate rather than a sentence. D30 the restore point is the layout before the change, so "Put my screen back" stops confirming an undo it never performed. D31 the Emergency key states what this phone can actually do, and the permissions behind the promise are requested when the promise is made. D32 the Call lock is enforced on both sides of a trade. D33 the 911 key fills the dialer and says so. D34 the icons were too small and the grid was corrected rather than followed.
+D20 superseded with the settled name and application ID. D21 signed commits from the first commit with no history rewriting. D22 one application ID with no debug suffix, so exactly one copy exists per device. D23 unbuilt tiles are honest rather than hidden. D24 the tile grid drops to one column at large font scales. D25 Settings is reached from More apps. D26 every key carries its own TalkBack label. D27 adding an app happens inside the arranging session. D28 the threshold only promises the Home return when it holds the home role. D29 the zero network promise is a build gate rather than a sentence. D30 the restore point is the layout before the change, so "Put my screen back" stops confirming an undo it never performed. D31 the Emergency key states what this phone can actually do, and the permissions behind the promise are requested when the promise is made. D32 the Call lock is enforced on both sides of a trade. D33 the 911 key fills the dialer and says so. D34 the icons were too small and the grid was corrected rather than followed. D35 arranging never loses work whichever way the session ends. D36 the first frame knows the real settings. D37 the status bar matches what is behind it. D38 prose about numbers goes stale one change later.
 
 All are recorded in full in `DECISIONS.md`.
 
