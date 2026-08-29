@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.kamsiob.launcher.R
@@ -132,7 +134,7 @@ fun HelperScreen(
         }
         RowKey(
             label = stringResource(R.string.helper_about),
-            icon = LineIcons.shield,
+            icon = LineIcons.door,
             onClick = onAbout,
         )
     }
@@ -156,6 +158,7 @@ fun PickContactScreen(
     var pending by remember { mutableStateOf<ContactsRepository.Contact?>(null) }
     var relationship by remember { mutableStateOf("") }
 
+    val relationshipLabel = stringResource(R.string.a11y_relationship_field)
     val chosen = pending
     if (chosen != null && askRelationship) {
         ScreenFrame(topBar = { TopBar(onHome = onHome, onBack = { pending = null }) }) {
@@ -181,7 +184,9 @@ fun PickContactScreen(
                     unfocusedBorderColor = palette.hairline,
                     cursorColor = palette.accent,
                 ),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { contentDescription = relationshipLabel },
             )
             ApplianceKey(
                 label = stringResource(R.string.key_done),

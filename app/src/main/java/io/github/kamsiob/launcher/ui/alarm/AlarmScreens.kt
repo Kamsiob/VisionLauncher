@@ -18,6 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
@@ -116,6 +118,7 @@ fun AlarmEditScreen(
     var hour by remember { mutableIntStateOf(existing?.hour ?: 8) }
     var minute by remember { mutableIntStateOf(existing?.minute ?: 0) }
     var label by remember { mutableStateOf(existing?.label.orEmpty()) }
+    val labelFieldDescription = stringResource(R.string.a11y_alarm_label_field)
 
     ScreenFrame(topBar = { TopBar(onHome = onHome, onBack = onBack) }) {
         ScreenTitle(stringResource(if (existing == null) R.string.alarm_new else R.string.alarms_title))
@@ -183,7 +186,9 @@ fun AlarmEditScreen(
                 unfocusedBorderColor = palette.hairline,
                 cursorColor = palette.accent,
             ),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { contentDescription = labelFieldDescription },
         )
         Spacer(modifier = Modifier.weight(1f))
         ApplianceKey(

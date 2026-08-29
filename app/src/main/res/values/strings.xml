@@ -138,6 +138,8 @@
     <string name="helper_remove_favorite">Take %1$s off the list</string>
     <string name="helper_favorite_removed">%1$s was taken off the favorites.</string>
     <string name="helper_relationship_hint">Relationship, like Daughter or Doctor</string>
+    <string name="a11y_relationship_field">How this person is related to you</string>
+    <string name="a11y_alarm_label_field">What this alarm is for</string>
     <string name="helper_emergency_person">The emergency person</string>
     <string name="helper_emergency_person_sub">Who the Emergency screen alerts</string>
     <string name="helper_restore_warnings">Bring back all warnings</string>
