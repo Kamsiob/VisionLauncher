@@ -1,8 +1,8 @@
 package io.github.kamsiob.launcher.ui.messages
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -75,24 +75,32 @@ fun MessagesScreen(
         }
 
         LazyColumn(
-            modifier = Modifier.weight(1f, fill = false).fillMaxSize(),
+            modifier = Modifier.weight(1f).fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(Dimens.gap),
         ) {
             items(messages, key = { it.id }) { message ->
                 MessageRow(message = message, onOpen = { onOpen(message) })
             }
+            // The sentence scrolls with the messages rather than sitting under
+            // them. Pinned, it took the same height as a message row, and at
+            // the largest text sizes that left the inbox showing exactly one
+            // message while the explanation of the inbox took the rest.
+            item {
+                NoteText(
+                    text = stringResource(R.string.messages_kept_here),
+                    modifier = Modifier.padding(top = Dimens.gap),
+                )
+            }
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(Dimens.gap)) {
-            NoteText(stringResource(R.string.messages_kept_here))
-            // The reliable fallback. Whatever the pipeline missed, this key
-            // still reaches the person's real messaging app.
-            ApplianceKey(
-                label = stringResource(R.string.open_message_app),
-                onClick = { Replying.openAnyMessagingApp(context) },
-                minHeight = Dimens.keySmall,
-            )
-        }
+        // Stays pinned. Whatever the pipeline missed, this key still reaches
+        // the person's real messaging app, and somebody looking for it is
+        // already having trouble; it must not be something they scroll to find.
+        ApplianceKey(
+            label = stringResource(R.string.open_message_app),
+            onClick = { Replying.openAnyMessagingApp(context) },
+            minHeight = Dimens.keySmall,
+        )
     }
 }
 

@@ -2,6 +2,7 @@ package io.github.kamsiob.launcher.ui.settings
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -21,6 +22,7 @@ import io.github.kamsiob.launcher.ui.components.KeyStyle
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
 import io.github.kamsiob.launcher.ui.components.ScreenTitle
 import io.github.kamsiob.launcher.ui.components.TopBar
+import io.github.kamsiob.launcher.ui.theme.Dimens
 import io.github.kamsiob.launcher.ui.theme.LocalPalette
 import io.github.kamsiob.launcher.ui.theme.TypeScale
 import io.github.kamsiob.launcher.ui.theme.bodyStyle
@@ -67,6 +69,10 @@ fun PhraseEditScreen(
             ),
             modifier = Modifier
                 .fillMaxWidth()
+                // Text fields default to 56dp, under the 72dp floor this app
+                // holds every other thing you touch to. A field is a target
+                // like any other.
+                .heightIn(min = Dimens.keySmall)
                 .semantics { contentDescription = hint },
         )
         Spacer(modifier = Modifier.weight(1f))

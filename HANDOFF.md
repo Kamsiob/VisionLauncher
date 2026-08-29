@@ -169,6 +169,29 @@ Roughly fifteen commits, each verified on the device. The themes, in the order t
 The Today one is populated the way grid 13 shows it, one card done and one
 still to do, so it documents the rule that green appears only on completion.
 
+## The accessibility audit
+
+An audit script walks a screen's accessibility tree, scrolls it, and reports any
+interactive element with no name or shorter than the app's own 72dp floor. It
+was run over every screen at ordinary and 200 percent text sizes. Home,
+messages, reading, replying, the magnifier, photos and more apps all come back
+clean.
+
+It found two things worth fixing:
+
+- Every text field in the app was 56dp to 64dp tall, under the 72dp floor the
+  app holds every key to. A field is a target like any other; all five now
+  carry `heightIn(min = Dimens.keySmall)`.
+- At 200 percent the inbox showed exactly one message, because the sentence
+  explaining that messages are kept on the phone was pinned below the list and
+  took the height of a message row. The sentence now scrolls with the messages.
+  "Open a message app" stays pinned, because somebody looking for it is already
+  having trouble and it must not be something they scroll to find.
+
+The script lives in the session scratch directory rather than the repository,
+since it is tied to one device's density. It is worth rewriting as an
+instrumented test.
+
 ## A note on driving this app from a script
 
 Two hours were lost to test harness artifacts that looked exactly like app

@@ -3,6 +3,7 @@ package io.github.kamsiob.launcher.ui.apps
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -96,6 +97,10 @@ fun MoreAppsScreen(
             ),
             modifier = Modifier
                 .fillMaxWidth()
+                // Text fields default to 56dp, under the 72dp floor this app
+                // holds every other thing you touch to. A field is a target
+                // like any other.
+                .heightIn(min = Dimens.keySmall)
                 .semantics { contentDescription = searchDescription },
         )
         if (query.isNotBlank() && shown.isEmpty()) {
