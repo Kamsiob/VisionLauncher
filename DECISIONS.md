@@ -227,3 +227,13 @@ The appearance is now set from the route and the Look together: light icons over
 `DESIGN.md` and D34 were written to record the first icon correction and then contradicted the second one, because the grid and `Dimens.kt` were updated and the prose was not. A review caught it. Both now carry the final set.
 
 The general lesson, which is cheaper than the habit of restating numbers: prose should say what a value is FOR and where it lives, and let the grid and the tokens carry the value. Where a document does restate a number, it is a copy that has to be maintained, and the next change is the one that forgets.
+
+## D39. Text direction follows the text, layout direction follows the locale
+
+MASTER_SPEC section 6 asks for Arabic with RTL mirroring "from the start", and the requirement had never actually been run. Setting the app's locale to Arabic on a device, which mirrors the layout while leaving the untranslated English strings in place, is a complete test of the half that does not need translations.
+
+The layout mirrors correctly everywhere: the masthead right aligns, the tile grid reverses while keeping Call first in reading order, row icons move to the trailing side, and the date localizes. Compose's start and end handling was doing its job, and nothing in the app had hardcoded a left or a right.
+
+Two things were wrong. Every text style inherited its direction from the layout, so an English sentence in an Arabic layout was laid out right to left and its full stop appeared at the visual left: the attention lamp read ".appearing". Styles now use `TextDirection.Content`, so each run of text follows its own script. That is also what keeps a Latin app name upright inside an Arabic sentence once translations land, which is the case that will actually matter.
+
+And "Outlined" broke into "Outline / d" on the Look card, because D24's rule that a single word never splits had been applied to every key in the app and not to those three cards. It steps down in size instead now.

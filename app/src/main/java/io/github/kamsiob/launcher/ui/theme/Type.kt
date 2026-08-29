@@ -8,6 +8,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import io.github.kamsiob.launcher.R
@@ -108,6 +109,12 @@ fun bodyStyle(
     fontWeight = weight,
     fontSize = stepSp(size),
     lineHeight = stepSp((size * lineHeightFactor).toInt()),
+    // Direction follows the content rather than the layout. In an Arabic
+    // layout an untranslated English sentence would otherwise be laid out
+    // right to left and its full stop would appear at the visual left, which
+    // is how ".appearing" showed up on the attention lamp. It also keeps a
+    // Latin app name upright inside an Arabic sentence once translations land.
+    textDirection = TextDirection.Content,
 )
 
 @Composable
@@ -121,6 +128,7 @@ fun monoStyle(
     fontWeight = weight,
     fontSize = stepSp(size),
     lineHeight = stepSp((size * lineHeightFactor).toInt()),
+    textDirection = TextDirection.Content,
 )
 
 @Composable
@@ -130,4 +138,5 @@ fun serifStyle(size: Int, lineHeightFactor: Float = 1.15f): TextStyle = TextStyl
     fontWeight = FontWeight.Normal,
     fontSize = stepSp(size),
     lineHeight = stepSp((size * lineHeightFactor).toInt()),
+    textDirection = TextDirection.Content,
 )

@@ -126,7 +126,7 @@ All are recorded in full in `DECISIONS.md`.
 - Every device setting changed during testing was restored afterward: font scale, color inversion, TalkBack, airplane mode, and the ringer, which was found on vibrate and put back on vibrate.
 - TalkBack pass: done on Home and the arranging screens, with the accessibility tree inspected on Call, the keypad, Settings, Helper settings, and Add an app. Not yet swept screen by screen with TalkBack actually speaking on every screen.
 - 200 percent font scale pass: done on Home. Not yet swept across every screen.
-- Arabic RTL pass: none. No translations exist yet.
+- Arabic RTL pass: done on the device by setting the app's locale to Arabic, which mirrors the layout while leaving the untranslated strings in place. The layout mirrors correctly throughout. Two defects found and fixed, recorded in D39. Translations themselves are still Stage 4.
 - Color inversion: checked against the requirement rather than the pixels, because `screencap` captures before the compositor inverts. Nothing carries meaning by color alone, so inversion cannot destroy meaning. A human eye on an inverted screen would still be worth having.
 - Color correction modes: none.
 - Screenshots captured: yes, in `docs/screenshots`, all from the running app on the device.

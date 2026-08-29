@@ -1,6 +1,8 @@
 package io.github.kamsiob.launcher.ui.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +35,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.ui.components.ApplianceKey
 import io.github.kamsiob.launcher.ui.components.NoteText
@@ -54,6 +57,7 @@ import io.github.kamsiob.launcher.ui.theme.Tokens
 import io.github.kamsiob.launcher.ui.theme.TypeScale
 import io.github.kamsiob.launcher.ui.theme.sideBySideFits
 import io.github.kamsiob.launcher.ui.theme.bodyStyle
+import io.github.kamsiob.launcher.ui.theme.stepSp
 import io.github.kamsiob.launcher.ui.theme.monoStyle
 import androidx.compose.ui.platform.LocalView
 import kotlinx.coroutines.delay
@@ -354,11 +358,20 @@ private fun ThemeCard(
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         ) {
             preview()
-            Text(
+            // "Outlined" is one word in a third of the screen, and it broke
+            // into "Outline / d" whenever the card was a little narrower. Same
+            // rule as every key in the app: a phrase may wrap, a single word
+            // steps down in size instead of splitting.
+            BasicText(
                 text = label,
-                style = bodyStyle(size = TypeScale.sect, weight = FontWeight.Bold, lineHeightFactor = 1.1f),
-                color = palette.text,
-                textAlign = TextAlign.Center,
+                style = bodyStyle(size = TypeScale.sect, weight = FontWeight.Bold, lineHeightFactor = 1.1f)
+                    .copy(color = palette.text, textAlign = TextAlign.Center),
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = stepSp(TypeScale.rowMeta),
+                    maxFontSize = stepSp(TypeScale.sect),
+                    stepSize = 1.sp,
+                ),
             )
             if (selected) {
                 Text(
