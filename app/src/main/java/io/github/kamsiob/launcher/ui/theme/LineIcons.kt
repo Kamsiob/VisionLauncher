@@ -207,6 +207,10 @@ object LineIcons {
         "M4 10v4h4l5 4V6l-5 4H4z",
         "M17 9a5 5 0 0 1 0 6M19.5 6.5a9 9 0 0 1 0 11",
     )
+    val heart = lineIcon(
+        "heart",
+        "M12 20s-7-4.5-7-9.5A4 4 0 0 1 12 7a4 4 0 0 1 7 3.5c0 5-7 9.5-7 9.5z",
+    )
     val shield = lineIcon(
         "shield",
         "M12 3l8 4v6c0 5-3.5 7.5-8 8-4.5-.5-8-3-8-8V7z",

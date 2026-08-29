@@ -73,6 +73,7 @@ fun SettingsScreen(
     onRestore: suspend () -> Boolean,
     onSeeHear: () -> Unit,
     onHelper: () -> Unit,
+    onSupport: () -> Unit,
     onHome: () -> Unit,
 ) {
     val view = LocalView.current
@@ -154,6 +155,15 @@ fun SettingsScreen(
             meta = stringResource(R.string.settings_helper_sub),
             icon = LineIcons.lock,
             onClick = onHelper,
+        )
+        // MASTER_SPEC section 2 requires the support link on this screen as
+        // well as About. It is the only money related element in the whole app
+        // and it is never a prompt, only a link somebody may choose to press.
+        RowKey(
+            label = stringResource(R.string.about_support),
+            meta = stringResource(R.string.settings_support_sub),
+            icon = LineIcons.heart,
+            onClick = onSupport,
         )
         NoteText(stringResource(R.string.settings_undo_note))
     }

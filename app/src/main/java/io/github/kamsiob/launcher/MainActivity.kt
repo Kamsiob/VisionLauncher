@@ -295,6 +295,7 @@ fun LauncherNav(
                 onRestore = { app.layoutStore.restoreSnapshot() },
                 onSeeHear = { navController.navigate(Routes.SEE_HEAR) },
                 onHelper = { navController.navigate(Routes.HELPER) },
+                onSupport = { openSupportLink(activity) },
                 onHome = goHome,
             )
         }
@@ -393,6 +394,15 @@ fun LauncherNav(
             }
         }
     }
+}
+
+/** The one money related link in the app, shared by Settings and About. */
+fun openSupportLink(context: android.content.Context) {
+    val intent = Intent(
+        Intent.ACTION_VIEW,
+        android.net.Uri.parse("https://buymeacoffee.com/kamsiob"),
+    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    runCatching { context.startActivity(intent) }
 }
 
 private fun launchCamera(activity: MainActivity) {

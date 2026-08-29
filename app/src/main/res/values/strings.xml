@@ -116,6 +116,7 @@
     <string name="settings_helper">Helper settings</string>
     <string name="settings_helper_sub">For the person who helps you</string>
     <string name="settings_undo_note">Every change here can be undone.</string>
+    <string name="settings_support_sub">Optional, and never required</string>
 
     <!-- See and hear better -->
     <string name="seehear_bigger">Make everything bigger</string>

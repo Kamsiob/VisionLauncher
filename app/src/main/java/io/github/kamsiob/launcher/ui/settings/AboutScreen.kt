@@ -1,7 +1,5 @@
 package io.github.kamsiob.launcher.ui.settings
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -9,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import io.github.kamsiob.launcher.R
+import io.github.kamsiob.launcher.openSupportLink
 import io.github.kamsiob.launcher.ui.components.ApplianceKey
 import io.github.kamsiob.launcher.ui.components.BodyText
 import io.github.kamsiob.launcher.ui.components.NoteText
@@ -36,13 +35,7 @@ fun AboutScreen(
         Spacer(modifier = Modifier.weight(1f))
         ApplianceKey(
             label = stringResource(R.string.about_support),
-            onClick = {
-                val intent = Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://buymeacoffee.com/kamsiob"),
-                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                runCatching { context.startActivity(intent) }
-            },
+            onClick = { openSupportLink(context) },
         )
     }
 }
