@@ -141,6 +141,10 @@ All are recorded in full in `DECISIONS.md`.
 
 ## Where the build is
 
-`~/Desktop/visionlauncher-0.1.0-stage1.apk`, rebuilt clean and re-exported after the icon work, and confirmed to install. Exactly one copy of the app exists on the Pixel 8, and the previous export was deleted rather than left beside it.
+`~/Desktop/VisionLauncher-0.1.0.apk`, a **signed release build**, 3.3MB, verified end to end on the device.
+
+It is signed with a local test key, `visionlauncher-test.jks`, which is gitignored along with `keystore.properties`. That key is for sideloading only and must not become the Play upload key. A checkout without those two files still builds; the release variant simply comes out unsigned rather than failing.
+
+Release was verified rather than assumed, because R8 can break things a debug build never shows. All three serialized stores survive minification: the home layout, the favorites, and the alarms each persisted across a force stop and restart. Cold start is about 148ms against 435ms for the debug build. Exactly one copy of the app exists on the Pixel 8, and the previous export was deleted rather than left beside it.
 
 Every device setting borrowed for testing was put back: font scale, color inversion, TalkBack, airplane mode, the battery optimization allowance, and the ringer, which was found on vibrate and is on vibrate again. The Pixel 8's home app is still the Pixel Launcher, deliberately. There is no debug application ID suffix, by D22, so a debug and a release build collide deliberately rather than coexisting.

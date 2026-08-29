@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -21,6 +22,19 @@ val versionPatch = 0
 // coexist. See DECISIONS.md D22.
 val launcherApplicationId = "io.github.kamsiob.launcher"
 
+/**
+ * Signing for builds that go on a real phone.
+ *
+ * The key lives outside the repository and `keystore.properties` is gitignored,
+ * so a checkout without it still builds: the release variant simply comes out
+ * unsigned rather than failing. This is a test key for sideloading, not the Play
+ * upload key, and the two must not become the same thing by accident.
+ */
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("keystore.properties")
+    if (file.exists()) file.inputStream().use { stream -> load(stream) }
+}
+
 android {
     namespace = "io.github.kamsiob.launcher"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -39,8 +53,23 @@ android {
         ksp { arg("room.schemaLocation", "$projectDir/schemas") }
     }
 
+    signingConfigs {
+        create("test") {
+            val store = keystoreProperties.getProperty("storeFile")
+            if (store != null) {
+                storeFile = rootProject.file(store)
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (keystoreProperties.getProperty("storeFile") != null) {
+                signingConfig = signingConfigs.getByName("test")
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
