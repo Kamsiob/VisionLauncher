@@ -4,6 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -92,7 +95,10 @@ fun SettingsScreen(
         ScreenTitle(stringResource(R.string.settings_title))
 
         SectLabel(stringResource(R.string.settings_text_size))
-        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(Dimens.gap),
+            modifier = Modifier.height(IntrinsicSize.Min),
+        ) {
             TextStep.entries.forEachIndexed { index, step ->
                 SizeKey(
                     step = step,
@@ -102,7 +108,7 @@ fun SettingsScreen(
                         Haptics.confirm(view)
                         onSetTextStep(step)
                     },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
             }
         }
@@ -217,9 +223,14 @@ private fun ThemeChoices(
             cards.forEach { it(Modifier.fillMaxWidth()) }
         }
     } else {
-        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(Dimens.gap),
+            modifier = Modifier.height(IntrinsicSize.Min),
+        ) {
             cards.forEach { card ->
-                Box(modifier = Modifier.weight(1f)) { card(Modifier.fillMaxWidth()) }
+                Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                    card(Modifier.fillMaxWidth().fillMaxHeight())
+                }
             }
         }
     }
@@ -271,8 +282,13 @@ private fun SizeKey(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .fillMaxHeight()
                 .keySurface()
                 .debouncedClickable { onClick() }
+                // The app's own key floor. These keys were about 50dp, which
+                // the whole design exists to argue against, on the screen that
+                // sets text size.
+                .defaultMinSize(minHeight = Dimens.keyMin)
                 .padding(vertical = 12.dp)
                 .clearAndSetSemantics {
                     contentDescription = description
@@ -280,7 +296,7 @@ private fun SizeKey(
                     role = Role.RadioButton
                 },
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
         ) {
             Text(
                 text = "A",
@@ -316,8 +332,10 @@ private fun ThemeCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .fillMaxHeight()
                 .keySurface()
                 .debouncedClickable { onClick() }
+                .defaultMinSize(minHeight = Dimens.themeCard)
                 .padding(horizontal = 6.dp, vertical = 12.dp)
                 .clearAndSetSemantics {
                     contentDescription = cardDescription
@@ -325,7 +343,7 @@ private fun ThemeCard(
                     role = Role.RadioButton
                 },
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         ) {
             preview()
             Text(

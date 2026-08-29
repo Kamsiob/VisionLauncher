@@ -2,6 +2,7 @@ package io.github.kamsiob.launcher.ui.arrange
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -236,6 +238,17 @@ fun ArrangeScreen(
 
     if (chosenIndex != null) {
         val chosenLabel = tileLabel(working[chosenIndex], apps)
+        // A scrim that consumes every touch that is not the sheet. Without it
+        // the dimmed tiles behind the sheet stayed tappable, so a stray press
+        // acted on a tile the sheet was covering. It carries no semantics of
+        // its own, so it adds no stop for a screen reader.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(chosenIndex) {
+                    detectTapGestures { mode = ArrangeMode.Browsing }
+                }
+        )
         ActionSheet(
             label = chosenLabel,
             onMove = { mode = ArrangeMode.Moving(chosenIndex) },
@@ -323,7 +336,9 @@ private fun ArrangeGrid(
                             apps = apps,
                             iconPx = iconPx,
                             lifted = lifted,
+                            chosen = lifted && movingLabel == null,
                             movingLabel = movingLabel,
+                            enabled = !dimOthers || lifted,
                             onClick = { onTapTile(index) },
                         )
                     }
@@ -340,12 +355,18 @@ private fun ArrangeTile(
     apps: AppsRepository,
     iconPx: Int,
     lifted: Boolean,
+    chosen: Boolean,
     movingLabel: String?,
+    enabled: Boolean,
     onClick: () -> Unit,
 ) {
     val feature = BuiltIn.fromId(tile.builtIn)
     val label = tileLabel(tile, apps)
     val description = when {
+        // Chosen and Moving are different modes and used to share a sentence.
+        // With the sheet open nothing has been picked up yet, so telling
+        // somebody to "tap a spot" describes a mode they are not in.
+        chosen -> stringResource(R.string.a11y_arrange_chosen, label)
         lifted -> stringResource(R.string.a11y_arrange_lifted, label)
         // Call refuses to be a destination, so it must say that rather than
         // offer itself as one.
@@ -365,6 +386,7 @@ private fun ArrangeTile(
             label = label,
             icon = feature.icon(),
             contentDescription = description,
+            enabled = enabled,
             onClick = onClick,
         )
         tile.packageName != null -> {
@@ -380,6 +402,7 @@ private fun ArrangeTile(
             label = stringResource(R.string.empty_spot),
             icon = LineIcons.plus,
             contentDescription = description,
+            enabled = enabled,
             onClick = onClick,
         )
     }

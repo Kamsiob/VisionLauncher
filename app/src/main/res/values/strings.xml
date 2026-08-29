@@ -79,6 +79,7 @@
     <string name="emergency_alert_person_sub">Calls and texts where you are</string>
     <string name="emergency_alert_person_sub_text_only">Calls and sends a text</string>
     <string name="emergency_alert_person_sub_call_only">Calls only, because sending a text was not allowed</string>
+    <string name="emergency_alert_person_sub_no_texting">Calls only, because this phone cannot send a text</string>
     <string name="onboarding_emergency_title">The emergency text</string>
     <string name="onboarding_emergency_body">To send a text with your location when you press the alert key, this app needs permission to send messages and to see where the phone is.</string>
     <string name="emergency_no_person">Choose a person to alert</string>
@@ -179,6 +180,7 @@
     <string name="a11y_arrange_empty">Empty spot. Tap to put an app here.</string>
     <string name="a11y_arrange_locked">Call. Call always stays first.</string>
     <string name="a11y_arrange_lifted">%1$s is lifted. Tap a spot to move it there, or tap it again to cancel.</string>
+    <string name="a11y_arrange_chosen">%1$s is chosen. Choose what to do with it below.</string>
     <string name="a11y_arrange_destination">Put %1$s here, in place of %2$s</string>
     <string name="a11y_arrange_destination_empty">Put %1$s here, in the empty spot</string>
 

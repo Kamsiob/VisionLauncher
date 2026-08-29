@@ -37,6 +37,8 @@ object Dimens {
     val keepKey = 104.dp
     val phraseKey = 84.dp
     val dismissKey = 60.dp
+    // The grid draws .themecard at min-height 112px.
+    val themeCard = 112.dp
 
     // Element sizes.
     //

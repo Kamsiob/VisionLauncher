@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.telephony.SmsManager
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
@@ -43,15 +44,23 @@ fun EmergencyScreen(
     // person, but they can be refused there or revoked later, and a key that
     // still promised a text would be exactly the silent failure D7 exists to
     // prevent.
-    val canText = remember(context) { granted(context, Manifest.permission.SEND_SMS) }
+    val permittedToText = remember(context) { granted(context, Manifest.permission.SEND_SMS) }
+    val phoneCanText = remember(context) { smsManager(context) != null }
     val canLocate = remember(context) {
-        granted(context, Manifest.permission.ACCESS_FINE_LOCATION) ||
+        val permitted = granted(context, Manifest.permission.ACCESS_FINE_LOCATION) ||
             granted(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+        val manager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+        // Permission alone is not enough. With location switched off there is
+        // no fix to attach, and the key would be promising a place it cannot
+        // name.
+        permitted && manager?.isLocationEnabled == true
     }
     val alertSubtitle = stringResource(
         when {
-            canText && canLocate -> R.string.emergency_alert_person_sub
-            canText -> R.string.emergency_alert_person_sub_text_only
+            permittedToText && phoneCanText && canLocate -> R.string.emergency_alert_person_sub
+            permittedToText && phoneCanText -> R.string.emergency_alert_person_sub_text_only
+            // Refused and cannot are different facts and deserve different words.
+            !phoneCanText -> R.string.emergency_alert_person_sub_no_texting
             else -> R.string.emergency_alert_person_sub_call_only
         }
     )
@@ -117,9 +126,9 @@ private fun alertPerson(context: Context, person: EmergencyContact) {
     } else {
         context.getString(R.string.emergency_sms_body_no_location)
     }
-    if (granted(context, Manifest.permission.SEND_SMS)) {
+    val sms = smsManager(context)
+    if (sms != null && granted(context, Manifest.permission.SEND_SMS)) {
         runCatching {
-            val sms = context.getSystemService(SmsManager::class.java)
             sms.sendMultipartTextMessage(
                 person.number, null, sms.divideMessage(body), null, null,
             )
@@ -130,6 +139,25 @@ private fun alertPerson(context: Context, person: EmergencyContact) {
 
 private fun granted(context: Context, permission: String): Boolean =
     ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+
+/**
+ * The SMS manager, on every version this app supports.
+ *
+ * `getSystemService(SmsManager::class.java)` only exists from API 31 and returns
+ * null below it, and minSdk is 29. The previous code called it unconditionally
+ * inside a bare runCatching, so on Android 10 and 11 the emergency text threw a
+ * null pointer, the failure was swallowed, and the call went out with no message
+ * and nothing said. Returns null when this phone genuinely cannot send, which is
+ * what the key's subtitle reads to decide what to promise.
+ */
+private fun smsManager(context: Context): SmsManager? = runCatching {
+    if (Build.VERSION.SDK_INT >= 31) {
+        context.getSystemService(SmsManager::class.java)
+    } else {
+        @Suppress("DEPRECATION")
+        SmsManager.getDefault()
+    }
+}.getOrNull()
 
 private fun lastKnownLocation(context: Context): Pair<Double, Double>? {
     if (!granted(context, Manifest.permission.ACCESS_FINE_LOCATION) &&
