@@ -11,13 +11,16 @@ plugins {
 // Semantic version. versionCode is major * 10000 + minor * 100 + patch.
 //
 // 0.1.0 was the foundation and Stage 1, the spine.
-// 0.4.0 is all four stages built: messaging, seeing, and the helper tools, one
-// minor per stage delivered. Still below 1.0.0, which stays reserved for the
-// Play release once all four are acceptance tested on real phones rather than
-// on an emulator.
+// 0.4.0 was all four stages built: messaging, seeing, and the helper tools, one
+// minor per stage delivered.
+// 0.4.1 is the acceptance pass over them: the magnifier fitting its screen at
+// every text size, orientation settled, and the whole app re-driven on the
+// signed release build. Still below 1.0.0, which stays reserved for the Play
+// release once all four are acceptance tested on real phones rather than on an
+// emulator.
 val versionMajor = 0
 val versionMinor = 4
-val versionPatch = 0
+val versionPatch = 1
 
 // One application ID, no debug suffix. The user keeps exactly one copy of this
 // app on any device, so debug and release deliberately collide rather than
