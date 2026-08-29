@@ -10,11 +10,13 @@ plugins {
 
 // Semantic version. versionCode is major * 10000 + minor * 100 + patch.
 //
-// 0.1.0: the foundation and Stage 1, the spine. The first version number because
-// this is the first buildable state of the app; 1.0.0 is reserved for the Play
-// release once all four stages are verified on a real device.
+// 0.1.0 was the foundation and Stage 1, the spine.
+// 0.4.0 is all four stages built: messaging, seeing, and the helper tools, one
+// minor per stage delivered. Still below 1.0.0, which stays reserved for the
+// Play release once all four are acceptance tested on real phones rather than
+// on an emulator.
 val versionMajor = 0
-val versionMinor = 1
+val versionMinor = 4
 val versionPatch = 0
 
 // One application ID, no debug suffix. The user keeps exactly one copy of this

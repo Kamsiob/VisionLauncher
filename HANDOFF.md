@@ -8,9 +8,11 @@ Update and commit this file at every commit, before any pause, when context runs
 
 ## Current state
 
-**Status:** Stage 1 is built, running, and verified on a real Pixel 8 running API 37. Stage 2, messaging, is built and verified end to end on an emulator, including a reply that a second app actually received. Every Stage 1 and Stage 2 screen from `MASTER_SPEC.md` section 8 exists and was exercised on a device, not only compiled.
+**Status:** All four stages are built. Every screen in `MASTER_SPEC.md` section 8 exists and was exercised on a device rather than only compiled. Stage 1 was verified on a real Pixel 8 running API 37; Stages 2, 3 and 4 were verified on an emulator, including on the signed, minified release build.
 
-The user has since asked for all four stages before the APK is delivered, which supersedes the original instruction to stop after Stage 1. Stages 3 and 4 are in progress.
+The original instruction was to stop after Stage 1. The user then asked for all four stages before the APK was delivered, which supersedes it.
+
+**Verified on the signed release build, not only on debug.** R8 breaks exactly the layers this app leans on, so the release APK was installed on the emulator and driven: a message arrived through the notification listener and appeared in the inbox; a reply was fired and the receiving app logged `GOT_REPLY[On my way]`; Tesseract loaded its native library and logged `Initialized Tesseract API with language=eng`; a setup file was written with real field names rather than obfuscated ones, proving kotlinx.serialization survived. The merged release manifest contains no INTERNET permission.
 
 Three review passes followed, each with every finding adversarially verified before anything was changed.
 
@@ -20,7 +22,7 @@ The most consequential across all three: an emergency text silently dead on Andr
 
 **Stage:** Stage 1 complete. Stage 2, messaging, has not been started.
 
-**Version:** 0.1.0. A first minor version rather than 0.0.1 because the app is a coherent working launcher rather than a fragment, and rather than 1.0.0 because 1.0.0 is reserved for the Play release after all four stages are verified.
+**Version:** 0.4.0. One minor per stage delivered: 0.1.0 was the spine, and messaging, seeing, and the helper tools take it to 0.4.0. Still below 1.0.0, which stays reserved for the Play release once all four stages are acceptance tested on real phones rather than on an emulator.
 
 **App name:** VisionLauncher. Application ID `io.github.kamsiob.launcher`. Both settled by the user on August 29, 2026. See `DECISIONS.md` D20.
 

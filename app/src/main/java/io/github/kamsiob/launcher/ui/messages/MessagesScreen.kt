@@ -67,7 +67,10 @@ fun MessagesScreen(
             )
         }
 
-        if (messages.isEmpty()) {
+        // Only where the app can actually see messages. Without access an
+        // empty list is not the same fact as nobody having written, and saying
+        // both put a true sentence next to a misleading one.
+        if (messages.isEmpty() && hasAccess) {
             NoteText(stringResource(R.string.messages_none_yet))
         }
 

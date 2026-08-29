@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -107,7 +110,12 @@ fun MagnifierScreen(
                     end = Dimens.screenSide,
                     top = Dimens.screenTop,
                     bottom = Dimens.screenBottom,
-                ),
+                )
+                // Scrolls only when it has to. At ordinary text sizes
+                // everything fits and nothing moves; at the largest sizes the
+                // keys grow past the screen and this is what keeps them
+                // reachable without the picture paying for it.
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(Dimens.gapColumn),
         ) {
             TopBar(onHome = onHome)
@@ -135,12 +143,14 @@ fun MagnifierScreen(
                 )
             }
 
-            // The viewfinder takes whatever height the keys do not, so the
-            // magnified world is always the largest thing on the screen.
+            // Square, rather than taking whatever height the keys leave over.
+            // It used to have a weight, and at 200 percent font scale the keys
+            // grew until the picture was a 150dp letterbox: the one thing on
+            // this screen that must not shrink was the only thing shrinking.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .aspectRatio(1f)
                     .clip(RoundedCornerShape(Dimens.radiusKey))
                     .background(DarkPalette.card),
                 contentAlignment = Alignment.Center,
