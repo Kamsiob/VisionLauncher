@@ -66,11 +66,15 @@ Stage 2 messaging, Stage 3 magnifier, reader, and photos, and Stage 4 Today, the
 - Whether the printable setup sheet and the settings file export stay in v1 or move to v1.1. Both are currently in Stage 4.
 - When to actually set VisionLauncher as the home screen on a real device. It is a Stage 2 or Stage 3 decision, not a Stage 1 one.
 
+## One thing that needs the user's own hand
+
+**Vigilant mode is not enabled and cannot be set from here.** It is an account level setting with no API, at https://github.com/settings/keys, under "Flag unsigned commits as unverified". Every commit in this repository is SSH signed and GitHub reports all of them as verified, so turning vigilant mode on costs nothing here and makes any future unsigned commit visibly suspect across the whole account. Worth doing once.
+
 ---
 
 ## Decisions made this session
 
-D20 superseded with the settled name and application ID. D21 signed commits from the first commit with no history rewriting. D22 one application ID with no debug suffix, so exactly one copy exists per device. D23 unbuilt tiles are honest rather than hidden. D24 the tile grid drops to one column at large font scales. D25 Settings is reached from More apps. D26 every key carries its own TalkBack label. D27 adding an app happens inside the arranging session. D28 the threshold only promises the Home return when it holds the home role.
+D20 superseded with the settled name and application ID. D21 signed commits from the first commit with no history rewriting. D22 one application ID with no debug suffix, so exactly one copy exists per device. D23 unbuilt tiles are honest rather than hidden. D24 the tile grid drops to one column at large font scales. D25 Settings is reached from More apps. D26 every key carries its own TalkBack label. D27 adding an app happens inside the arranging session. D28 the threshold only promises the Home return when it holds the home role. D29 the zero network promise is a build gate rather than a sentence.
 
 All are recorded in full in `DECISIONS.md`.
 
