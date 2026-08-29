@@ -1,6 +1,8 @@
 package io.github.kamsiob.launcher.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -25,13 +27,17 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.kamsiob.launcher.support.Haptics
 import io.github.kamsiob.launcher.support.debouncedClickable
 import io.github.kamsiob.launcher.ui.theme.AtkinsonMono
@@ -117,6 +123,8 @@ fun ApplianceKey(
 ) {
     val view = LocalView.current
     val content = keyContentColor(style)
+    val spoken = contentDescription
+        ?: listOfNotNull(label, sublabel).joinToString(". ")
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -127,13 +135,11 @@ fun ApplianceKey(
             }
             .defaultMinSize(minHeight = minHeight)
             .padding(horizontal = 18.dp, vertical = 12.dp)
-            .then(
-                if (contentDescription != null) {
-                    Modifier.clearAndSetSemantics { this.contentDescription = contentDescription }
-                } else {
-                    Modifier.semantics(mergeDescendants = true) {}
-                }
-            ),
+            .clearAndSetSemantics {
+                this.contentDescription = spoken
+                role = Role.Button
+                if (!enabled) disabled()
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -184,6 +190,7 @@ fun Tile(
 ) {
     val view = LocalView.current
     val palette = LocalPalette.current
+    val spoken = contentDescription ?: label
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -194,13 +201,10 @@ fun Tile(
             }
             .defaultMinSize(minHeight = Dimens.tile)
             .padding(horizontal = 12.dp, vertical = 14.dp)
-            .then(
-                if (contentDescription != null) {
-                    Modifier.clearAndSetSemantics { this.contentDescription = contentDescription }
-                } else {
-                    Modifier.semantics(mergeDescendants = true) {}
-                }
-            ),
+            .clearAndSetSemantics {
+                this.contentDescription = spoken
+                role = Role.Button
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
     ) {
@@ -219,11 +223,19 @@ fun Tile(
                     .clip(RoundedCornerShape(Dimens.appIconRadius)),
             )
         }
-        Text(
+        // The label holds the grid's 28sp until a single word genuinely cannot
+        // fit the tile, which happens around 200 percent font scale. Shrinking
+        // to fit beats breaking "Magnifier" across two lines mid word.
+        BasicText(
             text = label,
-            style = bodyStyle(size = TypeScale.tileLabel, weight = FontWeight.Bold, lineHeightFactor = 1.15f),
-            color = palette.text,
-            textAlign = TextAlign.Center,
+            style = bodyStyle(size = TypeScale.tileLabel, weight = FontWeight.Bold, lineHeightFactor = 1.15f)
+                .copy(color = palette.text, textAlign = TextAlign.Center),
+            maxLines = 2,
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = stepSp(TypeScale.rowMeta),
+                maxFontSize = stepSp(TypeScale.tileLabel),
+                stepSize = 1.sp,
+            ),
         )
     }
 }
@@ -248,6 +260,7 @@ fun RowKey(
 ) {
     val view = LocalView.current
     val palette = LocalPalette.current
+    val spoken = contentDescription ?: listOfNotNull(label, meta).joinToString(". ")
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -258,13 +271,10 @@ fun RowKey(
             }
             .defaultMinSize(minHeight = Dimens.rowKey)
             .padding(horizontal = 18.dp, vertical = 12.dp)
-            .then(
-                if (contentDescription != null) {
-                    Modifier.clearAndSetSemantics { this.contentDescription = contentDescription }
-                } else {
-                    Modifier.semantics(mergeDescendants = true) {}
-                }
-            ),
+            .clearAndSetSemantics {
+                this.contentDescription = spoken
+                role = Role.Button
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {

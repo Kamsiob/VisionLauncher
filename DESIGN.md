@@ -64,6 +64,8 @@ Outlined exists because soft shadows carry far less edge contrast than borders, 
 
 Corner radius 20dp on keys and cards, 30dp on the phone frame, 16dp on the lamp and prompt bar, 999dp on the status pill. Screen padding 28dp top, 24dp sides, 30dp bottom. Gaps between keys 12 to 14dp.
 
+The home grid is two columns. Above a combined text scale of 1.5, counting the system font scale and the user's text step together, it becomes one column, because a 128dp tile cannot hold a word like "Magnifier" at a readable size and neither breaking the word nor shrinking it below the metadata size is acceptable. Tile order never changes. See `DECISIONS.md` D24.
+
 ## Touch
 
 - Home tiles 128dp tall, about 20mm.
@@ -96,7 +98,7 @@ Colored accent bars. Left border cards. Purple. Gradients. Glassmorphism. Inter.
 ## Verification checklist for any screen
 
 - Does it match the grid measurements.
-- Does it survive 200 percent font scale with nothing clipped or overlapped.
+- Does it survive 200 percent font scale with nothing clipped, overlapped, or broken mid word.
 - Is every element labeled for TalkBack with a sensible focus order.
 - Does every colored signal also have an icon and words.
 - Is every target at or above the floor with adequate gaps.

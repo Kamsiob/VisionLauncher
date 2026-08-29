@@ -103,3 +103,23 @@ The portfolio convention elsewhere is a `.debug` suffix so debug and release ins
 ## D23. Unbuilt tiles are honest, not hidden
 
 Stage 1 ships the home screen with its full default tile set, but Messages, Magnifier, and Photos belong to later stages. Their tiles open a plain screen that says this part is not built yet and, where the phone has its own way to do the job, offers that instead: the message app for Messages, the gallery for Photos. Hiding the tiles would make the home layout shift as stages land, which breaks the layout the hands are learning. The interstitial deletes itself stage by stage. Camera is not an interstitial; it launches the phone's camera app directly, because the spec has no camera screen of its own.
+
+## D24. The tile grid drops to one column at large font scales
+
+Found by running the app at 200 percent system font scale, not by reading the spec. A 128dp tile in two columns physically cannot hold a word like "Magnifier" at a size this audience can read. Both obvious answers are wrong: breaking the word across two lines produces "Magnifi er", and shrinking the label below the row metadata size defeats the entire point of the app.
+
+So above a combined scale of 1.5, counting the system font scale and the user's own text step together, the home grid and arranging mode both go to one column. The tile order never changes, which is what procedural memory actually holds onto, and every label keeps its full size. This is the same reasoning as D11: the layout the hands learn is worth more than the layout that looks tidier.
+
+Tile labels also carry a step based auto size with the grid's 28sp as the maximum, which handles a long third party app name in the two column case without ever exceeding the specified size.
+
+## D25. Settings is reached from More apps, not from a home tile
+
+The grid puts no Settings tile on the home screen, and the six tiles belong to what a person uses daily. Settings sits pinned at the top of the More apps list instead, above the alphabetical apps, where it is findable without spending a tile. It is hidden from the list while a search is running, because a search for an app name should return apps.
+
+## D26. Every key carries its own TalkBack label, never an inherited one
+
+Found on a real device, not in review. Relying on a key's visible text to merge into its clickable node left the node with no label at all: the accessibility tree showed a clickable button with an empty name for the Done chip, "Add an app", and every other key labeled only by its text. TalkBack would have announced those as an unnamed button.
+
+So every key sets its label explicitly through `clearAndSetSemantics`: the appliance key speaks its label and sublabel, the tile speaks its label, the row key speaks its label and metadata, and the masthead and status pill each collapse to a single focus stop rather than exposing their parts twice. A caller can still override with a fuller sentence, which is how the Emergency key says it opens a screen rather than placing a call.
+
+The lesson generalizes: the accessibility tree is the thing to check, and it has to be checked on the device.

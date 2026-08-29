@@ -32,7 +32,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -161,9 +164,6 @@ fun Masthead(
     isEvening: Boolean,
 ) {
     val palette = LocalPalette.current
-    val markDescription = stringResource(
-        if (isEvening) R.string.a11y_moon_mark else R.string.a11y_sun_mark
-    )
     val merged = stringResource(R.string.a11y_masthead, clockText, dayPartText, dateText)
     Column(
         modifier = Modifier
@@ -171,7 +171,7 @@ fun Masthead(
             .background(palette.masthead)
             .statusBarsPadding()
             .padding(start = 24.dp, end = 24.dp, top = 34.dp, bottom = 26.dp)
-            .semantics(mergeDescendants = true) { contentDescription = merged },
+            .clearAndSetSemantics { contentDescription = merged },
     ) {
         Text(
             text = clockText,
@@ -185,7 +185,7 @@ fun Masthead(
         ) {
             Icon(
                 imageVector = if (isEvening) LineIcons.moon else LineIcons.sun,
-                contentDescription = markDescription,
+                contentDescription = null,
                 tint = palette.mastheadText,
                 modifier = Modifier.size(Dimens.daylineIcon),
             )
@@ -219,7 +219,7 @@ fun StatusPill(text: String, modifier: Modifier = Modifier) {
             .background(palette.statusBg)
             .then(if (outlined) Modifier.border(Dimens.statusBorder, palette.green, shape) else Modifier)
             .padding(horizontal = 18.dp, vertical = 10.dp)
-            .semantics(mergeDescendants = true) {},
+            .clearAndSetSemantics { contentDescription = text },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -369,7 +369,11 @@ fun UndoStrip(
                     Haptics.confirm(view)
                     onAction()
                 }
-                .padding(8.dp),
+                .padding(8.dp)
+                .clearAndSetSemantics {
+                    contentDescription = actionLabel
+                    role = Role.Button
+                },
         )
     }
 }
@@ -403,6 +407,7 @@ fun PromptBar(
             color = Tokens.cream,
             modifier = Modifier.weight(1f),
         )
+        val doneLabel = stringResource(R.string.key_done)
         Box(
             modifier = Modifier
                 .background(Tokens.cream, RoundedCornerShape(Dimens.radiusDoneChip))
@@ -411,11 +416,15 @@ fun PromptBar(
                     onDone()
                 }
                 .defaultMinSize(minWidth = 72.dp, minHeight = 48.dp)
-                .padding(horizontal = 18.dp, vertical = 12.dp),
+                .padding(horizontal = 18.dp, vertical = 12.dp)
+                .clearAndSetSemantics {
+                    contentDescription = doneLabel
+                    role = Role.Button
+                },
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = stringResource(R.string.key_done),
+                text = doneLabel,
                 style = bodyStyle(size = TypeScale.doneChip, weight = FontWeight.ExtraBold, lineHeightFactor = 1f),
                 color = Tokens.navy,
             )

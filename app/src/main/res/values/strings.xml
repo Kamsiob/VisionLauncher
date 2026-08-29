@@ -61,7 +61,7 @@
     <string name="a11y_call_person_no_relation">Call %1$s</string>
     <string name="call_no_contacts_permission">This app cannot see your contacts yet. You can still dial a number.</string>
     <string name="call_grant_contacts">Let this app see your contacts</string>
-    <string name="call_no_favorites">People you mark as favorites appear here. Helper settings is where favorites are chosen.</string>
+    <string name="call_no_favorites">Favorites are chosen in Helper settings.</string>
 
     <!-- Keypad -->
     <string name="keypad_title">Dial a number</string>
@@ -167,6 +167,8 @@
     <string name="arrange_add_app">Add an app</string>
     <string name="arrange_add_app_note">The new app lands at the bottom of your home screen.</string>
     <string name="a11y_arrange_tile">%1$s. Tap to move it or take it off.</string>
+    <string name="a11y_arrange_empty">Empty spot. Tap to put an app here.</string>
+    <string name="a11y_arrange_locked">Call. Call always stays first.</string>
     <string name="a11y_arrange_lifted">%1$s is lifted. Tap a spot to move it there, or tap it again to cancel.</string>
     <string name="a11y_arrange_destination">Put %1$s here, in place of %2$s</string>
     <string name="a11y_arrange_destination_empty">Put %1$s here, in the empty spot</string>

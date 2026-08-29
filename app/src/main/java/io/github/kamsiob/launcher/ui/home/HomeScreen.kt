@@ -44,6 +44,7 @@ import io.github.kamsiob.launcher.ui.theme.Dimens
 import io.github.kamsiob.launcher.ui.theme.LineIcons
 import io.github.kamsiob.launcher.ui.theme.LocalPalette
 import io.github.kamsiob.launcher.ui.theme.TypeScale
+import io.github.kamsiob.launcher.ui.theme.tileColumns
 import kotlinx.coroutines.delay
 import java.util.Calendar
 
@@ -148,15 +149,16 @@ private fun TileGrid(
 ) {
     val density = LocalDensity.current
     val iconPx = with(density) { Dimens.appIcon.roundToPx() }
+    val columns = tileColumns()
     Column(verticalArrangement = Arrangement.spacedBy(Dimens.gapTile)) {
-        layout.chunked(2).forEach { row ->
+        layout.chunked(columns).forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gapTile)) {
                 row.forEach { tile ->
                     Box(modifier = Modifier.weight(1f)) {
                         HomeTile(tile, apps, iconPx, onOpenFeature)
                     }
                 }
-                if (row.size == 1) {
+                repeat(columns - row.size) {
                     Box(modifier = Modifier.weight(1f)) {}
                 }
             }

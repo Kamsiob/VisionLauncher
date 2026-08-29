@@ -48,6 +48,7 @@ import io.github.kamsiob.launcher.ui.theme.Dimens
 import io.github.kamsiob.launcher.ui.theme.LineIcons
 import io.github.kamsiob.launcher.ui.theme.LocalPalette
 import io.github.kamsiob.launcher.ui.theme.TypeScale
+import io.github.kamsiob.launcher.ui.theme.tileColumns
 import io.github.kamsiob.launcher.ui.theme.bodyStyle
 import kotlinx.coroutines.delay
 
@@ -173,13 +174,15 @@ fun ArrangeScreen(
         )
 
         when (val current = undo) {
-            is UndoState.Moved -> UndoStrip(
-                message = stringResource(R.string.arrange_undo_last),
-                actionLabel = stringResource(R.string.put_it_back),
-                onAction = {
+            is UndoState.Moved -> ApplianceKey(
+                label = stringResource(R.string.arrange_undo_last),
+                onClick = {
                     working = current.before
                     undo = null
                 },
+                minHeight = Dimens.keySmall,
+                fontSize = TypeScale.keyLabelSmall,
+                committing = true,
             )
             is UndoState.TakenOff -> UndoStrip(
                 message = stringResource(R.string.arrange_taken_off, current.label),
@@ -267,11 +270,12 @@ private fun ArrangeGrid(
     val palette = LocalPalette.current
     val density = LocalDensity.current
     val iconPx = with(density) { Dimens.appIcon.roundToPx() }
+    val columns = tileColumns()
     Column(verticalArrangement = Arrangement.spacedBy(Dimens.gapTile)) {
-        layout.chunked(2).forEachIndexed { rowIndex, row ->
+        layout.chunked(columns).forEachIndexed { rowIndex, row ->
             Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gapTile)) {
                 row.forEachIndexed { columnIndex, tile ->
-                    val index = rowIndex * 2 + columnIndex
+                    val index = rowIndex * columns + columnIndex
                     val lifted = index == liftedIndex
                     val dimmed = dimOthers && !lifted
                     Box(
@@ -299,7 +303,7 @@ private fun ArrangeGrid(
                         )
                     }
                 }
-                if (row.size == 1) Box(modifier = Modifier.weight(1f))
+                repeat(columns - row.size) { Box(modifier = Modifier.weight(1f)) }
             }
         }
     }
@@ -315,10 +319,11 @@ private fun ArrangeTile(
 ) {
     val feature = BuiltIn.fromId(tile.builtIn)
     val label = tileLabel(tile, apps)
-    val description = if (lifted) {
-        stringResource(R.string.a11y_arrange_lifted, label)
-    } else {
-        stringResource(R.string.a11y_arrange_tile, label)
+    val description = when {
+        lifted -> stringResource(R.string.a11y_arrange_lifted, label)
+        isLocked(tile) -> stringResource(R.string.a11y_arrange_locked)
+        tile.isEmpty -> stringResource(R.string.a11y_arrange_empty)
+        else -> stringResource(R.string.a11y_arrange_tile, label)
     }
     when {
         feature != null -> Tile(

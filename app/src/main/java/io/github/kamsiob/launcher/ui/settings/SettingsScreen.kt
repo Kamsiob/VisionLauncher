@@ -27,6 +27,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.kamsiob.launcher.R
 import io.github.kamsiob.launcher.ui.components.ApplianceKey
@@ -261,7 +262,7 @@ private fun ThemeCard(
                 .fillMaxWidth()
                 .keySurface()
                 .debouncedClickable { onClick() }
-                .padding(12.dp)
+                .padding(horizontal = 6.dp, vertical = 12.dp)
                 .clearAndSetSemantics {
                     contentDescription = cardDescription
                     this.selected = selected
@@ -273,8 +274,10 @@ private fun ThemeCard(
             preview()
             Text(
                 text = label,
-                style = bodyStyle(size = TypeScale.keyLabelSmall, weight = FontWeight.Bold, lineHeightFactor = 1.1f),
+                style = bodyStyle(size = TypeScale.sect, weight = FontWeight.Bold, lineHeightFactor = 1.1f),
                 color = palette.text,
+                textAlign = TextAlign.Center,
+                softWrap = false,
             )
             if (selected) {
                 Text(
