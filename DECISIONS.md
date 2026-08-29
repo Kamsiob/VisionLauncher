@@ -175,3 +175,23 @@ This is the fourth sentence this session that asserted something the code did no
 The key's subtitle said "Opens the phone's own emergency call screen", which overstated it, and now says "Opens the phone's own call screen with 911 ready".
 
 Verified by reading the code path rather than by pressing it. Testing this key on a device with a live SIM risks placing a real emergency call, which is not a thing to do to find out what a button does. Test it on an emulator or a device with no SIM.
+
+## D34. The icons were too small, and the grid was corrected rather than followed
+
+The user looked at the running app and said the icons in the buttons were too small. They matched `design/design-grid-v4.html` exactly, so this was not a fidelity bug. The grid itself under-sized them.
+
+The reason is worth writing down, because it explains how a careful design got this wrong. This project argued its touch targets from the aging literature and landed far above Android's minimum: 128dp tiles, an 88dp key floor, 96dp keypad keys. It never made the same argument about the glyphs inside those targets, so they inherited conventional interface sizes. Only the targets got the argument.
+
+The grid is the measurement authority over prose. The user is the authority over the grid. The grid now carries the corrected values and a dated note saying why, so the two never disagree afterward.
+
+**What changed.** Tile glyph 46 to 64, which is 39 percent linear and 94 percent in area. Row icons 40 and 36 to 52 and 48. Home and Back key glyph 28 to 40. In-key glyphs from one flat 32 to 34, 40, or 56 depending on the key's height. Lamp glyph 32 to 40. Day part mark 32 to 36. Status dot 15 to 18. Threshold mark 64 to 72.
+
+**What deliberately did not change.** The third party app icon stays at 52dp, smaller than the 64dp line icon. That size difference is the quiet cue telling a built in feature from an installed app, which `DESIGN.md` relies on, and growing both to match would have erased it.
+
+**Three structural repairs the change required.** A tile's glyph and an app's bitmap now sit in one shared 64dp slot, so the two tile kinds are identical in height; previously they differed by 6dp and the rows ragged. The empty spot was a frozen 128dp box that no icon size could reach, so any tile growth would have ragged the default home screen by up to 39dp at the app's own text steps; the grid row now sizes to its tallest child and the empty spot follows. And the Home and Back bar now stacks on the same threshold as everything else.
+
+**One threshold, lowered to 1.3.** The tile grid, the top bar, and the three Look cards in Settings all reflow at a combined scale of 1.3 rather than 1.5. It is one number so the reflow is one behavior the hands learn instead of three. It moved down because 1.3 is the user's own largest text step, and above it a side by side layout starts shrinking labels to fit; reflowing first means the size a person chose is the size they get. This also fixed a bug that predated the icon work: "Home" clipped to "Hom" at a combined scale of 2.30.
+
+**Icon scaling with text was considered and deferred.** Icons stay fixed dp for now. Scaling them turned out to carry real hazards: the app icon bitmap cache is keyed without size, so a scaled bitmap would be drawn larger than it was rasterized and blur at exactly the setting a low vision user chose; a scaled app icon overruns the row key's content budget at the cap; and scaling the Home glyph pulls the label's shrink point below the reflow threshold. Base sizes carry the visible fix. Scaling is a separate change with its own verification, tracked in its own issue.
+
+This was reached through a five lens audit and three adversarial reviewers. The reviewers refuted the first proposal on all three lenses and were right to: they caught the frozen empty spot, the bitmap cache, the row budget overrun, and an arithmetic error in the reflow threshold, and they argued the first numbers were too timid to be noticed at arm's length, which was the entire point.

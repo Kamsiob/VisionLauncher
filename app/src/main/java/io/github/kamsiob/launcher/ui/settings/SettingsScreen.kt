@@ -49,7 +49,7 @@ import io.github.kamsiob.launcher.ui.theme.Look
 import io.github.kamsiob.launcher.ui.theme.TextStep
 import io.github.kamsiob.launcher.ui.theme.Tokens
 import io.github.kamsiob.launcher.ui.theme.TypeScale
-import io.github.kamsiob.launcher.ui.theme.tileColumns
+import io.github.kamsiob.launcher.ui.theme.sideBySideFits
 import io.github.kamsiob.launcher.ui.theme.bodyStyle
 import io.github.kamsiob.launcher.ui.theme.monoStyle
 import androidx.compose.ui.platform.LocalView
@@ -205,7 +205,7 @@ private fun ThemeChoices(
             )
         },
     )
-    if (tileColumns() == 1) {
+    if (!sideBySideFits()) {
         Column(verticalArrangement = Arrangement.spacedBy(Dimens.gap)) {
             cards.forEach { it(Modifier.fillMaxWidth()) }
         }

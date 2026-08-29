@@ -51,6 +51,7 @@ import io.github.kamsiob.launcher.ui.theme.LocalPalette
 import io.github.kamsiob.launcher.ui.theme.Tokens
 import io.github.kamsiob.launcher.ui.theme.TypeScale
 import io.github.kamsiob.launcher.ui.theme.bodyStyle
+import io.github.kamsiob.launcher.ui.theme.sideBySideFits
 import io.github.kamsiob.launcher.ui.theme.monoStyle
 import io.github.kamsiob.launcher.ui.theme.serifStyle
 
@@ -92,29 +93,46 @@ fun TopBar(
     onHome: () -> Unit,
     onBack: (() -> Unit)? = null,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(Dimens.gap),
-    ) {
+    val home: @Composable (Modifier) -> Unit = { m ->
         ApplianceKey(
             label = stringResource(R.string.key_home),
             onClick = onHome,
-            modifier = Modifier.weight(1f),
+            modifier = m,
             minHeight = Dimens.homeKey,
             fontSize = TypeScale.keyLabelSmall,
             icon = LineIcons.home,
             iconSize = Dimens.homeKeyIcon,
             contentDescription = stringResource(R.string.a11y_home_key),
         )
-        if (onBack != null) {
-            ApplianceKey(
-                label = stringResource(R.string.key_back),
-                onClick = onBack,
-                modifier = Modifier.weight(1f),
-                minHeight = Dimens.homeKey,
-                fontSize = TypeScale.keyLabelSmall,
-                contentDescription = stringResource(R.string.a11y_back_key),
-            )
+    }
+    val back: @Composable (Modifier) -> Unit = { m ->
+        ApplianceKey(
+            label = stringResource(R.string.key_back),
+            onClick = onBack ?: {},
+            modifier = m,
+            minHeight = Dimens.homeKey,
+            fontSize = TypeScale.keyLabelSmall,
+            contentDescription = stringResource(R.string.a11y_back_key),
+        )
+    }
+    // Side by side until the labels would start shrinking to fit. Home carries
+    // an icon and Back does not, so in a narrow bar Home runs out of room
+    // first and the two keys end up at different label sizes, which reads as a
+    // mistake. Stacking keeps both at full size.
+    if (onBack == null) {
+        home(Modifier.fillMaxWidth())
+    } else if (sideBySideFits()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Dimens.gap),
+        ) {
+            home(Modifier.weight(1f))
+            back(Modifier.weight(1f))
+        }
+    } else {
+        Column(verticalArrangement = Arrangement.spacedBy(Dimens.gap)) {
+            home(Modifier.fillMaxWidth())
+            back(Modifier.fillMaxWidth())
         }
     }
 }

@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -286,7 +289,10 @@ private fun ArrangeGrid(
     val columns = tileColumns()
     Column(verticalArrangement = Arrangement.spacedBy(Dimens.gapTile)) {
         layout.chunked(columns).forEachIndexed { rowIndex, row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gapTile)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Dimens.gapTile),
+                modifier = Modifier.height(IntrinsicSize.Min),
+            ) {
                 row.forEachIndexed { columnIndex, tile ->
                     val index = rowIndex * columns + columnIndex
                     val lifted = index == liftedIndex
@@ -294,6 +300,7 @@ private fun ArrangeGrid(
                     Box(
                         modifier = Modifier
                             .weight(1f)
+                            .fillMaxHeight()
                             .then(if (dimmed) Modifier.alpha(0.38f) else Modifier)
                             .then(
                                 if (lifted) {

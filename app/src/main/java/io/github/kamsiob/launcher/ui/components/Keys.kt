@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -114,7 +115,14 @@ fun ApplianceKey(
     minHeight: Dp = Dimens.keyMin,
     fontSize: Int = TypeScale.keyLabel,
     icon: ImageVector? = null,
-    iconSize: Dp = 32.dp,
+    // Sized to the key rather than fixed. One value used to serve the 72dp,
+    // 88dp and 130dp keys alike, which is how two different sizes in the grid
+    // both collapsed to one.
+    iconSize: Dp = when {
+        minHeight <= Dimens.keySmall -> Dimens.keyIconSmall
+        minHeight >= Dimens.bigKey -> Dimens.keyIconBig
+        else -> Dimens.keyIcon
+    },
     iconTint: Color? = null,
     sublabel: String? = null,
     contentDescription: String? = null,
@@ -221,20 +229,30 @@ fun Tile(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
     ) {
-        when {
-            icon != null -> Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = palette.accent,
-                modifier = Modifier.size(Dimens.tileIcon),
-            )
-            appIcon != null -> Image(
-                bitmap = appIcon,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(Dimens.appIcon)
-                    .clip(RoundedCornerShape(Dimens.appIconRadius)),
-            )
+        // Both glyph kinds sit in one slot of the same height. A line icon is
+        // larger than an app's own bitmap on purpose, which is the cue that
+        // separates a built in feature from an installed app, and without the
+        // shared slot that difference would also make the two tiles different
+        // heights and rag the row.
+        Box(
+            modifier = Modifier.height(Dimens.tileIconSlot),
+            contentAlignment = Alignment.Center,
+        ) {
+            when {
+                icon != null -> Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = palette.accent,
+                    modifier = Modifier.size(Dimens.tileIcon),
+                )
+                appIcon != null -> Image(
+                    bitmap = appIcon,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(Dimens.appIcon)
+                        .clip(RoundedCornerShape(Dimens.appIconRadius)),
+                )
+            }
         }
         // The same rule the appliance key follows. A one word label like
         // "Messages" gets a single line and steps down to keep it whole; a two
@@ -300,7 +318,11 @@ fun RowKey(
                 imageVector = icon,
                 contentDescription = null,
                 tint = palette.accent,
-                modifier = Modifier.size(Dimens.rowIcon),
+                // The grid draws a larger glyph on rows that carry only a
+                // label than on rows with a metadata line under it.
+                modifier = Modifier.size(
+                    if (meta == null) Dimens.rowIcon else Dimens.rowIconWithMeta
+                ),
             )
             appIcon != null -> Image(
                 bitmap = appIcon,

@@ -64,13 +64,19 @@ Outlined exists because soft shadows carry far less edge contrast than borders, 
 
 Corner radius 20dp on keys and cards, 30dp on the phone frame, 16dp on the lamp and prompt bar, 999dp on the status pill. Screen padding 28dp top, 24dp sides, 30dp bottom. Gaps between keys 12 to 14dp.
 
-The home grid is two columns, and the three Look cards in Settings sit side by side. Above a combined text scale of 1.5, counting the system font scale and the user's text step together, both become one column, because a 128dp tile cannot hold "Magnifier" and a third of the screen cannot hold "Outlined" at a readable size. Tile order never changes.
+The home grid is two columns, the Home and Back keys sit side by side, and so do the three Look cards in Settings. At or above a combined text scale of 1.3, counting the system font scale and the user's text step together, all three reflow to one column, because a 128dp tile cannot hold "Magnifier" and a third of the screen cannot hold "Outlined" at a readable size. Tile order never changes.
 
 Where the layout cannot give way, the type does: a keypad stays three columns, so "Erase" and "Clear" step down in size instead. The rule across the app is that a phrase may wrap across lines, a single word never splits, and the layout gives way before the type does. See `DECISIONS.md` D24.
 
+## Icons
+
+Glyph sizes were raised above the grid's original values on August 29, 2026, after the app was seen on a device. The grid argued its touch targets from the aging literature but let the glyphs inside them inherit conventional sizes. The corrected values: tile glyph 64dp, row icon 52dp or 48dp where a metadata line sits under the label, key glyph 34, 40, or 56dp by key height, Home and Back 40dp, lamp 40dp, day part mark 36dp, status dot 18dp, threshold mark 72dp. See `DECISIONS.md` D34.
+
+Two rankings are deliberate. A third party app icon stays at 52dp, smaller than the 64dp built in line icon, because that difference is what tells the two apart. And the lamp glyph at 40dp outranks the day part mark at 36dp, because the lamp backs a colored signal that must never carry meaning alone while the sun and moon are decoration.
+
 ## Touch
 
-- Home tiles 128dp tall, about 20mm.
+- Home tiles 128dp tall, about 20mm. With the corrected glyph they settle around 136dp.
 - Key floor 88dp, about 14mm. Keypad keys 96dp. Small keys 72dp.
 - These are far above Android's 48dp minimum, deliberately. Older and tremor affected users need substantially larger targets, and the aging literature shows meaningfully higher error rates at standard sizes.
 - No swipe, drag, long press, double tap, or pinch is required anywhere in the app. Older adults prefer tapping to direct manipulation, and dragging is exactly where tremor turns into misfires.

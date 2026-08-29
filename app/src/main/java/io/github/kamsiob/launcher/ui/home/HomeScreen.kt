@@ -9,8 +9,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -152,9 +155,16 @@ private fun TileGrid(
     val columns = tileColumns()
     Column(verticalArrangement = Arrangement.spacedBy(Dimens.gapTile)) {
         layout.chunked(columns).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gapTile)) {
+            // IntrinsicSize.Min lets the empty spot match the real tile beside
+            // it. Without it the empty spot is frozen at the 128dp floor while
+            // a tile with a larger glyph or a scaled label grows past it, and
+            // the default home screen rags by tens of dp.
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Dimens.gapTile),
+                modifier = Modifier.height(IntrinsicSize.Min),
+            ) {
                 row.forEach { tile ->
-                    Box(modifier = Modifier.weight(1f)) {
+                    Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
                         HomeTile(tile, apps, iconPx, onOpenFeature)
                     }
                 }
@@ -199,10 +209,17 @@ private fun HomeTile(
     }
 }
 
-/** An empty spot keeps its place silently on the home screen. */
+/**
+ * An empty spot keeps its place silently on the home screen, and keeps the
+ * height of whatever tile sits beside it.
+ */
 @Composable
 private fun EmptySpot() {
-    Box(modifier = Modifier.defaultMinSize(minHeight = Dimens.tile))
+    Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .defaultMinSize(minHeight = Dimens.tile)
+    )
 }
 
 @Composable
