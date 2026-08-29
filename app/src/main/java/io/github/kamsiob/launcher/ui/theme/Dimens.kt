@@ -40,6 +40,8 @@ object Dimens {
     val dismissKey = 60.dp
     // The grid draws .themecard at min-height 112px.
     val themeCard = 112.dp
+    /** The frozen frame above the recognized words, grid 11 draws it at 220px. */
+    val readerFrame = 220.dp
 
     // Element sizes.
     //

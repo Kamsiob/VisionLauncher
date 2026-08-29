@@ -1,0 +1,118 @@
+package io.github.kamsiob.launcher.seeing
+
+import android.content.Context
+import android.graphics.Bitmap
+import com.googlecode.tesseract.android.TessBaseAPI
+import java.io.File
+import java.util.Locale
+
+/**
+ * Optical character recognition on a frozen frame, on this phone only.
+ *
+ * Tesseract rather than ML Kit. ML Kit recognizes better, and it was tried
+ * first, but it hard references Google's telemetry uploader and will not
+ * initialize without it, and that uploader is the only thing that put an
+ * INTERNET permission into the merged manifest. The app's central promise is
+ * that it holds no such permission and that anybody can check. See
+ * DECISIONS.md D44 for the evidence and the reasoning.
+ *
+ * The trained data ships inside the APK, so nothing is ever downloaded.
+ */
+object Reading {
+
+    /** The languages Stage 4 localizes to, each with its data bundled. */
+    private val SUPPORTED = mapOf(
+        "en" to "eng",
+        "es" to "spa",
+        "zh" to "chi_sim",
+        "ar" to "ara",
+    )
+
+    @Volatile private var api: TessBaseAPI? = null
+    @Volatile private var loadedFor: String? = null
+
+    /**
+     * Copies the trained data out of the assets once, because Tesseract reads
+     * it from a real directory rather than from the APK. Returns the parent
+     * that Tesseract expects, which is the folder containing `tessdata`.
+     */
+    private fun dataDir(context: Context, language: String): File? = runCatching {
+        val root = File(context.filesDir, "tesseract")
+        val tessdata = File(root, "tessdata").apply { mkdirs() }
+        val file = File(tessdata, "$language.traineddata")
+        if (!file.exists() || file.length() == 0L) {
+            context.assets.open("tessdata/$language.traineddata").use { input ->
+                file.outputStream().use { output -> input.copyTo(output) }
+            }
+        }
+        root
+    }.getOrNull()
+
+    /** The bundled language closest to how the phone is set, English otherwise. */
+    private fun languageFor(context: Context): String {
+        val tag = context.resources.configuration.locales[0].language.lowercase(Locale.ROOT)
+        return SUPPORTED[tag] ?: "eng"
+    }
+
+    private fun engine(context: Context): TessBaseAPI? {
+        val language = languageFor(context)
+        api?.let { if (loadedFor == language) return it }
+        // The phone's language changed under a cached engine, so the old one is
+        // reading with the wrong alphabet and has to go.
+        api?.let { runCatching { it.recycle() } }
+        api = null
+        loadedFor = null
+        val root = dataDir(context, language) ?: return null
+        val created = runCatching {
+            TessBaseAPI().also { tess ->
+                if (!tess.init(root.absolutePath, language)) {
+                    tess.recycle()
+                    return null
+                }
+                // A magnified label is one block of text on one surface, which
+                // is what this mode assumes. The default assumes a scanned page
+                // and hunts for columns that are not there.
+                tess.pageSegMode = TessBaseAPI.PageSegMode.PSM_AUTO_OSD
+            }
+        }.getOrNull() ?: return null
+        api = created
+        loadedFor = language
+        return created
+    }
+
+    /**
+     * Reads the words in a frame and hands back one block of text.
+     *
+     * Blocking, and expected to be called off the main thread. Recognition on
+     * a full camera frame takes a second or two on a mid range phone.
+     */
+    fun read(context: Context, bitmap: Bitmap): String? {
+        val tess = engine(context) ?: return null
+        return runCatching {
+            tess.setImage(bitmap)
+            val text = tess.utF8Text?.trim().orEmpty()
+            tess.clear()
+            text.ifEmpty { null }
+        }.getOrNull()
+    }
+
+    /**
+     * The same text, punctuated for a voice rather than for an eye.
+     *
+     * A label reads "AMOXICILLIN 500 mg" on one line and "Take one capsule" on
+     * the next. Spoken with no pause between them it becomes one run-on
+     * sentence. A line break is a breath.
+     */
+    fun forSpeaking(text: String): String =
+        text.lineSequence()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .joinToString(". ") { line -> line.trimEnd('.', ',', ';', ':') }
+
+    /** Frees the native engine, which holds its language model in native memory. */
+    fun release() {
+        api?.let { runCatching { it.recycle() } }
+        api = null
+        loadedFor = null
+    }
+}

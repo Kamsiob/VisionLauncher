@@ -285,3 +285,74 @@ side effect of reading is close to the worst thing this screen could do.
 The shade is the system's surface and the source app's, not the launcher's.
 The inbox keeps its own record and does not need to edit somebody else's.
 Messaging apps clear their own notifications when a reply goes through.
+
+## D44. Tesseract for the reader, because ML Kit cannot be made offline
+
+Reading a label out loud needs optical character recognition. ML Kit was tried
+first and abandoned. Tesseract, which the spec named, is what shipped.
+
+ML Kit's bundled recognizer is the better reader by a wide margin, and it does
+ship its model inside the APK, so the recognition itself needs no network. But
+the dependency arrives with `com.google.android.datatransport:transport-backend-cct`
+attached, which exists only to upload usage telemetry to Google, and it brought
+an INTERNET permission into the merged manifest with it. The README makes a
+checkable promise: no internet permission, verifiable by anybody in the phone's
+own app info screen. A library quietly adding one turns that sentence into a
+lie.
+
+Excluding the group was tried, and the manifest went clean. It does not work.
+The first call into ML Kit dies immediately:
+
+    java.lang.NoClassDefFoundError: Failed resolution of:
+      Lcom/google/android/datatransport/cct/CCTDestination;
+        at com.google.mlkit.vision.common.InputImage.fromBitmap
+
+The telemetry uploader is not an optional add-on to ML Kit. It is a hard link,
+and the recognizer will not initialize without it. Found by an instrumented
+test on a real bitmap rather than by reading documentation, which is the only
+reason it was found before shipping rather than after.
+
+That left three options. Ship ML Kit and give up the promise. Ship ML Kit with
+the permission stripped by a manifest override, leaving a telemetry uploader in
+the APK that fails every attempt and, because Google's transport runtime
+schedules retries, would keep waking the phone to fail again. Or take the
+accuracy loss.
+
+Tesseract, with its trained data bundled in `assets/tessdata`. It carries no
+telemetry, no uploader, and no INTERNET permission. English, Spanish, simplified
+Chinese, and Arabic ship together, about ten megabytes, and the engine loads
+only the one matching the phone's language. It only publishes on JitPack, so
+that repository is added scoped to that single group and can supply nothing
+else.
+
+The accuracy cost is real and is mitigated by the workflow rather than ignored:
+people frame the label in the magnifier, enlarge it, and can raise contrast
+before freezing, which is close to Tesseract's best case and nothing like a
+snapshot across a room.
+
+Verified: an instrumented test draws a medicine label to a bitmap, runs it
+through the recognizer on the device, and asserts the drug name, the dose and
+the instruction all come back. A blank frame recognizes nothing rather than
+returning empty text. The merged manifest lists no INTERNET permission.
+
+## D45. The contrast filters are one cycling key, not five
+
+The magnifier and the reader both offer five color treatments: normal, gray,
+sharper, reversed, and yellow on black. The first build laid them out as five
+keys in a row that scrolled sideways when they did not fit.
+
+They never fit. On a 412dp frame at the smallest supported text size, the fifth
+key sat past the right edge, and "Yellow on black" is the one somebody reaches
+for after the others have failed them. A control that only the most able user
+discovers is worse than no control, and horizontal scrolling is not a gesture
+this app asks for anywhere else.
+
+One full width key now names the treatment in use and advances to the next on
+each press. Every option is reachable, the current one is readable without
+opening anything, and the target is the full width of the screen rather than a
+fifth of it. It announces politely on change, which is the only feedback a
+screen reader user gets that the press did anything.
+
+The cost is that the list of options is not visible at once. That is the right
+trade here: this is a setting people arrive at by trying, not by choosing from
+a menu, and five presses returns to where they started.

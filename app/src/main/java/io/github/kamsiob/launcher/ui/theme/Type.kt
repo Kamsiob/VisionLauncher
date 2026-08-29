@@ -92,6 +92,8 @@ object TypeScale {
     const val nowTag = 15
     const val bigmsg = 34
     const val from = 22
+    /** Grid 11 sets the recognized text at 30px, below the 34px message body. */
+    const val readerText = 30
 }
 
 /** Multiplies a base sp size by the user's chosen text step. */

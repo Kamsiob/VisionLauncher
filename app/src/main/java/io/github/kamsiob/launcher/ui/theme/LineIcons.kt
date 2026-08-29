@@ -237,6 +237,17 @@ object LineIcons {
         "M5 11a7 7 0 0 0 14 0",
         "M12 18v3",
     )
+    /** The torch on the magnifier's Light key, as the grid draws it. */
+    val torch = lineIcon(
+        "torch",
+        "M9 3h6l1 5-4 3-4-3 1-5z",
+        "M12 11v10",
+    )
+    /** The square that means a held frame, screen 10. */
+    val holdStill = lineIcon(
+        "holdStill",
+        rect(5f, 5f, 14f, 14f, 2f),
+    )
     val shield = lineIcon(
         "shield",
         "M12 3l8 4v6c0 5-3.5 7.5-8 8-4.5-.5-8-3-8-8V7z",

@@ -17,6 +17,13 @@
     <!-- Replies are spoken rather than typed. Recognition runs on the device;
          the app holds no INTERNET permission, so no audio can leave it. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- The magnifier and the reader point the camera at the physical world.
+         Nothing is recorded and nothing leaves the phone. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
@@ -28,6 +35,13 @@
     <!-- Visibility of launchable apps without QUERY_ALL_PACKAGES. Once the app
          holds the home role the system grants full visibility anyway; this
          covers the moment before the role is granted. -->
+    <!-- The camera is how the magnifier works, but a phone without one should
+         still be able to install a launcher and use everything else. -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />

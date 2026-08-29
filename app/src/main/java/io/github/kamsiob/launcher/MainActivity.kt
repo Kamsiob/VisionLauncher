@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.key
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -39,6 +41,7 @@ import io.github.kamsiob.launcher.data.Favorite
 import io.github.kamsiob.launcher.data.Settings
 import io.github.kamsiob.launcher.messages.MessagesState
 import io.github.kamsiob.launcher.nav.SystemDestination
+import io.github.kamsiob.launcher.seeing.SeeingState
 import io.github.kamsiob.launcher.ui.alarm.AlarmEditScreen
 import io.github.kamsiob.launcher.ui.alarm.AlarmListScreen
 import io.github.kamsiob.launcher.ui.apps.MoreAppsScreen
@@ -48,10 +51,12 @@ import io.github.kamsiob.launcher.ui.call.ContactsScreen
 import io.github.kamsiob.launcher.ui.call.KeypadScreen
 import io.github.kamsiob.launcher.ui.emergency.EmergencyScreen
 import io.github.kamsiob.launcher.ui.home.HomeScreen
-import io.github.kamsiob.launcher.ui.home.NotBuiltScreen
 import io.github.kamsiob.launcher.ui.messages.MessagesScreen
 import io.github.kamsiob.launcher.ui.messages.ReadMessageScreen
 import io.github.kamsiob.launcher.ui.messages.ReplyScreen
+import io.github.kamsiob.launcher.ui.seeing.MagnifierScreen
+import io.github.kamsiob.launcher.ui.seeing.PhotosScreen
+import io.github.kamsiob.launcher.ui.seeing.ReaderScreen
 import io.github.kamsiob.launcher.ui.onboarding.OnboardingScreen
 import io.github.kamsiob.launcher.ui.settings.AboutScreen
 import io.github.kamsiob.launcher.ui.settings.HelperScreen
@@ -61,8 +66,10 @@ import io.github.kamsiob.launcher.ui.settings.SettingsScreen
 import io.github.kamsiob.launcher.ui.theme.LauncherTheme
 import io.github.kamsiob.launcher.ui.theme.Look
 import io.github.kamsiob.launcher.ui.threshold.ThresholdScreen
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
@@ -70,6 +77,7 @@ class MainActivity : ComponentActivity() {
     lateinit var attentionWatcher: AttentionWatcher
         private set
     private lateinit var messagesState: MessagesState
+    private lateinit var seeingState: SeeingState
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +91,7 @@ class MainActivity : ComponentActivity() {
         // survives the recomposition that follows it and the speech engines are
         // built once rather than on every navigation.
         messagesState = MessagesState(this, lifecycleScope)
+        seeingState = SeeingState(this, lifecycleScope)
 
         // Read synchronously so frame one already knows the chosen theme and
         // whether first run is behind us, instead of painting the light palette
@@ -111,6 +120,7 @@ class MainActivity : ComponentActivity() {
                     settings = settings,
                     homePressed = homePressed,
                     messages = messagesState,
+                    seeing = seeingState,
                 )
             }
         }
@@ -121,6 +131,7 @@ class MainActivity : ComponentActivity() {
         // after the launcher is gone keeps a recognizer alive with a microphone
         // it is no longer entitled to.
         if (::messagesState.isInitialized) messagesState.release()
+        if (::seeingState.isInitialized) seeingState.release()
         super.onDestroy()
     }
 
@@ -157,12 +168,13 @@ object Routes {
     const val PICK_EMERGENCY = "pickemergency"
     const val ARRANGE = "arrange"
     const val MESSAGES = "messages"
+    const val MAGNIFIER = "magnifier"
+    const val READER = "reader"
+    const val PHOTOS = "photos"
     const val READ_MESSAGE = "readmessage"
     const val REPLY = "reply"
-    const val NOT_BUILT = "notbuilt/{feature}"
     const val THRESHOLD = "threshold/{dest}"
 
-    fun notBuilt(feature: BuiltIn) = "notbuilt/${feature.id}"
     fun threshold(dest: SystemDestination) = "threshold/${dest.id}"
     fun alarmEdit(id: Int) = "alarmedit/$id"
 }
@@ -177,6 +189,7 @@ fun LauncherNav(
     settings: Settings,
     homePressed: MutableSharedFlow<Unit>,
     messages: MessagesState,
+    seeing: SeeingState,
 ) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
@@ -251,9 +264,10 @@ fun LauncherNav(
                     when (feature) {
                         BuiltIn.CALL -> navController.navigate(Routes.CALL)
                         BuiltIn.MESSAGES -> navController.navigate(Routes.MESSAGES)
+                        BuiltIn.MAGNIFIER -> navController.navigate(Routes.MAGNIFIER)
+                        BuiltIn.PHOTOS -> navController.navigate(Routes.PHOTOS)
                         BuiltIn.ALARMS -> navController.navigate(Routes.ALARMS)
                         BuiltIn.CAMERA -> launchCamera(activity)
-                        else -> navController.navigate(Routes.notBuilt(feature))
                     }
                 },
                 onMoreApps = { navController.navigate(Routes.MORE_APPS) },
@@ -570,10 +584,82 @@ fun LauncherNav(
             }
         }
 
-        composable(Routes.NOT_BUILT) { backStackEntry ->
-            val feature = BuiltIn.fromId(backStackEntry.arguments?.getString("feature"))
-                ?: BuiltIn.MESSAGES
-            NotBuiltScreen(feature = feature, onHome = goHome)
+        composable(Routes.MAGNIFIER) {
+            // Read fresh on every visit. The permission can be revoked from
+            // system settings while the app sits in the background, and a
+            // remembered yes would leave a black rectangle with no explanation.
+            var cameraGeneration by remember { mutableStateOf(0) }
+            val camera = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { cameraGeneration++ }
+            key(cameraGeneration) {
+                MagnifierScreen(
+                    onRead = { frame ->
+                        seeing.readFrame(frame)
+                        navController.navigate(Routes.READER)
+                    },
+                    onGrantCamera = { camera.launch(Manifest.permission.CAMERA) },
+                    onHome = goHome,
+                )
+            }
+        }
+
+        composable(Routes.READER) { entry ->
+            if (seeing.frozen == null) {
+                PopWhenCurrent(entry, goBack)
+            } else {
+                ReaderScreen(
+                    frame = seeing.frozen,
+                    text = seeing.recognized,
+                    working = seeing.working,
+                    speaking = seeing.speaking,
+                    canSpeak = seeing.canSpeak,
+                    filter = seeing.filter,
+                    onFilter = { seeing.filter = it },
+                    onRead = { seeing.speakRecognized() },
+                    onStop = { seeing.stopSpeaking() },
+                    onHome = {
+                        goHome()
+                        seeing.clearFrame()
+                    },
+                    onBack = {
+                        goBack()
+                        seeing.clearFrame()
+                    },
+                )
+            }
+        }
+
+        composable(Routes.PHOTOS) {
+            var photoGeneration by remember { mutableStateOf(0) }
+            val ask = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { photoGeneration++ }
+            val hasPhotos = remember(photoGeneration) { seeing.photoStore.hasPermission() }
+            // Off the main thread. A media store query walks every picture on
+            // the phone, and running it during composition is the same stall
+            // the app list had.
+            val photos by produceState(initialValue = emptyList(), hasPhotos, photoGeneration) {
+                value = withContext(Dispatchers.IO) { seeing.photoStore.load() }
+            }
+            PhotosScreen(
+                photos = photos,
+                hasPermission = hasPhotos,
+                loadFrame = { seeing.loadPhoto(it) },
+                onGrantPhotos = {
+                    ask.launch(
+                        if (android.os.Build.VERSION.SDK_INT >= 33) {
+                            Manifest.permission.READ_MEDIA_IMAGES
+                        } else {
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        }
+                    )
+                },
+                onOpenGallery = { openGallery(activity) },
+                onSpeakCaption = { seeing.say(it) },
+                canSpeak = seeing.canSpeak,
+                onHome = goHome,
+            )
         }
 
         composable(Routes.THRESHOLD) { backStackEntry ->
@@ -647,6 +733,17 @@ fun openSupportLink(context: android.content.Context) {
         android.net.Uri.parse("https://buymeacoffee.com/kamsiob"),
     ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     runCatching { context.startActivity(intent) }
+}
+
+/** The phone's own gallery, for when there is nothing here to show. */
+private fun openGallery(activity: MainActivity) {
+    val intent = Intent(Intent.ACTION_VIEW).setType("image/*")
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    if (runCatching { activity.startActivity(intent) }.isSuccess) return
+    val fallback = Intent.makeMainSelectorActivity(
+        Intent.ACTION_MAIN, Intent.CATEGORY_APP_GALLERY
+    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    runCatching { activity.startActivity(fallback) }
 }
 
 private fun launchCamera(activity: MainActivity) {

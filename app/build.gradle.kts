@@ -65,6 +65,31 @@ android {
         }
     }
 
+    // Tesseract ships a native library for every architecture, about seven
+    // megabytes each, so a single APK carries three the phone can never run.
+    //
+    // Play receives the app bundle and splits per device by itself, and AGP
+    // refuses to build a bundle while ABI splits are on. So splitting is opt in:
+    // the default build produces the bundle Play needs, and
+    //
+    //     ./gradlew assembleRelease -PabiSplits
+    //
+    // produces the per architecture APKs for handing to somebody directly.
+    // Building both from one invocation is not possible, which is why this is a
+    // flag rather than a setting.
+    if (providers.gradleProperty("abiSplits").isPresent) {
+        splits {
+            abi {
+                isEnable = true
+                reset()
+                include("arm64-v8a", "armeabi-v7a")
+                // No universal APK. It would be the very thing this avoids, and
+                // having one in the output folder invites shipping it by mistake.
+                isUniversalApk = false
+            }
+        }
+    }
+
     buildTypes {
         release {
             if (keystoreProperties.getProperty("storeFile") != null) {
@@ -161,6 +186,14 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    // Tesseract, because it is the only on-device recognizer found that carries
+    // no telemetry uploader and therefore no INTERNET permission. See
+    // DECISIONS.md D44 for the ML Kit attempt and why it was abandoned.
+    implementation(libs.tesseract4android)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
 

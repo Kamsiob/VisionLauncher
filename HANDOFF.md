@@ -81,9 +81,36 @@ Two defects were found by driving the real UI, neither visible in the code:
 - Opening a message dismissed its notification, which destroyed the reply action, so reading a message removed the ability to answer it. See `DECISIONS.md` D43.
 - Sending a reply left the launcher showing a blank screen, because clearing the open message made two screens fire a back navigation as they were disposed and the two extra pops emptied the navigation graph.
 
+## Stage 3, seeing, and how it was verified
+
+Grid 10, 11 and 12: the magnifier, the reader, and photos. All three tiles now
+open real screens, so the "not built yet" interstitial has been deleted, which
+is what `DECISIONS.md` D23 said would happen stage by stage.
+
+- The magnifier runs CameraX in a dark interface whatever theme is chosen, with zoom as two large keys rather than a slider, a torch key that says so when the phone has no light, and Hold still to freeze a frame. Verified running on the emulator with a screenshot of the live preview.
+- The frozen frame is held in memory and never written to storage. A magnified pill bottle is not a photograph anybody wants keeping.
+- Optical character recognition is Tesseract, not ML Kit. ML Kit reads better and was tried first, but it will not initialize without Google's telemetry uploader, which is the one thing that put an INTERNET permission in the merged manifest. See `DECISIONS.md` D44 for the crash that proved it.
+- Recognition is proven by an instrumented test that runs on the device: it draws a medicine label to a bitmap, recognizes it through the shipping code path, and asserts the drug name, the dose and the instruction all come back. A blank frame recognizes nothing rather than returning empty text.
+- Recognition runs off the main thread, because Tesseract on a full camera frame takes a second or two and doing that on the main thread would freeze the launcher.
+- The five contrast filters are one full width key that names the current one and cycles, not a row of five. See `DECISIONS.md` D45.
+- Photos reads the media store, excludes screenshots and sticker folders, and captions each picture with which one of how many, the folder it came from where that names something, and when. Verified with pushed images: "Photo 1 of 3, from WhatsApp Images, 2:41 PM" for one in a named folder and "Photo 2 of 3" with no claimed sender for one in Pictures, and the screenshot correctly absent.
+- A photo is decoded at screen size rather than at full resolution, because three fifty megabyte bitmaps in a row would end the process.
+
+Two defects found by looking at the running screen rather than the code: the
+contrast filters scrolled sideways with the last one past the edge, and the
+photo caption was announced twice by a screen reader because both the image and
+the pill below it carried it.
+
+**Not yet verified end to end:** recognition through the camera rather than
+through a bitmap. The emulator's virtual scene ignores the poster flag that
+would put readable text in front of the lens, so the camera to recognizer link
+has been verified in its two halves rather than in one pass. Do this on the
+Pixel by pointing it at a real label.
+
 ## What is not built
 
-Stage 3 magnifier, reader, and photos, and Stage 4 Today, the printable sheet, the settings file, the PIN, the reply phrase editor, and localization. The Magnifier and Photos tiles open a screen that says plainly that the part is not built yet, offering the phone's own app where one exists. See `DECISIONS.md` D23. Those interstitials delete themselves stage by stage.
+Stage 4: Today, the printable setup sheet, the setup file, the helper PIN, the
+reply phrase editor, and localization to Spanish, Chinese and Arabic.
 
 ---
 

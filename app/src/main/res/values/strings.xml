@@ -98,10 +98,54 @@
     <string name="more_apps_none_found">No app is called %1$s.</string>
     <string name="contacts_none">There are no contacts on this phone yet.</string>
 
-    <!-- Not built yet -->
-    <string name="not_built_body">This part of VisionLauncher is still being built. It arrives with a later update.</string>
     <string name="no_app_for_that">This phone has no app for that.</string>
     <string name="open_message_app">Open a message app</string>
+
+    <!-- Magnifier and Reader, spec 5.7, grid 10 and 11 -->
+    <string name="magnifier_title">Magnifier</string>
+    <string name="magnifier_zoom_in">Bigger</string>
+    <string name="magnifier_zoom_out">Smaller</string>
+    <string name="magnifier_light">Light</string>
+    <string name="magnifier_light_off">Light off</string>
+    <string name="magnifier_hold_still">Hold still</string>
+    <string name="magnifier_live_again">Move again</string>
+    <string name="magnifier_no_camera">This phone will not open its camera. The magnifier needs it.</string>
+    <string name="magnifier_no_permission">The magnifier needs to use the camera.</string>
+    <string name="magnifier_allow_camera">Let it use the camera</string>
+    <string name="magnifier_no_torch">This phone has no light to turn on.</string>
+    <string name="magnifier_capture_failed">The picture did not hold still. Try again.</string>
+    <string name="magnifier_frozen">Holding still. Nothing is being recorded.</string>
+    <string name="a11y_zoom_level">Magnified %1$d percent</string>
+    <string name="magnifier_colors_now">Colors: %1$s</string>
+    <string name="a11y_colors_now">Colors are %1$s. Tap to try the next.</string>
+    <string name="filter_normal">Normal</string>
+    <string name="filter_gray">Gray</string>
+    <string name="filter_high_contrast">Sharper</string>
+    <string name="filter_inverted">Reversed</string>
+    <string name="filter_yellow_on_black">Yellow on black</string>
+
+    <string name="reader_title">Reader</string>
+
+    <!-- Photos, spec 5.8, grid 12 -->
+    <string name="photos_title">Photos</string>
+    <string name="photos_position">Photo %1$d of %2$d</string>
+    <string name="photos_from">from %1$s</string>
+    <string name="photos_back">Back</string>
+    <string name="photos_next">Next</string>
+    <string name="photos_read_caption">Read who sent it aloud</string>
+    <string name="photos_none">There are no photos on this phone yet.</string>
+    <string name="photos_no_permission">To show your pictures, this app needs to see them.</string>
+    <string name="photos_allow">Let it see my photos</string>
+    <string name="photos_open_gallery">Open a photo app</string>
+    <string name="a11y_photo">%1$s. Tap Next for the following one.</string>
+    <string name="reader_read_this">Read this to me</string>
+    <string name="reader_reading_now">Reading aloud now</string>
+    <string name="reader_stop">Stop reading</string>
+    <string name="reader_again">Read it again</string>
+    <string name="reader_working">Looking at the words.</string>
+    <string name="reader_nothing_found">No words were found. Move closer, steady the phone, and try again.</string>
+    <string name="reader_no_voice">This phone has no voice installed, so the words are shown but not spoken.</string>
+    <string name="reader_privacy">Everything happens on this phone. Nothing is sent anywhere.</string>
 
     <!-- Messages, spec 5.6, grid 07 08 09 -->
     <string name="messages_title">Messages</string>

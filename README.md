@@ -39,6 +39,12 @@ rather than promises. The reasoning lives in `DECISIONS.md`.
   through a library without someone deciding to let it in.
 - **It does not collect anything.** There is nowhere for your data to go. Messages
   the app sees are stored only on the phone and are never transmitted.
+- **It does not send anything to be recognized.** The reader recognizes text on
+  the phone using a model that ships inside the app. Google's ML Kit reads
+  better and was tried first, but it will not start without its telemetry
+  uploader attached, and that uploader was the only reason an internet
+  permission ever appeared. The better reader was given up rather than the
+  promise.
 - **It does not send your voice anywhere.** Spoken replies are understood by the
   phone's own on-device recognizer. Where a phone has no on-device recognizer, the
   app does not offer to listen at all rather than quietly falling back to a
@@ -75,9 +81,13 @@ message large, and replies by voice or by one of six phrases. Replies travel thr
 whichever app the message arrived in. Where a message cannot be answered from here,
 the screen says so instead of offering a key that would fail.
 
-Not built yet, and the app says so plainly where you would look for them: the
-magnifier, the reader, and photos (Stage 3), and the Today screen with the full
-helper tools (Stage 4).
+Stage 3, seeing, is built: a magnifier that points the camera at the physical
+world with large zoom keys, a torch, a freeze frame so a shaking hand can rest,
+and five contrast treatments. A reader that recognizes the words on the frozen
+frame and speaks them aloud, entirely on the phone. And photos, one at a time,
+edge to edge, with Back and Next as large keys and no pinching.
+
+Not built yet: the Today screen and the full helper tools, which are Stage 4.
 
 `HANDOFF.md` carries the current state, `MASTER_SPEC.md` the screen by screen
 specification, `DESIGN.md` the visual system, and `design/design-grid-v4.html` is the
