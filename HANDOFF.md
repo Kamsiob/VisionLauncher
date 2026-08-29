@@ -33,7 +33,9 @@ Specifically verified on the device, with evidence:
 - Saving an alarm registers an exact `RTC_WAKEUP` alarm clock with a show intent, so it reaches the system's next alarm indicator.
 - Three rapid taps on one keypad key register one digit. The tremor debounce holds, and deliberate typing still works.
 - TalkBack runs, focus lands on each tile as one unit, and the accessibility tree shows every clickable node carrying its own label.
-- At 200 percent font scale nothing clips and the grid drops to one column so no label breaks mid word.
+- At 200 percent font scale nothing clips and the grid drops to one column so no label breaks mid word. The worst case, the largest text step on top of 200 percent, was tested too and holds.
+- An in place upgrade preserves settings, and it was an upgrade rather than a fresh install that exposed the last word breaking bug.
+- The one tap battery optimization repair opens the system request dialog.
 - A fresh install after uninstall shows first run with no leftover state.
 - The home role request opens the system dialog with the right name and icon. It was cancelled deliberately, see the note below.
 - Revoking contacts while running does not crash; the Call screen says what it cannot do and keeps dialing and Emergency working.
@@ -87,9 +89,18 @@ All are recorded in full in `DECISIONS.md`.
 ## Verification state
 
 - Real device verification: Pixel 8, API 37. Every Stage 1 screen opened and exercised.
+- Every device setting changed during testing was restored afterward: font scale, color inversion, TalkBack, airplane mode, and the ringer, which was found on vibrate and put back on vibrate.
 - TalkBack pass: done on Home and the arranging screens, with the accessibility tree inspected on Call, the keypad, Settings, Helper settings, and Add an app. Not yet swept screen by screen with TalkBack actually speaking on every screen.
 - 200 percent font scale pass: done on Home. Not yet swept across every screen.
 - Arabic RTL pass: none. No translations exist yet.
-- Color inversion and color correction pass: none.
+- Color inversion: checked against the requirement rather than the pixels, because `screencap` captures before the compositor inverts. Nothing carries meaning by color alone, so inversion cannot destroy meaning. A human eye on an inverted screen would still be worth having.
+- Color correction modes: none.
 - Screenshots captured: yes, in `docs/screenshots`, all from the running app on the device.
 - Unit tests: 15, covering the home layout operations and the next alarm arithmetic, run against the code the screens actually call.
+- Build gates: the em dash gate and the no INTERNET permission gate, both proven to fail when violated.
+
+---
+
+## Where the build is
+
+`~/Desktop/visionlauncher-0.1.0-stage1.apk`, exported at the end of this session and confirmed to install. Exactly one copy of the app exists on the Pixel 8. There is no debug application ID suffix, by D22, so a debug and a release build collide deliberately rather than coexisting.
