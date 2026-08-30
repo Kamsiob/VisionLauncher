@@ -153,6 +153,15 @@
     <string name="helper_today">Things that happen today</string>
     <string name="helper_today_meta">%1$d written down</string>
 
+    <!-- Onboarding steps for the camera and for watching messages -->
+    <string name="onboarding_camera_title">Reading small print</string>
+    <string name="onboarding_camera_body">The magnifier points the camera at whatever you are trying to read and makes it bigger on screen. Nothing is recorded and no picture is kept.</string>
+    <string name="onboarding_camera_key">Let it use the camera</string>
+    <string name="onboarding_messages_title">Seeing your messages</string>
+    <string name="onboarding_messages_body">To show your messages in one place, this app needs permission to see them arrive. The next screen is a list of apps. Find VisionLauncher and turn it on.</string>
+    <string name="onboarding_messages_key">Let it watch for messages</string>
+    <string name="onboarding_messages_already">Message watching is already on.</string>
+
     <!-- Magnifier and Reader, spec 5.7, grid 10 and 11 -->
     <string name="magnifier_zoom_in">Bigger</string>
     <string name="magnifier_zoom_out">Smaller</string>

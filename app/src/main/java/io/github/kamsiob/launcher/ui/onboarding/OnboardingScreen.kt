@@ -23,6 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.kamsiob.launcher.R
+import io.github.kamsiob.launcher.messages.hasNotificationAccess
+import io.github.kamsiob.launcher.nav.SystemDestination
 import io.github.kamsiob.launcher.ui.components.ApplianceKey
 import io.github.kamsiob.launcher.ui.components.BodyText
 import io.github.kamsiob.launcher.ui.components.KeyStyle
@@ -34,7 +36,7 @@ import io.github.kamsiob.launcher.ui.theme.LineIcons
 import io.github.kamsiob.launcher.ui.theme.LocalPalette
 
 /** Where onboarding currently stands. Order matters, see spec 5.11. */
-private enum class Step { WELCOME, SET_HOME, CONTACTS, PHONE, BATTERY, DONE }
+private enum class Step { WELCOME, SET_HOME, CONTACTS, PHONE, CAMERA, MESSAGES, BATTERY, DONE }
 
 /**
  * Grid 22 and 23. Reassurance first, then the home role, then permissions one
@@ -64,6 +66,21 @@ fun OnboardingScreen(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (!granted) skippedSomething = true
+        step = Step.CAMERA
+    }
+    val cameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) skippedSomething = true
+        step = Step.MESSAGES
+    }
+    // Notification access is not a runtime permission. It is a switch on a
+    // system screen, so there is no result to read and the state is checked on
+    // the way back instead.
+    val messagesLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (!hasNotificationAccess(context)) skippedSomething = true
         step = Step.BATTERY
     }
     val batteryLauncher = rememberLauncherForActivityResult(
@@ -127,6 +144,50 @@ fun OnboardingScreen(
             body = stringResource(R.string.onboarding_phone_body),
             actionLabel = stringResource(R.string.onboarding_phone_key),
             onAction = { phoneLauncher.launch(Manifest.permission.CALL_PHONE) },
+            onSkip = {
+                skippedSomething = true
+                step = Step.CAMERA
+            },
+        )
+
+        Step.CAMERA -> StepScreen(
+            icon = LineIcons.magnifier,
+            title = stringResource(R.string.onboarding_camera_title),
+            body = stringResource(R.string.onboarding_camera_body),
+            actionLabel = stringResource(R.string.onboarding_camera_key),
+            onAction = { cameraLauncher.launch(Manifest.permission.CAMERA) },
+            onSkip = {
+                skippedSomething = true
+                step = Step.MESSAGES
+            },
+        )
+
+        // The step the whole messaging feature rests on. Without it messages
+        // never arrive, and the first build never asked: somebody finished
+        // setting the phone up and then waited for messages that could not
+        // reach them.
+        Step.MESSAGES -> StepScreen(
+            icon = LineIcons.messages,
+            title = stringResource(R.string.onboarding_messages_title),
+            body = stringResource(
+                if (hasNotificationAccess(context)) R.string.onboarding_messages_already
+                else R.string.onboarding_messages_body
+            ),
+            actionLabel = stringResource(R.string.onboarding_messages_key),
+            onAction = {
+                val opened = runCatching {
+                    messagesLauncher.launch(
+                        SystemDestination.NOTIFICATION_ACCESS.intent(context)
+                    )
+                    true
+                }.getOrDefault(false)
+                // A phone with no such screen must not strand somebody on a key
+                // that does nothing.
+                if (!opened) {
+                    skippedSomething = true
+                    step = Step.BATTERY
+                }
+            },
             onSkip = {
                 skippedSomething = true
                 step = Step.BATTERY

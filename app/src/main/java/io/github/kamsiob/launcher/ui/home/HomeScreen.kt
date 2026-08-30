@@ -111,11 +111,18 @@ fun HomeScreen(
         watcher.state.collect { value = it }
     }
 
+    // The masthead is pinned and everything under it scrolls.
+    //
+    // It used to scroll with the rest, and because the status bar is
+    // transparent the date line slid up behind it and sat on top of the
+    // system's own clock: two times, in two fonts, overlapping. Pinning it
+    // fixes that at the root rather than papering over it, and it means the
+    // time is always on screen, which is the one thing on this page most
+    // likely to be what somebody picked the phone up for.
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(palette.background)
-            .verticalScroll(rememberScrollState())
             .navigationBarsPadding(),
     ) {
         Masthead(
@@ -125,7 +132,9 @@ fun HomeScreen(
             isEvening = DayPart.isMoon(now),
         )
         Column(
-            modifier = Modifier.padding(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(
                 start = Dimens.screenSide,
                 end = Dimens.screenSide,
                 top = Dimens.gapColumn,
