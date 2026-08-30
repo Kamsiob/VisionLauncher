@@ -185,6 +185,7 @@
     <string name="filter_yellow_on_black">Yellow on black</string>
 
     <!-- Photos, spec 5.8, grid 12 -->
+    <string name="photos_title">Photos</string>
     <string name="photos_position">Photo %1$d of %2$d</string>
     <string name="photos_from">from %1$s</string>
     <string name="photos_back">Back</string>

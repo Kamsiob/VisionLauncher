@@ -29,6 +29,7 @@ import io.github.kamsiob.launcher.ui.components.ApplianceKey
 import io.github.kamsiob.launcher.ui.components.KeyStyle
 import io.github.kamsiob.launcher.ui.components.NoteText
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
+import io.github.kamsiob.launcher.ui.components.ScreenTitle
 import io.github.kamsiob.launcher.ui.components.StatusPill
 import io.github.kamsiob.launcher.ui.components.TopBar
 import io.github.kamsiob.launcher.ui.theme.Dimens
@@ -69,6 +70,14 @@ fun PhotosScreen(
 
     ScreenFrame(scrollable = false) {
         TopBar(onHome = onHome)
+
+        // A title only when there is no picture. With a photo on screen the
+        // picture is the page and a heading would take room from it, which is
+        // how grid 12 draws it. Without one the screen was unnamed: nothing
+        // said where you were, on screen or to a screen reader.
+        if (!hasPermission || photos.isEmpty()) {
+            ScreenTitle(stringResource(R.string.photos_title))
+        }
 
         when {
             !hasPermission -> {

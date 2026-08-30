@@ -404,4 +404,5 @@
     <string name="onboarding_messages_already">已经可以接收新消息了。</string>
     <string name="onboarding_go_helper">现在就去设置</string>
     <string name="onboarding_go_home_instead">暂时跳过，去主屏幕</string>
+    <string name="photos_title">照片</string>
 </resources>

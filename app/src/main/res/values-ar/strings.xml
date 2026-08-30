@@ -414,4 +414,5 @@
     <string name="onboarding_messages_already">متابعة الرسائل مفعلة بالفعل.</string>
     <string name="onboarding_go_helper">لنجهزها الآن</string>
     <string name="onboarding_go_home_instead">ليس الآن، اذهب إلى الشاشة الرئيسية</string>
+    <string name="photos_title">الصور</string>
 </resources>

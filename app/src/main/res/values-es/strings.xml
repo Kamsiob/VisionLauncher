@@ -408,4 +408,5 @@
     <string name="onboarding_messages_already">Ya puede ver los mensajes que llegan.</string>
     <string name="onboarding_go_helper">Configurar eso ahora</string>
     <string name="onboarding_go_home_instead">Ahora no, ir a la pantalla de inicio</string>
+    <string name="photos_title">Fotos</string>
 </resources>
