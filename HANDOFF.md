@@ -163,6 +163,28 @@ Roughly fifteen commits, each verified on the device. The themes, in the order t
 - Nineteen strings are unreachable, several of them fossils of features that were wired differently in the end.
 - Icons do not scale with the user's text step, deferred with reasons in issue #18.
 
+## What real-device testing found that the emulator never would
+
+The app was handed to somebody who used it on a Pixel 8 and reported that it
+was slow, that it showed smears like an e-ink screen refreshing between pages,
+that the magnifier was unreliable, that Hold still often did nothing, that it
+did not recognize text, and that there were scattered bugs throughout. Every one
+of those was real. None of them reproduced on an emulator, and several were
+invisible to the measurements taken before, because the app was not dropping
+frames.
+
+- **The smearing was a 700ms crossfade.** Navigation Compose fades between screens by default and had never been told otherwise. Twelve screen changes rendered 561 frames of two screens drawn on top of each other. They now render three. Frame timing had been fine all along, which is why nothing looked wrong in `gfxinfo`.
+- **Hold still captured a different picture from the viewfinder.** The preview shows a square crop; ImageCapture returns the whole sensor. It also ran at maximum quality, took seconds with no sign of progress, and could fail. Freezing now holds the analyzer's current frame with a shared `ViewPort`, which is instant and by construction what was on screen. See `DECISIONS.md` D48.
+- **The camera could not be told where to look**, so held close to a label it focused past it and the reader was handed a blur. Touching the picture now focuses there.
+- **The masthead scrolled under the transparent status bar** and its date line came to rest on top of the system's own clock. A strip over the top of the page now takes the color of whatever is passing under it, and the system's icons flip with it.
+- **The navigation graph was rebuilt when setup finished**, because the start destination was derived from a setting that setup writes. Navigation issued at that moment vanished. See `DECISIONS.md` D49.
+- **The zoom keys disappeared when a frame was held**, so the one moment somebody had a steady picture to study was the one moment they could not enlarge it.
+- **Setup never asked for the camera or for notification access**, so somebody could finish it and then wait for messages that had no way to reach them.
+
+Verified on the Pixel 8: cold start 244ms, on-device speech recognition and text
+to speech both present and correctly detected, and recognition reading a
+photographed label in a fifth of a second.
+
 ## Screenshots
 
 `docs/screenshots/` now covers all four stages, captured from the running app.
