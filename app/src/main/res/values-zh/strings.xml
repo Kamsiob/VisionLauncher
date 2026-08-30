@@ -365,7 +365,7 @@
     <string name="onboarding_battery_skipped">如果安卓让这个应用休眠了,提醒灯会告诉您。</string>
     <string name="onboarding_skipped_consequence">您以后可以在设置里再允许。在那之前,这一部分不会开启。</string>
     <string name="onboarding_all_set">都设置好了。</string>
-    <string name="onboarding_helper_note">帮手设置里放着常用联系人和紧急联系人。它在设置的最下面。</string>
+    <string name="onboarding_helper_note">有四件事现在值得设置好：他常打电话的人、一触即发的回复短语、一个防止误改设置的密码，还有一张可以打印出来放在手机旁边的说明纸。这四件都在下一个画面里。</string>
     <string name="onboarding_go_home">去您的主屏幕</string>
 
     <!-- Alarms -->
@@ -395,4 +395,13 @@
     <!-- Misc -->
     <!-- Reserved for the reader and reply screens in Stages 2 and 3, where
          DESIGN.md names this sentence as brand furniture. -->
+    <string name="onboarding_camera_title">看清小字</string>
+    <string name="onboarding_camera_body">放大镜用相机对准您想看的东西，把它放大到屏幕上。不录像，也不保存任何照片。</string>
+    <string name="onboarding_camera_key">允许它使用相机</string>
+    <string name="onboarding_messages_title">看到您的消息</string>
+    <string name="onboarding_messages_body">要把您的消息集中在一处，这个应用需要获得查看新消息的权限。下一个画面是一份应用清单，请找到 VisionLauncher 并打开它。</string>
+    <string name="onboarding_messages_key">允许它接收新消息</string>
+    <string name="onboarding_messages_already">已经可以接收新消息了。</string>
+    <string name="onboarding_go_helper">现在就去设置</string>
+    <string name="onboarding_go_home_instead">暂时跳过，去主屏幕</string>
 </resources>

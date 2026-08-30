@@ -32,6 +32,7 @@ import io.github.kamsiob.launcher.ui.components.NoteText
 import io.github.kamsiob.launcher.ui.components.ScreenFrame
 import io.github.kamsiob.launcher.ui.components.SerifHeading
 import io.github.kamsiob.launcher.ui.theme.Dimens
+import io.github.kamsiob.launcher.ui.theme.TypeScale
 import io.github.kamsiob.launcher.ui.theme.LineIcons
 import io.github.kamsiob.launcher.ui.theme.LocalPalette
 
@@ -225,15 +226,35 @@ fun OnboardingScreen(
                 BodyText(stringResource(R.string.onboarding_skipped_consequence))
             }
             if (helperPath) {
-                NoteText(stringResource(R.string.onboarding_helper_note))
+                BodyText(stringResource(R.string.onboarding_helper_note))
             }
             Spacer(modifier = Modifier.weight(1f))
-            ApplianceKey(
-                label = stringResource(R.string.onboarding_go_home),
-                onClick = { onFinished(helperPath, batterySkipped) },
-                style = KeyStyle.PRIMARY,
-                committing = true,
-            )
+            // The helper path ends where a helper's work actually is. Section
+            // 5.11 asks this route to cover favorites, the reply phrases, the
+            // code and the printable sheet; all four live on one screen, so it
+            // offers that screen rather than rebuilding four of them here and
+            // leaving two copies to drift apart.
+            if (helperPath) {
+                ApplianceKey(
+                    label = stringResource(R.string.onboarding_go_helper),
+                    onClick = { onFinished(true, batterySkipped) },
+                    style = KeyStyle.PRIMARY,
+                    committing = true,
+                )
+                ApplianceKey(
+                    label = stringResource(R.string.onboarding_go_home_instead),
+                    onClick = { onFinished(false, batterySkipped) },
+                    minHeight = Dimens.keySmall,
+                    fontSize = TypeScale.keyLabelSmall,
+                )
+            } else {
+                ApplianceKey(
+                    label = stringResource(R.string.onboarding_go_home),
+                    onClick = { onFinished(false, batterySkipped) },
+                    style = KeyStyle.PRIMARY,
+                    committing = true,
+                )
+            }
         }
     }
 }

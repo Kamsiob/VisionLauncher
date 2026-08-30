@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +35,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -105,6 +109,12 @@ fun MagnifierScreen(
     var filter by remember { mutableStateOf(Filter.NORMAL) }
     var failed by remember { mutableStateOf<String?>(null) }
     var zoomLabel by remember { mutableStateOf(35) }
+    // Zoom and pan on the frozen frame, which section 5.7 asks for and the
+    // first build dropped: the zoom keys vanished the moment a frame was held,
+    // so the one time somebody has a steady picture to study was the one time
+    // they could not enlarge it.
+    var frozenScale by remember { mutableStateOf(1f) }
+    var frozenPan by remember { mutableStateOf(Offset.Zero) }
 
     // Read in the composition rather than from the context inside a click
     // handler, so they follow a language or configuration change instead of
@@ -122,6 +132,9 @@ fun MagnifierScreen(
             filter = filter,
             owner = owner,
             magnifier = magnifier,
+            scale = frozenScale,
+            pan = frozenPan,
+            onPan = { frozenPan += it },
             onCameraFailed = { failed = noCameraMessage },
         )
     }
@@ -130,11 +143,20 @@ fun MagnifierScreen(
         Controls(
             frozen = frozen,
             filter = filter,
-            zoomLabel = zoomLabel,
+            zoomLabel = if (frozen == null) zoomLabel else (frozenScale * 100).toInt(),
             torchOn = magnifier.torchOn,
             onZoom = { by ->
-                magnifier.nudgeZoom(by)
-                zoomLabel = (magnifier.zoom * 100).toInt()
+                if (frozen != null) {
+                    // The held picture enlarges on its own, without touching
+                    // the camera, so letting go and holding again returns to
+                    // the same view rather than a different one.
+                    val next = (frozenScale + by * 4f).coerceIn(1f, 6f)
+                    if (next == 1f) frozenPan = Offset.Zero
+                    frozenScale = next
+                } else {
+                    magnifier.nudgeZoom(by)
+                    zoomLabel = (magnifier.zoom * 100).toInt()
+                }
             },
             onFilter = { filter = it },
             onTorch = {
@@ -147,14 +169,24 @@ fun MagnifierScreen(
             },
             onFreeze = {
                 magnifier.freeze(
-                    onFrozen = { frozen = it; failed = null },
+                    onFrozen = {
+                        frozen = it
+                        frozenScale = 1f
+                        frozenPan = Offset.Zero
+                        failed = null
+                    },
                     onFailed = {
                         Haptics.reject(view)
                         failed = captureFailedMessage
                     },
                 )
             },
-            onLive = { frozen = null; failed = null },
+            onLive = {
+                frozen = null
+                frozenScale = 1f
+                frozenPan = Offset.Zero
+                failed = null
+            },
             onRead = { frozen?.let(onRead) },
         )
     }
@@ -254,6 +286,9 @@ private fun Viewfinder(
     filter: Filter,
     owner: androidx.lifecycle.LifecycleOwner,
     magnifier: Magnifier,
+    scale: Float,
+    pan: Offset,
+    onPan: (Offset) -> Unit,
     onCameraFailed: () -> Unit,
 ) {
     Box(
@@ -272,7 +307,25 @@ private fun Viewfinder(
                 // jump to a different framing the moment it was held.
                 contentScale = ContentScale.Crop,
                 colorFilter = filter.matrix()?.let { ColorFilter.colorMatrix(it) },
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                        translationX = pan.x
+                        translationY = pan.y
+                    }
+                    // Dragging moves the held picture. This is the only drag
+                    // the app asks for, and it is asked for only once a frame
+                    // is standing still and enlarged past what fits.
+                    .pointerInput(scale) {
+                        if (scale > 1f) {
+                            detectDragGestures { change, dragAmount ->
+                                change.consume()
+                                onPan(dragAmount)
+                            }
+                        }
+                    },
             )
         } else {
             AndroidView(
@@ -318,32 +371,35 @@ private fun ColumnScope.Controls(
     onLive: () -> Unit,
     onRead: () -> Unit,
 ) {
-    if (frozen == null) {
-        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
-            ApplianceKey(
-                label = "−",
-                contentDescription = stringResource(R.string.magnifier_zoom_out),
-                onClick = { onZoom(-0.1f) },
-                modifier = Modifier.weight(1f),
-                fontSize = TypeScale.padKey,
-                repeatable = true,
-            )
-            ApplianceKey(
-                label = "+",
-                contentDescription = stringResource(R.string.magnifier_zoom_in),
-                onClick = { onZoom(0.1f) },
-                modifier = Modifier.weight(1f),
-                fontSize = TypeScale.padKey,
-                repeatable = true,
-            )
-        }
-        Text(
-            text = stringResource(R.string.a11y_zoom_level, zoomLabel),
-            style = bodyStyle(size = TypeScale.note),
-            color = DarkPalette.note,
-            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+    // The zoom keys stay whether the picture is live or held. They used to
+    // disappear on freezing, so the one moment somebody has a steady picture to
+    // study was the one moment they could not enlarge it. Section 5.7 asks for
+    // zoom and pan on the frozen frame and this is half of it; dragging the
+    // held picture is the other half.
+    Row(horizontalArrangement = Arrangement.spacedBy(Dimens.gap)) {
+        ApplianceKey(
+            label = "−",
+            contentDescription = stringResource(R.string.magnifier_zoom_out),
+            onClick = { onZoom(-0.1f) },
+            modifier = Modifier.weight(1f),
+            fontSize = TypeScale.padKey,
+            repeatable = true,
+        )
+        ApplianceKey(
+            label = "+",
+            contentDescription = stringResource(R.string.magnifier_zoom_in),
+            onClick = { onZoom(0.1f) },
+            modifier = Modifier.weight(1f),
+            fontSize = TypeScale.padKey,
+            repeatable = true,
         )
     }
+    Text(
+        text = stringResource(R.string.a11y_zoom_level, zoomLabel),
+        style = bodyStyle(size = TypeScale.note),
+        color = DarkPalette.note,
+        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+    )
 
     FilterRow(current = filter, onPick = onFilter)
 

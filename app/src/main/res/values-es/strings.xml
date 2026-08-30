@@ -369,7 +369,7 @@
     <string name="onboarding_battery_skipped">Si Android pone esta app en reposo, la luz de aviso se lo dirá.</string>
     <string name="onboarding_skipped_consequence">Puede permitirlo más adelante en Ajustes. Hasta entonces, esta parte queda apagada.</string>
     <string name="onboarding_all_set">Todo listo.</string>
-    <string name="onboarding_helper_note">Los ajustes del ayudante guardan los favoritos y la persona de emergencia. Están al final de Ajustes.</string>
+    <string name="onboarding_helper_note">Hay cuatro cosas que conviene preparar ahora: las personas a las que llama, las respuestas de un toque, un código para que los ajustes no se cambien sin querer, y una hoja que puede imprimir y dejar junto al teléfono. Las cuatro están en la siguiente pantalla.</string>
     <string name="onboarding_go_home">Ir a su pantalla de inicio</string>
 
     <!-- Alarmas -->
@@ -399,4 +399,13 @@
     <!-- Varios -->
     <!-- Reservado para las pantallas de lectura y respuesta de las etapas 2 y 3,
          donde DESIGN.md nombra esta frase como parte de la identidad. -->
+    <string name="onboarding_camera_title">Leer letra pequeña</string>
+    <string name="onboarding_camera_body">La lupa apunta la cámara a lo que usted quiere leer y lo agranda en la pantalla. No se graba nada y no se guarda ninguna foto.</string>
+    <string name="onboarding_camera_key">Permitir que use la cámara</string>
+    <string name="onboarding_messages_title">Ver sus mensajes</string>
+    <string name="onboarding_messages_body">Para reunir sus mensajes en un solo lugar, esta app necesita permiso para verlos llegar. La siguiente pantalla es una lista de apps. Busque VisionLauncher y actívela.</string>
+    <string name="onboarding_messages_key">Permitir que vea los mensajes</string>
+    <string name="onboarding_messages_already">Ya puede ver los mensajes que llegan.</string>
+    <string name="onboarding_go_helper">Configurar eso ahora</string>
+    <string name="onboarding_go_home_instead">Ahora no, ir a la pantalla de inicio</string>
 </resources>

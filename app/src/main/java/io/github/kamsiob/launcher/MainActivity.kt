@@ -233,6 +233,8 @@ fun LauncherNav(
     // done yesterday is not still green after midnight while the app sat open.
     val todayKey = TodayStore.dayKey()
     var helperNotice by remember { mutableStateOf<String?>(null) }
+    // Set when setup ends on the helper path, consumed once by the home screen.
+    var handOffToHelper by remember { mutableStateOf(false) }
     val inbox by messages.messages.collectAsStateWithLifecycle(initialValue = emptyList())
     val unreadToday by messages.unreadToday.collectAsStateWithLifecycle(initialValue = 0)
 
@@ -268,7 +270,13 @@ fun LauncherNav(
         controller.isAppearanceLightNavigationBars = settings.look != Look.DARK
     }
 
-    val start = if (settings.onboardingDone) Routes.HOME else Routes.ONBOARDING
+    // Decided once. Finishing setup writes onboardingDone, and this value
+    // changing under a live NavHost rebuilds the whole graph and throws the
+    // back stack away: the navigation that had just been issued vanished, and
+    // a helper who asked to go on and set things up was dropped on the home
+    // screen instead. The route out of onboarding is the explicit navigate
+    // below, not a change of start destination.
+    val start = remember { if (settings.onboardingDone) Routes.HOME else Routes.ONBOARDING }
 
     // No transition between screens.
     //
@@ -293,10 +301,18 @@ fun LauncherNav(
     ) {
         composable(Routes.ONBOARDING) {
             OnboardingScreen(
-                onFinished = { helperPath, batterySkipped ->
+                onFinished = { goToHelper, batterySkipped ->
+                    // The helper path is recorded either way; the flag here is
+                    // only about where setup lets go of them.
                     scope.launch {
-                        app.settingsStore.setOnboardingDone(helperPath, batterySkipped)
+                        app.settingsStore.setOnboardingDone(goToHelper, batterySkipped)
                     }
+                    // Home first, so Back from helper settings lands on the
+                    // home screen rather than dropping out of the launcher.
+                    // The second hop waits until home is actually on the stack:
+                    // issued in the same breath as the first it was swallowed,
+                    // and the helper was quietly left on the home screen.
+                    handOffToHelper = goToHelper
                     navController.navigate(Routes.HOME) {
                         popUpTo(Routes.ONBOARDING) { inclusive = true }
                     }
@@ -305,6 +321,15 @@ fun LauncherNav(
         }
 
         composable(Routes.HOME) {
+            // Keyed on Unit, not on the flag. Keyed on the flag, clearing it
+            // was cancelling the very effect that was still trying to navigate,
+            // and the helper was left on the home screen.
+            LaunchedEffect(Unit) {
+                if (handOffToHelper) {
+                    handOffToHelper = false
+                    navController.navigate(Routes.HELPER)
+                }
+            }
             HomeScreen(
                 layout = layout,
                 apps = apps,

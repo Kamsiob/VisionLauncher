@@ -375,7 +375,7 @@
     <string name="onboarding_battery_skipped">إن أوقف أندرويد هذا التطبيق، فسيخبرك مصباح التنبيه.</string>
     <string name="onboarding_skipped_consequence">يمكنك السماح بهذا لاحقا من الإعدادات. وحتى ذلك الحين، يبقى هذا الجزء متوقفا.</string>
     <string name="onboarding_all_set">كل شيء جاهز.</string>
-    <string name="onboarding_helper_note">إعدادات المساعد تضم المفضلة وشخص الطوارئ. وهي في أسفل الإعدادات.</string>
+    <string name="onboarding_helper_note">هناك أربعة أمور يحسن تجهيزها الآن: الأشخاص الذين يتصل بهم، الردود السريعة، رمز يمنع تغيير الإعدادات دون قصد، وورقة يمكنك طباعتها وتركها بجانب الهاتف. الأربعة كلها في الشاشة التالية.</string>
     <string name="onboarding_go_home">اذهب إلى شاشتك الرئيسية</string>
 
     <!-- Alarms -->
@@ -405,4 +405,13 @@
     <!-- Misc -->
     <!-- Reserved for the reader and reply screens in Stages 2 and 3, where
          DESIGN.md names this sentence as brand furniture. -->
+    <string name="onboarding_camera_title">قراءة الخط الصغير</string>
+    <string name="onboarding_camera_body">العدسة المكبرة توجه الكاميرا إلى ما تريد قراءته وتكبره على الشاشة. لا يُسجل شيء ولا تُحفظ أي صورة.</string>
+    <string name="onboarding_camera_key">السماح باستخدام الكاميرا</string>
+    <string name="onboarding_messages_title">رؤية رسائلك</string>
+    <string name="onboarding_messages_body">لجمع رسائلك في مكان واحد، يحتاج هذا التطبيق إلى إذن برؤيتها عند وصولها. الشاشة التالية قائمة بالتطبيقات. ابحث عن VisionLauncher وشغله.</string>
+    <string name="onboarding_messages_key">السماح بمتابعة الرسائل</string>
+    <string name="onboarding_messages_already">متابعة الرسائل مفعلة بالفعل.</string>
+    <string name="onboarding_go_helper">لنجهزها الآن</string>
+    <string name="onboarding_go_home_instead">ليس الآن، اذهب إلى الشاشة الرئيسية</string>
 </resources>

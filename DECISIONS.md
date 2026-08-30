@@ -458,3 +458,24 @@ now focuses there.
 Recognition also takes a second pass with sparse-text segmentation when the
 first finds nothing, which costs a third of a second only in the case that was
 previously being told there were no words.
+
+## D49. The start destination is decided once
+
+`NavHost`'s `startDestination` is captured in a `remember` rather than read
+from settings on every recomposition.
+
+Finishing setup writes `onboardingDone`, that flows back through the settings
+state, and the expression choosing the start destination changed from the
+onboarding route to the home route while the graph was live. Navigation Compose
+rebuilds the entire graph when its start destination changes, which throws the
+back stack away. A navigation issued in the same moment simply vanished, and a
+helper who chose to go on and set things up landed on the home screen with no
+sign anything had been asked for.
+
+It took logging inside the effect to find, because every part looked correct in
+isolation: the flag was set, the effect ran, the navigation was called, and
+nothing happened. The graph it was navigating had already been replaced.
+
+The route out of onboarding is the explicit navigate, which is what it should
+always have been. Reading it from settings meant the same fact was expressed in
+two places, and the derived one fought the deliberate one.
