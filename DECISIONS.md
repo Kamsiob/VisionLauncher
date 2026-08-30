@@ -419,3 +419,42 @@ sensor orientation with the view it draws into. Both were reverted.
 This does not weaken D42. Rotation is still not a person leaving, and the alarm
 still survives a configuration change; there is simply one fewer configuration
 change to survive.
+
+## D48. Screen changes are instant, and the frozen frame is the frame you framed
+
+Three findings from the first time somebody used this on a real phone, none of
+which any emulator would have shown.
+
+**The app was not slow, it was animating.** Navigation Compose fades one screen
+into the next over 700ms unless told otherwise, and it had never been told
+otherwise. Twelve screen changes rendered 561 frames. Frame timing was fine the
+whole time, 2.5 percent jank and no missed vsync, which is why nothing looked
+wrong in any measurement taken before: the frames were arriving on time, there
+were simply hundreds of them drawing two screens on top of each other. On a
+paper background full of high contrast text that reads as a smear, and it was
+described as an e-ink screen refreshing. The same twelve navigations now render
+three frames. Nothing in this app moves on its own, and the code already said so
+in a comment while the navigation graph quietly did the opposite.
+
+**Hold still captured a different picture from the one on screen.** The
+viewfinder shows a square crop of the sensor; ImageCapture returns the whole
+sensor. Somebody lining up a pill bottle got back a 3072 by 4080 frame
+containing a good deal they had not framed, letterboxed inside the square with
+grey bars, and recognition then read whatever else was in the room. It also took
+seconds, at maximum quality, with no sign anything was happening, and could
+fail outright.
+
+Freezing now holds the frame the analyzer already has, with a `ViewPort` shared
+between preview and analysis so the two are the same picture by construction.
+It is instant, it cannot fail while the preview is running, and it is by
+definition what was on screen. The resolution is lower than a photograph and
+that does not matter: recognition reads a 1400 by 1000 frame in a fifth of a
+second, and the person has already zoomed in on the thing they want read.
+
+**The camera had no way to be told where to look.** Held close to a bottle it
+focuses past it, and a blurred frame has no words in it. Touching the picture
+now focuses there.
+
+Recognition also takes a second pass with sparse-text segmentation when the
+first finds nothing, which costs a third of a second only in the case that was
+previously being told there were no words.

@@ -10,6 +10,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -268,7 +270,27 @@ fun LauncherNav(
 
     val start = if (settings.onboardingDone) Routes.HOME else Routes.ONBOARDING
 
-    NavHost(navController = navController, startDestination = start) {
+    // No transition between screens.
+    //
+    // Navigation Compose fades one screen into the next over 700ms by default,
+    // which draws both of them on top of each other for most of a second. On a
+    // paper background full of high contrast text that reads as a smear, and
+    // the first person to use this on a real phone described it as an e-ink
+    // screen refreshing. It also made every screen change feel slow when the
+    // frames were in fact arriving on time.
+    //
+    // Nothing in this app moves on its own. The one deliberate animation is the
+    // tile trade during arranging, and that one already honors the system's
+    // remove-animations setting. A screen change is instant, which is both
+    // faster and truer to the design. See DECISIONS.md D48.
+    NavHost(
+        navController = navController,
+        startDestination = start,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
+        popEnterTransition = { EnterTransition.None },
+        popExitTransition = { ExitTransition.None },
+    ) {
         composable(Routes.ONBOARDING) {
             OnboardingScreen(
                 onFinished = { helperPath, batterySkipped ->

@@ -266,7 +266,11 @@ private fun Viewfinder(
             Image(
                 bitmap = frozen.asImageBitmap(),
                 contentDescription = stringResource(R.string.magnifier_frozen),
-                contentScale = ContentScale.Fit,
+                // Crop, not fit. The frozen frame is the same shape as the
+                // viewfinder now, and fitting it left grey bars either side on
+                // any device where it is not, which made the picture appear to
+                // jump to a different framing the moment it was held.
+                contentScale = ContentScale.Crop,
                 colorFilter = filter.matrix()?.let { ColorFilter.colorMatrix(it) },
                 modifier = Modifier.fillMaxSize(),
             )
@@ -275,6 +279,16 @@ private fun Viewfinder(
                 factory = { ctx ->
                     PreviewView(ctx).also { preview ->
                         preview.scaleType = PreviewView.ScaleType.FILL_CENTER
+                        // Touching the picture focuses there. Held close to a
+                        // pill bottle the camera often focuses past it, and
+                        // there was no way to tell it otherwise.
+                        preview.setOnTouchListener { view, event ->
+                            if (event.action == android.view.MotionEvent.ACTION_UP) {
+                                magnifier.focusAt(preview, event.x, event.y)
+                                view.performClick()
+                            }
+                            true
+                        }
                         magnifier.start(owner, preview) { onCameraFailed() }
                     }
                 },

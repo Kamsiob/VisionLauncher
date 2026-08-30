@@ -2,34 +2,52 @@ package io.github.kamsiob.launcher.seeing
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import androidx.camera.core.CameraControl
 import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
+import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import android.util.Size
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.max
 import kotlin.math.min
 
 /**
  * The camera behind the magnifier.
  *
- * Wrapped rather than used directly because everything here can fail on a real
- * phone in a way the screen has to survive: no camera, no torch, a camera held
- * by another app, a capture that never returns. Each entry point reports what
- * happened instead of throwing into a launcher that has to stay open.
+ * Freezing takes the frame the viewfinder is already showing rather than firing
+ * the shutter. The first build used ImageCapture at maximum quality, and on a
+ * real phone that meant several seconds of nothing happening after pressing
+ * Hold still, sometimes ending in a failure, and a frozen picture in a
+ * different shape from the preview because the shutter captures the whole
+ * sensor while the viewfinder shows a square crop of it. Somebody framing a
+ * pill bottle would press the key, wait, and get back a picture that was not
+ * what they had lined up.
+ *
+ * Holding the analyzer's latest frame is instant, cannot fail once the preview
+ * is running, and is by construction exactly what was on screen. The resolution
+ * is lower than a photograph, which does not matter: recognition reads a
+ * 1400 by 1000 frame in about a third of a second, and the person has already
+ * zoomed in on the thing they want read.
  */
 class Magnifier(private val context: Context) {
 
     private var provider: ProcessCameraProvider? = null
     private var control: CameraControl? = null
     private var info: CameraInfo? = null
-    private var capture: ImageCapture? = null
+    private val analysisExecutor = Executors.newSingleThreadExecutor()
+    private val freezeRequested = AtomicBoolean(false)
+    private var onFrozen: ((Bitmap) -> Unit)? = null
 
     var torchOn = false
         private set
@@ -53,28 +71,58 @@ class Magnifier(private val context: Context) {
                 return@addListener
             }
             provider = cameraProvider
-            // Target rotation is deliberately left to CameraX and PreviewView.
-            // Pinning it to the window's own orientation was tried, on the
-            // theory that a portrait-locked app should ignore a rotated
-            // display, and it turned the preview sideways: PreviewView already
-            // reconciles the sensor orientation with the view it draws into,
-            // and a second correction on top of that is one too many.
+
             val preview = Preview.Builder().build().also {
                 it.surfaceProvider = view.surfaceProvider
             }
-            val imageCapture = ImageCapture.Builder()
-                // The frozen frame is read by OCR and shown large, so latency
-                // matters less than not being a blur.
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+            val analysis = ImageAnalysis.Builder()
+                // Enough for recognition without making every frame expensive.
+                .setResolutionSelector(
+                    ResolutionSelector.Builder()
+                        .setResolutionStrategy(
+                            ResolutionStrategy(
+                                Size(1920, 1080),
+                                ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER,
+                            )
+                        )
+                        .build()
+                )
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .build()
-            capture = imageCapture
+            analysis.setAnalyzer(analysisExecutor) { image ->
+                // Frames are converted only when somebody asked for one.
+                // Copying every frame would cost a full bitmap allocation
+                // sixty times a second for a picture nobody is keeping.
+                if (freezeRequested.compareAndSet(true, false)) {
+                    val bitmap = runCatching {
+                        image.toBitmap().rotated(image.imageInfo.rotationDegrees)
+                    }.getOrNull()
+                    if (bitmap != null) {
+                        ContextCompat.getMainExecutor(context).execute {
+                            onFrozen?.invoke(bitmap)
+                        }
+                    }
+                }
+                image.close()
+            }
+
+            // The view port is what makes the frozen frame match the viewfinder.
+            // Without it the preview shows a square crop and the analyzer hands
+            // over the whole sensor, so what was framed and what was frozen are
+            // two different pictures.
+            val group = UseCaseGroup.Builder()
+                .addUseCase(preview)
+                .addUseCase(analysis)
+                .apply { view.viewPort?.let { setViewPort(it) } }
+                .build()
+
             val bound = runCatching {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
                     owner,
                     CameraSelector.DEFAULT_BACK_CAMERA,
-                    preview,
-                    imageCapture,
+                    group,
                 )
             }.getOrNull()
             if (bound == null) {
@@ -92,10 +140,16 @@ class Magnifier(private val context: Context) {
     fun stop() {
         runCatching { if (torchOn) control?.enableTorch(false) }
         torchOn = false
+        onFrozen = null
+        freezeRequested.set(false)
         runCatching { provider?.unbindAll() }
         control = null
         info = null
-        capture = null
+    }
+
+    fun release() {
+        stop()
+        runCatching { analysisExecutor.shutdown() }
     }
 
     /** Returns true when the torch actually changed, so the key can say so. */
@@ -119,36 +173,59 @@ class Magnifier(private val context: Context) {
     }
 
     /**
+     * Focuses where somebody touched the picture.
+     *
+     * A phone held close to a pill bottle focuses on whatever the camera
+     * decided was interesting, which at that distance is often the background.
+     * Without a way to say "this bit", the magnifier hands back a blurred frame
+     * and the reader finds no words in it.
+     */
+    fun focusAt(view: PreviewView, x: Float, y: Float) {
+        val camera = control ?: return
+        runCatching {
+            val point = view.meteringPointFactory.createPoint(x, y)
+            camera.startFocusAndMetering(
+                FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
+                    .disableAutoCancel()
+                    .build()
+            )
+        }
+    }
+
+    /**
      * Freezes a frame so a shaking hand can rest.
      *
-     * Captured to memory rather than to a file. A magnified pill bottle is not
-     * a photograph anybody wants keeping, and writing it to storage would put
-     * a picture of somebody's medication in their gallery.
+     * Held in memory rather than written to storage. A magnified pill bottle is
+     * not a photograph anybody wants keeping, and saving it would put a picture
+     * of somebody's medication in their gallery.
+     *
+     * Returns immediately; the frame arrives on the main thread within a frame
+     * or two. If the camera is not running, [onFailed] is called rather than
+     * leaving the key looking pressed forever.
      */
     fun freeze(onFrozen: (Bitmap) -> Unit, onFailed: () -> Unit) {
-        val imageCapture = capture ?: return onFailed()
-        runCatching {
-            imageCapture.takePicture(
-                ContextCompat.getMainExecutor(context),
-                object : ImageCapture.OnImageCapturedCallback() {
-                    override fun onCaptureSuccess(image: ImageProxy) {
-                        val bitmap = runCatching {
-                            image.toBitmap().rotated(image.imageInfo.rotationDegrees)
-                        }.getOrNull()
-                        image.close()
-                        if (bitmap == null) onFailed() else onFrozen(bitmap)
-                    }
+        if (control == null) return onFailed()
+        this.onFrozen = onFrozen
+        freezeRequested.set(true)
+        // If no frame arrives, say so. The analyzer runs continuously while the
+        // preview is up so this should never fire, but a key that quietly does
+        // nothing is the failure this app cannot afford, and "should never" is
+        // not a guarantee on somebody else's phone.
+        ContextCompat.getMainExecutor(context).execute {
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                if (freezeRequested.compareAndSet(true, false)) onFailed()
+            }, FREEZE_TIMEOUT_MS)
+        }
+    }
 
-                    override fun onError(exception: ImageCaptureException) = onFailed()
-                },
-            )
-        }.onFailure { onFailed() }
+    private companion object {
+        const val FREEZE_TIMEOUT_MS = 1500L
     }
 }
 
 /** The sensor does not rotate with the phone, so the frame arrives sideways. */
 private fun Bitmap.rotated(degrees: Int): Bitmap {
     if (degrees == 0) return this
-    val matrix = android.graphics.Matrix().apply { postRotate(degrees.toFloat()) }
+    val matrix = Matrix().apply { postRotate(degrees.toFloat()) }
     return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
 }

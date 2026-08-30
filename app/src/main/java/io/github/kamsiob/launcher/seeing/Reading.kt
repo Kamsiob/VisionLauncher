@@ -69,10 +69,7 @@ object Reading {
                     tess.recycle()
                     return null
                 }
-                // A magnified label is one block of text on one surface, which
-                // is what this mode assumes. The default assumes a scanned page
-                // and hunts for columns that are not there.
-                tess.pageSegMode = TessBaseAPI.PageSegMode.PSM_AUTO_OSD
+                tess.pageSegMode = TessBaseAPI.PageSegMode.PSM_AUTO
             }
         }.getOrNull() ?: return null
         api = created
@@ -88,12 +85,30 @@ object Reading {
      */
     fun read(context: Context, bitmap: Bitmap): String? {
         val tess = engine(context) ?: return null
-        return runCatching {
-            tess.setImage(bitmap)
-            val text = tess.utF8Text?.trim().orEmpty()
-            tess.clear()
-            text.ifEmpty { null }
-        }.getOrNull()
+        // Two passes. The first assumes a page and finds the lines on it, which
+        // is right for a label held square on. The second assumes text scattered
+        // anywhere in the frame, which is what a curved bottle or a sign at an
+        // angle actually looks like. The second costs about a third of a second
+        // and only runs when the first came back with nothing, so the common
+        // case pays nothing for it and the awkward case is rescued instead of
+        // being told there are no words.
+        val modes = listOf(
+            TessBaseAPI.PageSegMode.PSM_AUTO,
+            TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT,
+        )
+        for (mode in modes) {
+            val text = runCatching {
+                tess.pageSegMode = mode
+                tess.setImage(bitmap)
+                val found = tess.utF8Text?.trim().orEmpty()
+                tess.clear()
+                found
+            }.getOrDefault("")
+            // A single stray character is noise, not a reading. Two passes over
+            // a blank wall will both find something eventually.
+            if (text.count { it.isLetterOrDigit() } >= 3) return text
+        }
+        return null
     }
 
     /**

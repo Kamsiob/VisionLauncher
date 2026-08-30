@@ -454,7 +454,8 @@ private fun ArrangeGrid(
                             .weight(1f)
                             .fillMaxHeight()
                             // The two tiles slide from where they were to where
-                            // they now are. Nothing else in the app animates.
+                            // they now are. This is the only animation in the
+                            // app: screen changes are instant, see D48.
                             .offset { slide }
                             .onGloballyPositioned { trade.remember(index, it.positionInRoot()) }
                             .then(if (dimmed) Modifier.alpha(0.38f) else Modifier)
