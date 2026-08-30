@@ -11,7 +11,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -22,7 +26,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalDensity
+import androidx.core.view.WindowCompat
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -111,30 +120,48 @@ fun HomeScreen(
         watcher.state.collect { value = it }
     }
 
-    // The masthead is pinned and everything under it scrolls.
+    // The whole page scrolls, masthead included, and a strip the height of the
+    // status bar is painted over the top of it.
     //
-    // It used to scroll with the rest, and because the status bar is
-    // transparent the date line slid up behind it and sat on top of the
-    // system's own clock: two times, in two fonts, overlapping. Pinning it
-    // fixes that at the root rather than papering over it, and it means the
-    // time is always on screen, which is the one thing on this page most
-    // likely to be what somebody picked the phone up for.
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(palette.background)
-            .navigationBarsPadding(),
-    ) {
-        Masthead(
-            clockText = DayPart.clockText(context, now.time),
-            dayPartText = DayPart.dayPartText(context, now),
-            dateText = DayPart.dateText(now.time),
-            isEvening = DayPart.isMoon(now),
-        )
+    // Without that strip the date line slid up behind the transparent status
+    // bar and came to rest on the system's own clock: two times, in two fonts,
+    // overlapping. Pinning the masthead fixed that and cost too much: at the
+    // largest text size it took half the screen and the tiles started below
+    // the fold. The strip takes the color of whatever is passing under it, so
+    // it is navy while the masthead is there and paper once it has gone by,
+    // and at every size the page is free to scroll out of its own way.
+    val scroll = rememberScrollState()
+    var mastheadHeight by remember { mutableStateOf(0) }
+    val statusBarHeight = WindowInsets.statusBars.getTop(LocalDensity.current)
+    val overMasthead = scroll.value < (mastheadHeight - statusBarHeight).coerceAtLeast(0)
+
+    // The system's own clock and icons sit on that strip, so they have to flip
+    // with it. They were set once for the whole screen on the assumption that
+    // home always means a navy masthead behind them, and once the page scrolled
+    // past the masthead the light icons were sitting on paper and disappeared.
+    val view = LocalView.current
+    LaunchedEffect(overMasthead, palette.isDark) {
+        val window = (view.context as? android.app.Activity)?.window ?: return@LaunchedEffect
+        WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
+            !overMasthead && !palette.isDark
+    }
+
+    Box(modifier = Modifier.fillMaxSize().background(palette.background)) {
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(
+                .fillMaxSize()
+                .verticalScroll(scroll)
+                .navigationBarsPadding(),
+        ) {
+            Masthead(
+                clockText = DayPart.clockText(context, now.time),
+                dayPartText = DayPart.dayPartText(context, now),
+                dateText = DayPart.dateText(now.time),
+                isEvening = DayPart.isMoon(now),
+                onHeight = { mastheadHeight = it },
+            )
+            Column(
+                modifier = Modifier.padding(
                 start = Dimens.screenSide,
                 end = Dimens.screenSide,
                 top = Dimens.gapColumn,
@@ -159,7 +186,16 @@ fun HomeScreen(
                 minHeight = Dimens.keySmall,
                 fontSize = TypeScale.keyLabelSmall,
             )
+            }
         }
+
+        // The strip that keeps the page out from under the system's clock.
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsTopHeight(WindowInsets.statusBars)
+                .background(if (overMasthead) palette.masthead else palette.background)
+        )
     }
 }
 

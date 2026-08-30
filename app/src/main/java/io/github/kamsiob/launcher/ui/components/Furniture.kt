@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -182,6 +183,9 @@ fun Masthead(
     dayPartText: String,
     dateText: String,
     isEvening: Boolean,
+    /** Reports its measured height so the home screen can color the strip
+     *  over the status bar to match whatever is currently passing under it. */
+    onHeight: (Int) -> Unit = {},
 ) {
     val palette = LocalPalette.current
     val merged = stringResource(R.string.a11y_masthead, clockText, dayPartText, dateText)
@@ -189,6 +193,7 @@ fun Masthead(
         modifier = Modifier
             .fillMaxWidth()
             .background(palette.masthead)
+            .onSizeChanged { onHeight(it.height) }
             .statusBarsPadding()
             .padding(start = 24.dp, end = 24.dp, top = 34.dp, bottom = 26.dp)
             .clearAndSetSemantics { contentDescription = merged },
