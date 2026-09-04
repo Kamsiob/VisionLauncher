@@ -479,3 +479,49 @@ nothing happened. The graph it was navigating had already been replaced.
 The route out of onboarding is the explicit navigate, which is what it should
 always have been. Reading it from settings meant the same fact was expressed in
 two places, and the derived one fought the deliberate one.
+
+## D50. The view port has to be cropped, not just set
+
+Setting a `ViewPort` on the use case group is half the job. `ImageProxy.toBitmap()`
+returns the whole buffer and ignores the crop rectangle CameraX put on it, so
+the view port changed nothing about the picture that came back. The frame is now
+cropped to `image.cropRect` explicitly.
+
+The other half is timing. `PreviewView.getViewPort()` returns null until the view
+has been measured, and the camera provider is usually ready first, so binding
+happened with no view port at all. Starting the camera now waits for the view to
+have a size, and falls back to a view port built from the view's own shape rather
+than binding without one and silently reverting to the whole sensor.
+
+Together these were why somebody framing a book cover got back everything above
+and below it as well. Measured after the fix: the viewfinder is 954 by 777
+pixels, an aspect of 1.228, and the frame handed back is 1440 by 1174, an aspect
+of 1.227.
+
+## D51. The reader says only the words it was sure of
+
+Recognition returns everything it saw, including marks made out of paper grain,
+speckles and the edge of a table. Read aloud, those became characters that were
+never on the page, and a listener has no way to tell the invented part from the
+real one. That is worse than reading nothing.
+
+Words now have to clear a confidence of 60 and contain something readable to
+survive, and punctuation standing on its own is dropped, since a stray comma is
+nearly always a speck. The threshold was chosen against photographs of real
+labels, not picked from the air: at 60 every word on a label survives and the
+invented marks do not.
+
+Separately, anything a voice would read out by name is taken out before speaking
+but left in the text on screen. A bracket is useful to see and useless to hear.
+
+## D52. The sun's rays are all the same length and the same distance out
+
+Every ray now starts 7 units from the centre and ends at 9. The top one started
+at 6 and ended at 8: closer in than the others and shorter, and with a 2.1
+stroke the gap it left was about a tenth of a unit, so it read as joined to the
+sun while the other four floated.
+
+Icons also grew 15 percent, the third enlargement. The stroke came down to 1.91
+in step, as it did the previous two times, so the absolute line weight has
+stayed within a tenth of a dp of the original throughout. The icons are larger
+and exactly as bold; only the room inside them changes.

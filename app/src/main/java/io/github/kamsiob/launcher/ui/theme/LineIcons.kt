@@ -14,16 +14,17 @@ import androidx.compose.ui.unit.dp
  * joins, no fills. Icons are drawn in black and tinted at the point of use, so
  * one set serves all three themes.
  *
- * The stroke is 2.2 rather than the grid's 2.7 because the icons grew. A
- * stroke in viewport units scales with the icon, so drawing the old weight at
- * the new sizes would have thickened every line by a quarter and closed the
- * gaps inside the camera and the photo frame until they read as blots. At 2.2
- * the absolute stroke lands within a tenth of a dp of what it was before at
- * every size in Dimens: the icons look exactly as bold and simply have more
- * room inside them. Change the sizes and this number without checking that
- * arithmetic and the shapes will fuse.
+ * The stroke is 1.91 rather than the grid's 2.7 because the icons grew, twice
+ * early on and once more by 15 percent after the app was used on a real phone.
+ * A stroke in viewport units scales with the icon, so drawing the old weight at
+ * the new sizes would thicken every line in step and close the gaps inside the
+ * camera and the photo frame until they read as blots. Each time the sizes went
+ * up this number came down to match, so the absolute stroke has stayed within a
+ * tenth of a dp of the original throughout: the icons look exactly as bold and
+ * simply have more room inside them. Change the sizes and this number without
+ * checking that arithmetic and the shapes will fuse.
  */
-private fun lineIcon(name: String, vararg paths: String, stroke: Float = 2.2f): ImageVector =
+private fun lineIcon(name: String, vararg paths: String, stroke: Float = 1.91f): ImageVector =
     ImageVector.Builder(
         name = name,
         defaultWidth = 24.dp,
@@ -94,18 +95,23 @@ object LineIcons {
         "M3 11l9-8 9 8",
         "M5 10v10h14V10",
     )
+    // Every ray starts 7 from the centre and ends at 9, so the gap around the
+    // sun is the same all the way round. The top ray used to start at 6 and end
+    // at 8: closer in than the rest and shorter, and with a 2.1 stroke the gap
+    // it left was about a tenth of a unit, so it read as joined to the sun
+    // while the others floated.
     val sun = lineIcon(
         "sun",
         circle(12f, 14f, 4f),
-        "M12 6v2M5 14H3M21 14h-2M6.6 8.6L5.2 7.2M17.4 8.6l1.4-1.4",
+        "M12 7V5M5 14H3M19 14H21M7.05 9.05L5.64 7.64M16.95 9.05L18.36 7.64",
         "M3 19h18",
-        stroke = 2.1f,
+        stroke = 1.83f,
     )
     val moon = lineIcon(
         "moon",
         "M19 14a7 7 0 0 1-9-9 7 7 0 1 0 9 9z",
         "M3 19h18",
-        stroke = 2.1f,
+        stroke = 1.83f,
     )
     val bellOff = lineIcon(
         "bellOff",

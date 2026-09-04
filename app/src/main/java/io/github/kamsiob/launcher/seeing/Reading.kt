@@ -100,7 +100,8 @@ object Reading {
             val text = runCatching {
                 tess.pageSegMode = mode
                 tess.setImage(bitmap)
-                val found = tess.utF8Text?.trim().orEmpty()
+                tess.utF8Text // recognition has to run before the iterator exists
+                val found = confidentText(tess)
                 tess.clear()
                 found
             }.getOrDefault("")
@@ -112,6 +113,62 @@ object Reading {
     }
 
     /**
+     * The words the recognizer was actually sure about.
+     *
+     * Tesseract returns everything it saw, including the marks it made out of
+     * grain in the paper and the edge of the table. Reading the whole lot aloud
+     * meant announcing characters that were never on the page, which is worse
+     * than reading nothing: somebody has no way to tell the invented part from
+     * the real one.
+     *
+     * A word is kept when the recognizer was reasonably confident of it and it
+     * contains something readable. Punctuation on its own is dropped: a stray
+     * comma is nearly always the recognizer finding a speck.
+     */
+    private fun confidentText(tess: TessBaseAPI): String {
+        val iterator = tess.resultIterator ?: return tess.utF8Text?.trim().orEmpty()
+        val out = StringBuilder()
+        runCatching {
+            iterator.begin()
+            do {
+                val word = iterator.getUTF8Text(TessBaseAPI.PageIteratorLevel.RIL_WORD)
+                    ?.trim().orEmpty()
+                val confidence = iterator.confidence(TessBaseAPI.PageIteratorLevel.RIL_WORD)
+                if (word.isNotEmpty() && confidence >= MIN_CONFIDENCE && isReadable(word)) {
+                    if (out.isNotEmpty()) {
+                        val newLine = runCatching {
+                            iterator.isAtBeginningOf(TessBaseAPI.PageIteratorLevel.RIL_TEXTLINE)
+                        }.getOrDefault(false)
+                        out.append(if (newLine) '\n' else ' ')
+                    }
+                    out.append(word)
+                }
+            } while (iterator.next(TessBaseAPI.PageIteratorLevel.RIL_WORD))
+        }
+        runCatching { iterator.delete() }
+        return out.toString().trim()
+    }
+
+    /**
+     * Whether a recognized word is worth saying.
+     *
+     * It has to carry a letter or a digit, and it cannot be mostly symbols. A
+     * price like "$4.99" survives; a run like "|:~" does not.
+     */
+    private fun isReadable(word: String): Boolean {
+        val letters = word.count { it.isLetterOrDigit() }
+        if (letters == 0) return false
+        return letters * 2 >= word.length
+    }
+
+    /**
+     * Below this the recognizer is guessing. Chosen against photographs of real
+     * labels rather than picked from the air: at 60 the words on a label all
+     * survive and the marks invented from paper grain and table edges do not.
+     */
+    private const val MIN_CONFIDENCE = 60f
+
+    /**
      * The same text, punctuated for a voice rather than for an eye.
      *
      * A label reads "AMOXICILLIN 500 mg" on one line and "Take one capsule" on
@@ -120,9 +177,35 @@ object Reading {
      */
     fun forSpeaking(text: String): String =
         text.lineSequence()
-            .map { it.trim() }
+            .map { spokenLine(it) }
             .filter { it.isNotEmpty() }
-            .joinToString(". ") { line -> line.trimEnd('.', ',', ';', ':') }
+            .joinToString(". ")
+
+    /**
+     * One line, said rather than displayed.
+     *
+     * A voice reads a stray bracket as the word "bracket". Recognition on a
+     * photograph always finds a few marks that were never on the page, and
+     * hearing those read out is worse than hearing nothing: somebody listening
+     * has no way to tell the invented part from the real one. They stay in the
+     * text on screen, where seeing them is useful and hearing them is not.
+     */
+    private fun spokenLine(line: String): String {
+        val kept = line.map { c ->
+            if (c.isLetterOrDigit() || c.isWhitespace() || c in SPOKEN_PUNCTUATION) c else ' '
+        }.joinToString("")
+        return kept.split(" ")
+            .filter { it.isNotBlank() }
+            .joinToString(" ")
+            .trim()
+            .trim { it in TRIMMED_ENDS }
+    }
+
+    /** Marks a voice treats as a pause rather than reading out by name. */
+    private const val SPOKEN_PUNCTUATION = ".,;:'%"
+
+    /** Punctuation left stranded at either end once the marks are gone. */
+    private const val TRIMMED_ENDS = ".,;:'"
 
     /** Frees the native engine, which holds its language model in native memory. */
     fun release() {

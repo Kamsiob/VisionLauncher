@@ -10,11 +10,14 @@ import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.ViewPort
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import android.util.Rational
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnLayout
 import androidx.lifecycle.LifecycleOwner
 import android.util.Size
 import java.util.concurrent.Executors
@@ -63,6 +66,16 @@ class Magnifier(private val context: Context) {
         view: PreviewView,
         onFailed: () -> Unit,
     ) {
+        // Wait for the view to have a size. A PreviewView reports no view port
+        // until it has been measured, and the camera provider is usually ready
+        // first, so binding immediately bound with no view port at all and the
+        // frame handed back covered the whole sensor rather than the square on
+        // screen. Somebody framing a book cover got back everything above and
+        // below it as well.
+        if (view.width == 0 || view.height == 0) {
+            view.doOnLayout { start(owner, view, onFailed) }
+            return
+        }
         val future = ProcessCameraProvider.getInstance(context)
         future.addListener({
             val cameraProvider = runCatching { future.get() }.getOrNull()
@@ -96,7 +109,13 @@ class Magnifier(private val context: Context) {
                 // sixty times a second for a picture nobody is keeping.
                 if (freezeRequested.compareAndSet(true, false)) {
                     val bitmap = runCatching {
-                        image.toBitmap().rotated(image.imageInfo.rotationDegrees)
+                        // Cropped to the rectangle the view port asked for.
+                        // toBitmap returns the whole buffer and ignores the crop
+                        // rect, so setting a view port alone changed nothing
+                        // about the picture that came back.
+                        image.toBitmap()
+                            .cropped(image.cropRect)
+                            .rotated(image.imageInfo.rotationDegrees)
                     }.getOrNull()
                     if (bitmap != null) {
                         ContextCompat.getMainExecutor(context).execute {
@@ -111,10 +130,18 @@ class Magnifier(private val context: Context) {
             // Without it the preview shows a square crop and the analyzer hands
             // over the whole sensor, so what was framed and what was frozen are
             // two different pictures.
+            // The view port is what makes the frozen frame match the
+            // viewfinder. PreviewView supplies one once it is laid out; where
+            // it does not, one is built from the view's own shape rather than
+            // binding without and silently going back to the whole sensor.
+            val viewPort = view.viewPort ?: ViewPort.Builder(
+                Rational(view.width, view.height),
+                preview.targetRotation,
+            ).setScaleType(ViewPort.FILL_CENTER).build()
             val group = UseCaseGroup.Builder()
                 .addUseCase(preview)
                 .addUseCase(analysis)
-                .apply { view.viewPort?.let { setViewPort(it) } }
+                .setViewPort(viewPort)
                 .build()
 
             val bound = runCatching {
@@ -221,6 +248,16 @@ class Magnifier(private val context: Context) {
     private companion object {
         const val FREEZE_TIMEOUT_MS = 1500L
     }
+}
+
+/** Takes the part of the frame the view port asked for, and nothing else. */
+private fun Bitmap.cropped(rect: android.graphics.Rect): Bitmap {
+    val left = rect.left.coerceIn(0, width)
+    val top = rect.top.coerceIn(0, height)
+    val w = rect.width().coerceIn(1, width - left)
+    val h = rect.height().coerceIn(1, height - top)
+    if (left == 0 && top == 0 && w == width && h == height) return this
+    return Bitmap.createBitmap(this, left, top, w, h)
 }
 
 /** The sensor does not rotate with the phone, so the frame arrives sideways. */

@@ -46,7 +46,8 @@ object Dimens {
     // Element sizes.
     //
     // The icons were enlarged from the grid's own values after the user looked
-    // at the running app and found them small. See DECISIONS.md D34: the grid
+    // at the running app and found them small, three times now: twice early on
+    // and once more, by 15 percent, after using the app on a real phone. See DECISIONS.md D34: the grid
     // sized them by the conventions of ordinary interface design while sizing
     // its touch targets by the aging literature, and only the targets got the
     // argument. These are the corrected values, and the grid now carries them.
@@ -54,38 +55,38 @@ object Dimens {
     // Both kinds of tile glyph sit in one slot of this height, so a built in
     // line icon and a third party bitmap produce tiles of identical height.
     // Without the shared slot the two differ and the rows rag.
-    val tileIconSlot = 80.dp
-    val tileIcon = 80.dp
+    val tileIconSlot = 92.dp
+    val tileIcon = 92.dp
 
     // Deliberately smaller than the line icon and unchanged from the grid. The
     // size difference is the quiet cue that tells built in features from
     // installed apps, which DESIGN.md relies on.
-    val appIcon = 60.dp
+    val appIcon = 69.dp
     val appIconRadius = 16.dp
-    val avatar = 60.dp
+    val avatar = 69.dp
 
     // The grid draws two row icon sizes, 40 on the Call screen and 36 on rows
     // carrying a mono metadata line, and the first port collapsed them to 36.
     // Both are restored, both enlarged.
-    val rowIcon = 64.dp
-    val rowIconWithMeta = 58.dp
+    val rowIcon = 74.dp
+    val rowIconWithMeta = 67.dp
 
-    val homeKeyIcon = 44.dp
+    val homeKeyIcon = 51.dp
 
     // Keys carry an icon sized to the key. One value served the 72dp, 88dp and
     // 130dp keys before, which is how the grid's own 30 and 40 both became 32.
-    val keyIconSmall = 40.dp
-    val keyIcon = 48.dp
-    val keyIconBig = 64.dp
+    val keyIconSmall = 46.dp
+    val keyIcon = 55.dp
+    val keyIconBig = 74.dp
 
     // The lamp glyph outranks the day part mark on purpose. It backs a colored
     // signal that must never carry meaning alone, while the sun and moon are
     // decoration that happens to aid orientation. They were equal by accident.
-    val lampIcon = 48.dp
-    val daylineIcon = 42.dp
+    val lampIcon = 55.dp
+    val daylineIcon = 48.dp
 
     val statusDot = 20.dp
-    val thresholdIcon = 88.dp
+    val thresholdIcon = 101.dp
 
     // Borders.
     val outlinedBorder = 3.dp

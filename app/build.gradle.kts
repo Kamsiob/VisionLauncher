@@ -23,7 +23,7 @@ plugins {
 // emulator.
 val versionMajor = 0
 val versionMinor = 4
-val versionPatch = 4
+val versionPatch = 5
 
 // One application ID, no debug suffix. The user keeps exactly one copy of this
 // app on any device, so debug and release deliberately collide rather than
